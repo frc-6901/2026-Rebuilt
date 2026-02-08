@@ -40,7 +40,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         this.drivetrain = drivetrain;
         // put the real camera when connecting to robot, but for simulation I'm just making a random name
-        camera = new PhotonCamera("sim-camera");
+        camera = new PhotonCamera("Arducam_OV9281_USB_Camera");
         try {
             fieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2026RebuiltAndymark.m_resourceFile);
         } catch (IOException e) {
