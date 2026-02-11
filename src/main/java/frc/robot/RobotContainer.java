@@ -6,7 +6,7 @@ package frc.robot;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
+import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentric;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,11 +20,12 @@ import frc.robot.subsystems.*;
 
 public class RobotContainer {
     /* Setting up bindings for necessary control of the swerve drive platform */
-    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+    private final SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric()
             .withDeadband(ControllerConstants.kDeadband).withRotationalDeadband(ControllerConstants.kDeadband) // Add a
                                                                                                                // 10%
                                                                                                                // deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
@@ -64,30 +65,22 @@ public class RobotContainer {
         driver.start().and(driver.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         driver.start().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-        // Reset the field-centric heading on left bumper press.
-        driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
-
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
     // Generates the command request for moving the drive train based on the current
     // controller input.
-    public FieldCentric getDriverInput() {
-        double translationX = 0;
-        double translationY = 0;
-        double angularRotation = 0;
+    public RobotCentric getDriverInput() {
+        double rightTriggerDepth = driver.getRightTriggerAxis();
+        double leftTriggerDepth = driver.getLeftTriggerAxis();
 
-        // only move if the trigger is pressed
-        if (driver.rightBumper().getAsBoolean()) {
-            translationX = -driver.getLeftY() * DrivetrainConstants.MaxSpeed;
-            translationY = -driver.getLeftX() * DrivetrainConstants.MaxSpeed;
+        double netForwardAcceleration = (rightTriggerDepth - leftTriggerDepth) * DrivetrainConstants.MaxSpeed;
 
-            angularRotation = driver.getRightX() * DrivetrainConstants.MaxAngularRate;
-        }
+        double angularAcceleration = -driver.getLeftX() * DrivetrainConstants.MaxAngularRate;
 
-        return drive.withVelocityX(translationX) // Drive forward with negative Y (forward)
-                .withVelocityY(translationY) // Drive left with negative X (left)
-                .withRotationalRate(angularRotation); // Drive counterclockwise with negative X (left)
+        return drive
+                .withVelocityX(netForwardAcceleration)
+                .withRotationalRate(angularAcceleration);
     }
 
     public Command getAutonomousCommand() {
