@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 // import frc.robot.generated.TunerConstants;
 import frc.robot.Constants.*;
+import frc.robot.commands.ShooterCommand;
 import frc.robot.subsystems.*;
 
 public class RobotContainer {
@@ -35,17 +36,16 @@ public class RobotContainer {
     private final CommandXboxController operator = new CommandXboxController(ControllerConstants.kOperatorPort);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    private final ShooterSubsystem shooter = new ShooterSubsystem();
 
     public RobotContainer() {
         configureBindings();
     }
 
-    public CommandSwerveDrivetrain getDrivetrain() {
-        return drivetrain;
-    }
-
     private void configureBindings() {
-        drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> getDriverInput()));
+        drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> getDriverDrivetrainInput()));
+
+        operator.a().whileTrue(new ShooterCommand(shooter));
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -70,7 +70,7 @@ public class RobotContainer {
 
     // Generates the command request for moving the drive train based on the current
     // controller input.
-    public RobotCentric getDriverInput() {
+    public RobotCentric getDriverDrivetrainInput() {
         double rightTriggerDepth = driver.getRightTriggerAxis();
         double leftTriggerDepth = driver.getLeftTriggerAxis();
 

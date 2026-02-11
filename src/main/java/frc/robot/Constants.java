@@ -75,6 +75,22 @@ public final class Constants {
                 public final static double MaxAngularRate = RotationsPerSecond.of(1.0).in(RadiansPerSecond);
         }
 
+        public static final class ShooterConstants {
+                // The motor ID of the left motor.
+                public final static int LeftMotorId = 35;
+                // The motor ID of the right motor.
+                public final static int RightMotorId = 36;
+
+                /// The maximum power to apply to the shooter motors, as a percentage (i.e. 0.5
+                /// for 50%).
+                public final static double MaxPower = 0.5;
+
+                /// The PID settings for the shooter motors.
+                public final static Slot0Configs ShooterGains = new Slot0Configs()
+                                .withKP(0.1).withKI(0).withKD(0)
+                                .withKS(0).withKV(0.1);
+        }
+
         public class TunerConstants {
                 // Both sets of gains need to be tuned to your individual robot.
 
@@ -125,6 +141,7 @@ public final class Constants {
                                                                 // impacting performance.
                                                                 .withStatorCurrentLimit(Amps.of(60))
                                                                 .withStatorCurrentLimitEnable(true));
+
                 private static final CANcoderConfiguration encoderInitialConfigs = new CANcoderConfiguration();
                 // Configs for the Pigeon 2; leave this null to skip applying Pigeon 2 configs
                 private static final Pigeon2Configuration pigeonConfigs = null;
