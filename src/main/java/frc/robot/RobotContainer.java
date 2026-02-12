@@ -6,6 +6,7 @@ package frc.robot;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
 import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentric;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -16,17 +17,20 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-// import frc.robot.generated.TunerConstants;
 import frc.robot.Constants.*;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.subsystems.*;
 
 public class RobotContainer {
     /* Setting up bindings for necessary control of the swerve drive platform */
-    private final SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric()
-            .withDeadband(ControllerConstants.kDeadband).withRotationalDeadband(ControllerConstants.kDeadband) // Add a
-                                                                                                               // 10%
-                                                                                                               // deadband
+    // private final SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric()
+    //         .withDeadband(ControllerConstants.kDeadband).withRotationalDeadband(ControllerConstants.kDeadband) // Add a
+    //                                                                                                            // 10%
+    //                                                                                                            // deadband
+    //         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+
+    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+            .withDeadband(ControllerConstants.kDeadband).withRotationalDeadband(ControllerConstants.kDeadband) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
 
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -46,7 +50,8 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> getDriverDrivetrainInput()));
+        // drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> getDriverDrivetrainInput()));
+        drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> getDriverInput()));
 
         operator.a().whileTrue(new ShooterCommand(shooter));
 
@@ -68,6 +73,9 @@ public class RobotContainer {
         driver.start().and(driver.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         driver.start().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
+        // Reset the field-centric heading on left bumper press.
+        driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+
         if (Robot.isSimulation()) {
                 driver.y().whileTrue(new RunCommand(() -> drivetrain.driveToPose(new Pose2d(0, 0, Rotation2d.fromDegrees(0)))));
         }
@@ -77,17 +85,34 @@ public class RobotContainer {
 
     // Generates the command request for moving the drive train based on the current
     // controller input.
-    public RobotCentric getDriverDrivetrainInput() {
-        double rightTriggerDepth = driver.getRightTriggerAxis();
-        double leftTriggerDepth = driver.getLeftTriggerAxis();
+    // public RobotCentric getDriverDrivetrainInput() {
+    //     double rightTriggerDepth = driver.getRightTriggerAxis();
+    //     double leftTriggerDepth = driver.getLeftTriggerAxis();
 
-        double netForwardAcceleration = (rightTriggerDepth - leftTriggerDepth) * DrivetrainConstants.MaxSpeed;
+    //     double netForwardAcceleration = (rightTriggerDepth - leftTriggerDepth) * DrivetrainConstants.MaxSpeed;
 
-        double angularAcceleration = -driver.getLeftX() * DrivetrainConstants.MaxAngularRate;
+    //     double angularAcceleration = -driver.getLeftX() * DrivetrainConstants.MaxAngularRate;
 
-        return drive
-                .withVelocityX(netForwardAcceleration)
-                .withRotationalRate(angularAcceleration);
+    //     return drive
+    //             .withVelocityX(netForwardAcceleration)
+    //             .withRotationalRate(angularAcceleration);
+    // }
+
+    // Generates the command request for moving the drive train based on the current
+    // controller input.
+    public FieldCentric getDriverInput() {
+        double translationX = 0;
+        double translationY = 0;
+        double angularRotation = 0;
+
+        translationX = -driver.getLeftY() * DrivetrainConstants.MaxSpeed;
+        translationY = -driver.getLeftX() * DrivetrainConstants.MaxSpeed;
+
+        angularRotation = driver.getRightX() * DrivetrainConstants.MaxAngularRate;
+
+        return drive.withVelocityX(translationX) // Drive forward with negative Y (forward)
+                .withVelocityY(translationY) // Drive left with negative X (left)
+                .withRotationalRate(angularRotation); // Drive counterclockwise with negative X (left)
     }
 
     public Command getAutonomousCommand() {

@@ -70,9 +70,9 @@ public final class Constants {
 
         public static final class DrivetrainConstants {
                 // The desired top speed of the robot.
-                public final static double MaxSpeed = 0.5 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+                public final static double MaxSpeed = 2 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
                 // The maximum turning rate (in radians per second).
-                public final static double MaxAngularRate = RotationsPerSecond.of(1.0).in(RadiansPerSecond);
+                public final static double MaxAngularRate = RotationsPerSecond.of(0.5).in(RadiansPerSecond);
         }
 
         public static final class ShooterConstants {
