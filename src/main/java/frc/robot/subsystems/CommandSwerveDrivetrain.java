@@ -21,10 +21,11 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
+import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.TunerConstants.TunerSwerveDrivetrain;
 
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -151,6 +152,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (RobotBase.isSimulation()) {
             SmartDashboard.putData("Field", m_field);
         }
+        
     }
 
     /**
@@ -176,10 +178,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-
-        if (RobotBase.isSimulation()) {
-            SmartDashboard.putData("Field", m_field);
-        }
+        
+        xController.setTolerance(0.05);
+        yController.setTolerance(0.05);
+        thetaController.setTolerance(0.05);
     }
 
     /**
@@ -220,17 +222,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-
-        if (RobotBase.isSimulation()) {
-            SmartDashboard.putData("Field", m_field);
-        }
     }
 
     public void driveToPose(Pose2d targetPose) {
         Pose2d currentPose = this.getState().Pose;
 
-        double xVel = xController.calculate(currentPose.getX(), targetPose.getX());
-        double yVel = yController.calculate(currentPose.getY(), targetPose.getY());
+        double xVel = -xController.calculate(currentPose.getX(), targetPose.getX());
+        double yVel = -yController.calculate(currentPose.getY(), targetPose.getY());
         double thetaVel = thetaController.calculate(currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians());
 
         setControl(new SwerveRequest.FieldCentric()
