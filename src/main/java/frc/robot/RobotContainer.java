@@ -5,6 +5,7 @@
 package frc.robot;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -13,6 +14,8 @@ import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentric;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -81,7 +84,13 @@ public class RobotContainer {
         if (Robot.isSimulation()) {
                 driver.y().whileTrue(new RunCommand(() -> {
                         Pose2d currentPose = drivetrain.getState().Pose;
-                        Translation2d vectorToTarget = fieldConstants.blueHubLocation.minus(currentPose.getTranslation());
+                        Translation2d vectorToTarget = null;
+                        
+                        if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Blue) {
+                                vectorToTarget = gameConstants.blueHubLocation.minus(currentPose.getTranslation());
+                        } else if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red) {
+                                vectorToTarget = gameConstants.redHubLocation.minus(currentPose.getTranslation());
+                        }
                         Rotation2d targetAngle = vectorToTarget.getAngle();
                         drivetrain.driveToPose(new Pose2d(currentPose.getX(), currentPose.getY(), targetAngle));
                 }

@@ -392,7 +392,8 @@ public final class Constants {
                 public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
         }
 
-        public static final class fieldConstants {
-                public static final Translation2d blueHubLocation = new Translation2d(8.27, 4.1);
+        public static final class gameConstants {
+                public static final Translation2d blueHubLocation = new Translation2d(4.03, 4.035);
+                public static final Translation2d redHubLocation = new Translation2d(12.51, 4.035);
         }
 }

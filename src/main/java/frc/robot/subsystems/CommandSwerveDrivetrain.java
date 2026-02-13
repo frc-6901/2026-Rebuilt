@@ -66,7 +66,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     private final PIDController xController = new PIDController(2, 0, 0);
     private final PIDController yController = new PIDController(2, 0, 0);
-    private final PIDController thetaController = new PIDController(1.5, 0, 0);
+    private final PIDController thetaController = new PIDController(7, 0, 0.05);
 
     /*
      * SysId routine for characterizing translation. This is used to find PID gains
