@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +20,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -48,7 +50,7 @@ public class RobotContainer {
     private final CommandXboxController operator = new CommandXboxController(ControllerConstants.kOperatorPort);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-    private final ShooterSubsystem shooter = new ShooterSubsystem();
+    private final ShooterSubsystem shooter = new ShooterSubsystem(drivetrain);
     private final VisionSubsystem vision = new VisionSubsystem(drivetrain);
 
     public RobotContainer() {
@@ -95,6 +97,11 @@ public class RobotContainer {
                         drivetrain.driveToPose(new Pose2d(currentPose.getX(), currentPose.getY(), targetAngle));
                 }
                 ));
+
+                driver.x().onTrue(new InstantCommand(() -> {
+                        shooter.updateShotVisualization(7, 60);
+                }
+                )).onFalse(new InstantCommand(() -> shooter.clearTrajectory()));
         }
 
         drivetrain.registerTelemetry(logger::telemeterize);
