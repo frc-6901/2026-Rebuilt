@@ -1,9 +1,6 @@
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.ShooterConstants.LeftMotorId;
-import static frc.robot.Constants.ShooterConstants.RightMotorId;
-import static frc.robot.Constants.ShooterConstants.ShooterGains;
-import static frc.robot.Constants.ShooterConstants.rps;
+import static frc.robot.Constants.ShooterConstants.*;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
@@ -22,6 +19,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
+import frc.robot.Telemetry;
 
 public class ShooterSubsystem extends SubsystemBase {
     private final TalonFX motorRight = new TalonFX(RightMotorId);
@@ -57,8 +55,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void updateShotVisualization(double v0_mag, double launchAngleDegrees) {
-        //this whole method is AI generated so not really sure if its gonna work lol
-        //update: it works, i'm gonna fine tune it now
+        //works but is scuffed, also it's not 100% AI anymore (i added some stuff + made it work while moving yay)
         
         // 1. Fetch robot pose (The starting point)
         Pose2d robotPose = drivetrain.getState().Pose;
@@ -66,8 +63,8 @@ public class ShooterSubsystem extends SubsystemBase {
         double robotY = robotPose.getY();
 
         // placeholders cuz i can't fetch them right now
-        double robotVx = 0;
-        double robotVy = 0;
+        double robotVx = Telemetry.currentSpeeds.vxMetersPerSecond;
+        double robotVy = Telemetry.currentSpeeds.vyMetersPerSecond;
 
         // 2. Calculate the Shot's initial velocity (without robot movement)
         double launchAngleRad = Math.toRadians(launchAngleDegrees);

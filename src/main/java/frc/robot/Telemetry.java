@@ -93,8 +93,14 @@ public class Telemetry {
      * Accept the swerve drive state and telemeterize it to SmartDashboard and
      * SignalLogger.
      */
+
+    public static ChassisSpeeds currentSpeeds = new ChassisSpeeds();
+
     public void telemeterize(SwerveDriveState state) {
         /* Telemeterize the swerve drive state */
+
+        currentSpeeds = state.Speeds;
+        
         drivePose.set(state.Pose);
         driveSpeeds.set(state.Speeds);
         driveModuleStates.set(state.ModuleStates);
