@@ -26,7 +26,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.*;
+import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShooterCommand;
+import frc.robot.commands.SlapdownCommand;
 import frc.robot.subsystems.*;
 
 public class RobotContainer {
@@ -52,6 +54,8 @@ public class RobotContainer {
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     private final ShooterSubsystem shooter = new ShooterSubsystem(drivetrain);
     private final VisionSubsystem vision = new VisionSubsystem(drivetrain);
+    private final IntakeSubsystem intake = new IntakeSubsystem();
+    private final SlapdownSubsystem slapdown = new SlapdownSubsystem();
 
     public RobotContainer() {
         configureDriverBindings();
@@ -108,7 +112,9 @@ public class RobotContainer {
     }
 
     public void configureOperatorBindings() {
-        operator.a().whileTrue(new ShooterCommand(shooter));
+        operator.rightTrigger().whileTrue(new ShooterCommand(shooter));
+        operator.leftTrigger().whileTrue(new IntakeCommand(intake));
+        operator.a().whileTrue(new SlapdownCommand(slapdown));
     }
 
     // Generates the command request for moving the drive train based on the current
