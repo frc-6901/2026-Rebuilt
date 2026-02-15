@@ -1,9 +1,13 @@
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.ShooterConstants.*;
+import static frc.robot.Constants.ShooterConstants.KickerMotorId;
+import static frc.robot.Constants.ShooterConstants.LeftMotorId;
+import static frc.robot.Constants.ShooterConstants.ReverseMotorId;
+import static frc.robot.Constants.ShooterConstants.RightMotorId;
+import static frc.robot.Constants.ShooterConstants.ShooterGains;
+import static frc.robot.Constants.ShooterConstants.rps;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -11,18 +15,15 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTableInstance;
-
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Telemetry;
 
 public class ShooterSubsystem extends SubsystemBase {
-    private final TalonFX motorRight = new TalonFX(RightMotorId);
+    private final TalonFX motorRight = new TalonFX(RightMotorId, "rio");
     private final TalonFX motorLeft = new TalonFX(LeftMotorId);
     private final TalonFX motorKicker = new TalonFX(KickerMotorId);
     private final TalonFX motorReverse = new TalonFX(ReverseMotorId);
@@ -45,6 +46,16 @@ public class ShooterSubsystem extends SubsystemBase {
         motorReverse.setControl(new Follower(KickerMotorId, MotorAlignmentValue.Opposed));
     }
 
+    public ShooterSubsystem() {
+        drivetrain = null;
+        TalonFXConfiguration m_motorConfig = new TalonFXConfiguration();
+        m_motorConfig.Slot0 = ShooterGains;
+        m_motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        m_motorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
+        motorRight.getConfigurator().apply(m_motorConfig);
+    }
+
     // Sets the power of both motors.
     //
     // The left motor is set to the given power, while the right motor is set to the
@@ -52,7 +63,11 @@ public class ShooterSubsystem extends SubsystemBase {
     public void setPower(double power) {
         // motorRight.setControl(new DutyCycleOut(power));
         motorRight.setControl(m_request.withVelocity(rps));
-        motorKicker.setControl(m_request.withVelocity(0.75*rps));
+        motorKicker.setControl(m_request.withVelocity(rps));
+    }
+
+    public void shoot() {
+        motorRight.setControl(m_request.withVelocity(rps));
     }
 
     // Disables both motors by setting their power to 0.

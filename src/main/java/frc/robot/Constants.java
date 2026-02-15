@@ -91,12 +91,12 @@ public final class Constants {
                 /// for 50%).
                 public final static double MaxPower = 0.5;
 
-                public final static int rps = 2;
+                public final static int rps = 50;
 
                 /// The PID settings for the shooter motors.
                 public final static Slot0Configs ShooterGains = new Slot0Configs()
-                                .withKP(0.1).withKI(0).withKD(0)
-                                .withKS(0).withKV(0.1);
+                                .withKP(0.075).withKI(0).withKD(0)
+                                .withKS(0).withKV(0.05);
         }
 
         public static final class IntakeConstants {

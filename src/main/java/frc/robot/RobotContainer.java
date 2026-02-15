@@ -30,132 +30,150 @@ import frc.robot.commands.ShooterCommand;
 import frc.robot.subsystems.*;
 
 public class RobotContainer {
-    /* Setting up bindings for necessary control of the swerve drive platform */
-    // private final SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric()
-    //         .withDeadband(ControllerConstants.kDeadband).withRotationalDeadband(ControllerConstants.kDeadband) // Add a
-    //                                                                                                            // 10%
-    //                                                                                                            // deadband
-    //         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+        /* Setting up bindings for necessary control of the swerve drive platform */
+        // private final SwerveRequest.RobotCentric drive = new
+        // SwerveRequest.RobotCentric()
+        // .withDeadband(ControllerConstants.kDeadband).withRotationalDeadband(ControllerConstants.kDeadband)
+        // // Add a
+        // // 10%
+        // // deadband
+        // .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop
+        // control for drive motors
 
-    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(ControllerConstants.kDeadband).withRotationalDeadband(ControllerConstants.kDeadband) // Add a 10% deadband
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+        private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+                        .withDeadband(ControllerConstants.kDeadband)
+                        .withRotationalDeadband(ControllerConstants.kDeadband) // Add a 10% deadband
+                        .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive
+                                                                                 // motors
 
-    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-    private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+        private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+        private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-    private final Telemetry logger = new Telemetry(DrivetrainConstants.MaxSpeed);
+        private final Telemetry logger = new Telemetry(DrivetrainConstants.MaxSpeed);
 
-    private final CommandXboxController driver = new CommandXboxController(ControllerConstants.kDriverPort);
-    private final CommandXboxController operator = new CommandXboxController(ControllerConstants.kOperatorPort);
+        private final CommandXboxController driver = new CommandXboxController(ControllerConstants.kDriverPort);
+        private final CommandXboxController operator = new CommandXboxController(ControllerConstants.kOperatorPort);
 
-    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-    private final ShooterSubsystem shooter = new ShooterSubsystem(drivetrain);
-    private final VisionSubsystem vision = new VisionSubsystem(drivetrain);
+        public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+        // private final ShooterSubsystem shooter = new ShooterSubsystem(drivetrain);
+        private final VisionSubsystem vision = new VisionSubsystem(drivetrain);
+        private final ShooterSubsystem shooter = new ShooterSubsystem();
 
-    public RobotContainer() {
-        configureDriverBindings();
-        configureOperatorBindings();
-    }
+        public RobotContainer() {
+                configureDriverBindings();
+                configureOperatorBindings();
+        }
 
-    private void configureDriverBindings() {
-        // drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> getDriverDrivetrainInput()));
-        drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> getDriverInput()));
+        private void configureDriverBindings() {
+                // drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> getDriverDrivetrainInput()));
+                drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> getDriverInput()));
 
-        // Idle while the robot is disabled. This ensures the configured
-        // neutral mode is applied to the drive motors while disabled.
-        final var idle = new SwerveRequest.Idle();
+                // Idle while the robot is disabled. This ensures the configured
+                // neutral mode is applied to the drive motors while disabled.
+                final var idle = new SwerveRequest.Idle();
 
-        RobotModeTriggers.disabled().whileTrue(
+                RobotModeTriggers.disabled().whileTrue(
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-        driver.a().whileTrue(drivetrain.applyRequest(() -> brake));
-        driver.b().whileTrue(drivetrain
-                .applyRequest(() -> point.withModuleDirection(new Rotation2d(-driver.getLeftY(), -driver.getLeftX()))));
+                driver.a().whileTrue(drivetrain.applyRequest(() -> brake));
+                driver.b().whileTrue(drivetrain
+                .applyRequest(() -> point.withModuleDirection(new
+                Rotation2d(-driver.getLeftY(), -driver.getLeftX()))));
 
-        // Run SysId routines when holding back/start and X/Y.
-        // Note that each routine should be run exactly once in a single log.
-        driver.back().and(driver.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        driver.back().and(driver.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        driver.start().and(driver.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        driver.start().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+                // Run SysId routines when holding back/start and X/Y.
+                // Note that each routine should be run exactly once in a single log.
+                driver.back().and(driver.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+                driver.back().and(driver.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+                driver.start().and(driver.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+                driver.start().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-        // Reset the field-centric heading on left bumper press.
-        driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+                // Reset the field-centric heading on left bumper press.
+                driver.leftBumper().onTrue(drivetrain.runOnce(() ->
+                drivetrain.seedFieldCentric()));
 
-        if (Robot.isSimulation()) {
+                if (Robot.isSimulation()) {
                 driver.y().whileTrue(new RunCommand(() -> {
-                        Pose2d currentPose = drivetrain.getState().Pose;
-                        Translation2d vectorToTarget = null;
-                        
-                        if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Blue) {
-                                vectorToTarget = gameConstants.blueHubLocation.minus(currentPose.getTranslation());
-                        } else if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red) {
-                                vectorToTarget = gameConstants.redHubLocation.minus(currentPose.getTranslation());
-                        }
-                        Rotation2d targetAngle = vectorToTarget.getAngle();
-                        drivetrain.driveToPose(new Pose2d(currentPose.getX(), currentPose.getY(), targetAngle));
+                Pose2d currentPose = drivetrain.getState().Pose;
+                Translation2d vectorToTarget = null;
+
+                if (DriverStation.getAlliance().isPresent() &&
+                DriverStation.getAlliance().get() == Alliance.Blue) {
+                vectorToTarget =
+                gameConstants.blueHubLocation.minus(currentPose.getTranslation());
+                } else if (DriverStation.getAlliance().isPresent() &&
+                DriverStation.getAlliance().get() == Alliance.Red) {
+                vectorToTarget =
+                gameConstants.redHubLocation.minus(currentPose.getTranslation());
+                }
+                Rotation2d targetAngle = vectorToTarget.getAngle();
+                drivetrain.driveToPose(new Pose2d(currentPose.getX(), currentPose.getY(),
+                targetAngle));
                 }
                 ));
 
                 driver.x().onTrue(new InstantCommand(() -> {
-                        shooter.updateShotVisualization(7, 60);
+                shooter.updateShotVisualization(7, 60);
                 }
                 )).onFalse(new InstantCommand(() -> shooter.clearTrajectory()));
+                }
+
+                drivetrain.registerTelemetry(logger::telemeterize);
         }
 
-        drivetrain.registerTelemetry(logger::telemeterize);
-    }
+        public void configureOperatorBindings() {
+                // operator.a().whileTrue(new ShooterCommand(shooter));
 
-    public void configureOperatorBindings() {
-        operator.a().whileTrue(new ShooterCommand(shooter));
-    }
+                operator.b().whileTrue(new InstantCommand(() -> shooter.shoot()));
+                operator.b().whileFalse(new InstantCommand(() -> shooter.stop()));
+        }
 
-    // Generates the command request for moving the drive train based on the current
-    // controller input.
-    // public RobotCentric getDriverDrivetrainInput() {
-    //     double rightTriggerDepth = driver.getRightTriggerAxis();
-    //     double leftTriggerDepth = driver.getLeftTriggerAxis();
+        // Generates the command request for moving the drive train based on the current
+        // controller input.
+        // public RobotCentric getDriverDrivetrainInput() {
+        // double rightTriggerDepth = driver.getRightTriggerAxis();
+        // double leftTriggerDepth = driver.getLeftTriggerAxis();
 
-    //     double netForwardAcceleration = (rightTriggerDepth - leftTriggerDepth) * DrivetrainConstants.MaxSpeed;
+        // double netForwardAcceleration = (rightTriggerDepth - leftTriggerDepth) *
+        // DrivetrainConstants.MaxSpeed;
 
-    //     double angularAcceleration = -driver.getLeftX() * DrivetrainConstants.MaxAngularRate;
+        // double angularAcceleration = -driver.getLeftX() *
+        // DrivetrainConstants.MaxAngularRate;
 
-    //     return drive
-    //             .withVelocityX(netForwardAcceleration)
-    //             .withRotationalRate(angularAcceleration);
-    // }
+        // return drive
+        // .withVelocityX(netForwardAcceleration)
+        // .withRotationalRate(angularAcceleration);
+        // }
 
-    // Generates the command request for moving the drive train based on the current
-    // controller input.
-    public FieldCentric getDriverInput() {
-        double translationX = 0;
-        double translationY = 0;
-        double angularRotation = 0;
+        // Generates the command request for moving the drive train based on the current
+        // controller input.
+        public FieldCentric getDriverInput() {
+                double translationX = 0;
+                double translationY = 0;
+                double angularRotation = 0;
 
-        translationX = -driver.getLeftY() * DrivetrainConstants.MaxSpeed;
-        translationY = -driver.getLeftX() * DrivetrainConstants.MaxSpeed;
+                translationX = -driver.getLeftY() * DrivetrainConstants.MaxSpeed;
+                translationY = -driver.getLeftX() * DrivetrainConstants.MaxSpeed;
 
-        angularRotation = driver.getRightX() * DrivetrainConstants.MaxAngularRate;
+                angularRotation = driver.getRightX() * DrivetrainConstants.MaxAngularRate;
 
-        return drive.withVelocityX(translationX) // Drive forward with negative Y (forward)
-                .withVelocityY(translationY) // Drive left with negative X (left)
-                .withRotationalRate(angularRotation); // Drive counterclockwise with negative X (left)
-    }
+                return drive.withVelocityX(translationX) // Drive forward with negative Y (forward)
+                                .withVelocityY(translationY) // Drive left with negative X (left)
+                                .withRotationalRate(angularRotation); // Drive counterclockwise with negative X (left)
+        }
 
-    public Command getAutonomousCommand() {
-        // Simple drive forward auton
-        final var idle = new SwerveRequest.Idle();
-        return Commands.sequence(
+        public Command getAutonomousCommand() {
+                // Simple drive forward auton
+                final var idle = new SwerveRequest.Idle();
+                return Commands.sequence(
                 // Reset our field centric heading to match the robot
                 // facing away from our alliance station wall (0 deg).
                 drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
                 // Then slowly drive forward (away from us) for 5 seconds.
                 drivetrain.applyRequest(() -> drive.withVelocityX(0.5)
-                        .withVelocityY(0)
-                        .withRotationalRate(0))
-                        .withTimeout(5.0),
+                .withVelocityY(0)
+                .withRotationalRate(0))
+                .withTimeout(5.0),
                 // Finally idle for the rest of auton
                 drivetrain.applyRequest(() -> idle));
-    }
+        }
 }
