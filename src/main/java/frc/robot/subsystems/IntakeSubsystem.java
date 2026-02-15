@@ -48,6 +48,6 @@ public class IntakeSubsystem extends SubsystemBase{
     }
 
     public void stopSlapdown() {
-        motorIntake.setControl(m_request.withVelocity(0));
+        motorSlapdown.setControl(m_request.withVelocity(0));
     }
 }
