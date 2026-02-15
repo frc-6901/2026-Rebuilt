@@ -90,30 +90,25 @@ public final class Constants {
                 /// for 50%).
                 public final static double MaxPower = 0.5;
 
-                public final static int rps = 2;
+                public final static int rps = 100;
 
                 /// The PID settings for the shooter motors.
                 public final static Slot0Configs ShooterGains = new Slot0Configs()
-                                .withKP(0.1).withKI(0).withKD(0)
-                                .withKS(0).withKV(0.1);
+                                .withKP(0.075).withKI(0).withKD(0)
+                                .withKS(0).withKV(0.05);
         }
 
         public static final class IntakeConstants {
                 // The motor ID of the intake motor.
                 public final static int IntakeMotorId = 103;
 
-<<<<<<< HEAD
-                /// The maximum power to apply to the intake motor, as a percentage (i.e. 0.5
-=======
                 ///The maximum power to apply to the intake motor, as a percentage (i.e. 0.5
->>>>>>> 23dcefcc743496772d49461f9afaef3e155959fb
                 /// for 50%)
                 public final static double MaxPower = 0.5;
 
                 public final static int rps = 2;
 
                 /// The PID settings for the slapdown motor.
-<<<<<<< HEAD
                 public final static Slot0Configs IntakeGains = new Slot0Configs()
                                 .withKP(0.1).withKI(0).withKD(0)
                                 .withKS(0).withKV(0.1);
@@ -123,34 +118,13 @@ public final class Constants {
                 // The motor ID of the slapdown motor.
                 public final static int SlapdownMotorId = 104;
 
-                /// The maximum power to apply to the slapdown motor, as a percentage (i.e. 0.5
-                /// for 50%)
-                public final static double MaxPower = 0.5;
-
-                public final static int rps = 2;
-
-                /// The PID settings for the slapdown motor.
-=======
->>>>>>> 23dcefcc743496772d49461f9afaef3e155959fb
-                public final static Slot0Configs IntakeGains = new Slot0Configs()
-                                .withKP(0.1).withKI(0).withKD(0)
-                                .withKS(0).withKV(0.1);
-        }
-
-        public static final class SlapdownConstants {
-                // The motor ID of the slapdown motor.
-                public final static int SlapdownMotorId = 104;
-
-                ///The maximum power to apply to the slapdown motor, as a percentage (i.e. 0.5
-                /// for 50%)
-                public final static double MaxPower = 0.5;
-
-                public final static int rps = 2;
-
                 /// The PID settings for the slapdown motor.
                 public final static Slot0Configs IntakeGains = new Slot0Configs()
                                 .withKP(0.1).withKI(0).withKD(0)
                                 .withKS(0).withKV(0.1);
+
+                public final static double intakePosition = 0.25;
+                public final static double homePosition = 0;
         }
 
 

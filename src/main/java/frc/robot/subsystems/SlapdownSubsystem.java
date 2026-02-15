@@ -11,16 +11,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-<<<<<<< HEAD
 public class SlapdownSubsystem extends SubsystemBase {
-    private final TalonFX motorSlapdown = new TalonFX(SlapdownMotorId);
-    // private final VelocityVoltage m_velocityRequest = new
-    // VelocityVoltage(0).withSlot(0);
-=======
-public class SlapdownSubsystem extends SubsystemBase{
-    private final TalonFX motorSlapdown = new TalonFX(SlapdownMotorId);
+    private final TalonFX motorSlapdown = new TalonFX(SlapdownMotorId, "rio");
     // private final VelocityVoltage m_velocityRequest = new VelocityVoltage(0).withSlot(0);
->>>>>>> 23dcefcc743496772d49461f9afaef3e155959fb
     private final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
     public boolean isSlapdownDeployed = false;
 
@@ -31,49 +24,21 @@ public class SlapdownSubsystem extends SubsystemBase{
         m_motorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         motorSlapdown.getConfigurator().apply(m_motorConfig);
-<<<<<<< HEAD
-    }
-
-    // Sets the power of the slapdown motor.
-    public void slapdown(double power) {
-        // rps prolly needs to be multiplied with some constant
-=======
         motorSlapdown.setPosition(0);
     }
 
-    //Sets the power of the slapdown motor.
-    public void slapdown(double power) {
-        //rps prolly needs to be multiplied with some constant
->>>>>>> 23dcefcc743496772d49461f9afaef3e155959fb
-        motorSlapdown.setControl(m_request.withPosition(.25));
+    public void slapdown() {
+        motorSlapdown.setControl(m_request.withPosition(intakePosition));
         isSlapdownDeployed = true;
     }
 
-<<<<<<< HEAD
-    // Retracts the slapdown.
-    public void retractSlapdown(double power) {
-        // rps prolly needs to be multiplied with some constant
-        motorSlapdown.setControl(m_request.withPosition(-.25));
-=======
     //Retracts the slapdown.
-    public void retractSlapdown(double power) {
-        //rps prolly needs to be multiplied with some constant
-        motorSlapdown.setControl(m_request.withPosition(0));
->>>>>>> 23dcefcc743496772d49461f9afaef3e155959fb
+    public void retractSlapdown() {
+        motorSlapdown.setControl(m_request.withPosition(homePosition));
         isSlapdownDeployed = false;
     }
 
     public boolean getSlapdownDeployed() {
         return isSlapdownDeployed;
     }
-
-    // public void stop() {
-<<<<<<< HEAD
-    // motorSlapdown.setControl(m_velocityRequest.withVelocity(0));
-    // }
 }
-=======
-    //     motorSlapdown.setControl(m_velocityRequest.withVelocity(0));
-    // }
-}
->>>>>>> 23dcefcc743496772d49461f9afaef3e155959fb

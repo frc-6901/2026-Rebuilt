@@ -1,11 +1,10 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.SlapdownConstants;
+import frc.robot.Constants.SlapdownConstants.*;
 import frc.robot.subsystems.SlapdownSubsystem;
 
 public class SlapdownCommand extends Command {
-    private final double power = SlapdownConstants.MaxPower;
     private final SlapdownSubsystem slapdown;
 
     public SlapdownCommand(SlapdownSubsystem slapdown) {
@@ -16,9 +15,9 @@ public class SlapdownCommand extends Command {
     @Override
     public void initialize() {
         if (slapdown.isSlapdownDeployed) {
-            slapdown.retractSlapdown(power);
+            slapdown.retractSlapdown();
         } else {
-            slapdown.slapdown(power);
+            slapdown.slapdown();
         }
     }
 
