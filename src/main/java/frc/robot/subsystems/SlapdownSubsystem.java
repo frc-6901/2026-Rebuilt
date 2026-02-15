@@ -24,6 +24,7 @@ public class SlapdownSubsystem extends SubsystemBase{
         m_motorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         motorSlapdown.getConfigurator().apply(m_motorConfig);
+        motorSlapdown.setPosition(0);
     }
 
     //Sets the power of the slapdown motor.
@@ -36,7 +37,7 @@ public class SlapdownSubsystem extends SubsystemBase{
     //Retracts the slapdown.
     public void retractSlapdown(double power) {
         //rps prolly needs to be multiplied with some constant
-        motorSlapdown.setControl(m_request.withPosition(-.25));
+        motorSlapdown.setControl(m_request.withPosition(0));
         isSlapdownDeployed = false;
     }
 
