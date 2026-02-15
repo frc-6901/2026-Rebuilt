@@ -26,7 +26,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.*;
+import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShooterCommand;
+import frc.robot.commands.SlapdownCommand;
 import frc.robot.subsystems.*;
 
 public class RobotContainer {
@@ -58,6 +60,8 @@ public class RobotContainer {
         // private final ShooterSubsystem shooter = new ShooterSubsystem(drivetrain);
         private final VisionSubsystem vision = new VisionSubsystem(drivetrain);
         private final ShooterSubsystem shooter = new ShooterSubsystem();
+        private final IntakeSubsystem intake = new IntakeSubsystem();
+        private final SlapdownSubsystem slapdown = new SlapdownSubsystem();
 
         public RobotContainer() {
                 configureDriverBindings();
@@ -65,7 +69,8 @@ public class RobotContainer {
         }
 
         private void configureDriverBindings() {
-                // drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> getDriverDrivetrainInput()));
+                // drivetrain.setDefaultCommand(drivetrain.applyRequest(() ->
+                // getDriverDrivetrainInput()));
                 drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> getDriverInput()));
 
                 // Idle while the robot is disabled. This ensures the configured
@@ -73,12 +78,12 @@ public class RobotContainer {
                 final var idle = new SwerveRequest.Idle();
 
                 RobotModeTriggers.disabled().whileTrue(
-                drivetrain.applyRequest(() -> idle).ignoringDisable(true));
+                                drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
                 driver.a().whileTrue(drivetrain.applyRequest(() -> brake));
                 driver.b().whileTrue(drivetrain
-                .applyRequest(() -> point.withModuleDirection(new
-                Rotation2d(-driver.getLeftY(), -driver.getLeftX()))));
+                                .applyRequest(() -> point.withModuleDirection(
+                                                new Rotation2d(-driver.getLeftY(), -driver.getLeftX()))));
 
                 // Run SysId routines when holding back/start and X/Y.
                 // Note that each routine should be run exactly once in a single log.
@@ -88,43 +93,39 @@ public class RobotContainer {
                 driver.start().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
                 // Reset the field-centric heading on left bumper press.
-                driver.leftBumper().onTrue(drivetrain.runOnce(() ->
-                drivetrain.seedFieldCentric()));
+                driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
                 if (Robot.isSimulation()) {
-                driver.y().whileTrue(new RunCommand(() -> {
-                Pose2d currentPose = drivetrain.getState().Pose;
-                Translation2d vectorToTarget = null;
+                        driver.y().whileTrue(new RunCommand(() -> {
+                                Pose2d currentPose = drivetrain.getState().Pose;
+                                Translation2d vectorToTarget = null;
 
-                if (DriverStation.getAlliance().isPresent() &&
-                DriverStation.getAlliance().get() == Alliance.Blue) {
-                vectorToTarget =
-                gameConstants.blueHubLocation.minus(currentPose.getTranslation());
-                } else if (DriverStation.getAlliance().isPresent() &&
-                DriverStation.getAlliance().get() == Alliance.Red) {
-                vectorToTarget =
-                gameConstants.redHubLocation.minus(currentPose.getTranslation());
-                }
-                Rotation2d targetAngle = vectorToTarget.getAngle();
-                drivetrain.driveToPose(new Pose2d(currentPose.getX(), currentPose.getY(),
-                targetAngle));
-                }
-                ));
+                                if (DriverStation.getAlliance().isPresent() &&
+                                                DriverStation.getAlliance().get() == Alliance.Blue) {
+                                        vectorToTarget = gameConstants.blueHubLocation
+                                                        .minus(currentPose.getTranslation());
+                                } else if (DriverStation.getAlliance().isPresent() &&
+                                                DriverStation.getAlliance().get() == Alliance.Red) {
+                                        vectorToTarget = gameConstants.redHubLocation
+                                                        .minus(currentPose.getTranslation());
+                                }
+                                Rotation2d targetAngle = vectorToTarget.getAngle();
+                                drivetrain.driveToPose(new Pose2d(currentPose.getX(), currentPose.getY(),
+                                                targetAngle));
+                        }));
 
-                driver.x().onTrue(new InstantCommand(() -> {
-                shooter.updateShotVisualization(7, 60);
-                }
-                )).onFalse(new InstantCommand(() -> shooter.clearTrajectory()));
+                        driver.x().onTrue(new InstantCommand(() -> {
+                                shooter.updateShotVisualization(7, 60);
+                        })).onFalse(new InstantCommand(() -> shooter.clearTrajectory()));
                 }
 
                 drivetrain.registerTelemetry(logger::telemeterize);
         }
 
         public void configureOperatorBindings() {
-                // operator.a().whileTrue(new ShooterCommand(shooter));
-
-                operator.b().whileTrue(new InstantCommand(() -> shooter.shoot()));
-                operator.b().whileFalse(new InstantCommand(() -> shooter.stop()));
+                operator.rightTrigger().whileTrue(new ShooterCommand(shooter, operator.getRightTriggerAxis()));
+                operator.leftTrigger().whileTrue(new IntakeCommand(intake, operator.getLeftTriggerAxis()));
+                operator.a().onTrue(new SlapdownCommand(slapdown));
         }
 
         // Generates the command request for moving the drive train based on the current
@@ -165,15 +166,15 @@ public class RobotContainer {
                 // Simple drive forward auton
                 final var idle = new SwerveRequest.Idle();
                 return Commands.sequence(
-                // Reset our field centric heading to match the robot
-                // facing away from our alliance station wall (0 deg).
-                drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
-                // Then slowly drive forward (away from us) for 5 seconds.
-                drivetrain.applyRequest(() -> drive.withVelocityX(0.5)
-                .withVelocityY(0)
-                .withRotationalRate(0))
-                .withTimeout(5.0),
-                // Finally idle for the rest of auton
-                drivetrain.applyRequest(() -> idle));
+                                // Reset our field centric heading to match the robot
+                                // facing away from our alliance station wall (0 deg).
+                                drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
+                                // Then slowly drive forward (away from us) for 5 seconds.
+                                drivetrain.applyRequest(() -> drive.withVelocityX(0.5)
+                                                .withVelocityY(0)
+                                                .withRotationalRate(0))
+                                                .withTimeout(5.0),
+                                // Finally idle for the rest of auton
+                                drivetrain.applyRequest(() -> idle));
         }
 }

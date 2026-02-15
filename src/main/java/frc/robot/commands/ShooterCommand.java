@@ -8,7 +8,7 @@ public class ShooterCommand extends Command {
     private final double power = ShooterConstants.MaxPower;
     private final ShooterSubsystem shooter;
 
-    public ShooterCommand(ShooterSubsystem shooter) {
+    public ShooterCommand(ShooterSubsystem shooter, double d) {
         this.shooter = shooter;
         addRequirements(shooter);
     }

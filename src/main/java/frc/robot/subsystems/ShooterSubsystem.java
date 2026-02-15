@@ -1,11 +1,6 @@
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.ShooterConstants.KickerMotorId;
-import static frc.robot.Constants.ShooterConstants.LeftMotorId;
-import static frc.robot.Constants.ShooterConstants.ReverseMotorId;
-import static frc.robot.Constants.ShooterConstants.RightMotorId;
-import static frc.robot.Constants.ShooterConstants.ShooterGains;
-import static frc.robot.Constants.ShooterConstants.rps;
+import static frc.robot.Constants.ShooterConstants.*;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -77,8 +72,9 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void updateShotVisualization(double v0_mag, double launchAngleDegrees) {
-        //works but is scuffed, also it's not 100% AI anymore (i added some stuff + made it work while moving yay)
-        
+        // works but is scuffed, also it's not 100% AI anymore (i added some stuff +
+        // made it work while moving yay)
+
         // 1. Fetch robot pose (The starting point)
         Pose2d robotPose = drivetrain.getState().Pose;
         double robotX = robotPose.getX();
@@ -103,19 +99,20 @@ public class ShooterSubsystem extends SubsystemBase {
 
         // 3. Create a list of Poses (the "streak")
         int samples = 20; // How many points to draw
-        double dt = 0.1;  // Time step between points (0.1 seconds)
+        double dt = 0.1; // Time step between points (0.1 seconds)
         Pose3d[] trajectory = new Pose3d[samples];
 
         for (int i = 0; i < samples; i++) {
             double t = i * dt;
-            
+
             // 4. Basic Kinematics (x = x0 + vt, z = z0 + vt - 0.5gt^2)
             double currX = robotX + (totalVx * t);
             double currY = robotY + (totalVy * t);
             double currZ = 0.5 + (totalVz * t) - (0.5 * 9.81 * t * t); // Starting 0.5m high
 
             // Clamp Z so it doesn't go through the floor in the visualizer
-            if (currZ < 0) currZ = 0;
+            if (currZ < 0)
+                currZ = 0;
 
             // Create the Pose3d Object
             trajectory[i] = new Pose3d(currX, currY, currZ, new Rotation3d());
@@ -123,15 +120,15 @@ public class ShooterSubsystem extends SubsystemBase {
 
         // 5. Upload to Network Tables (Using the modern Struct approach)
         NetworkTableInstance.getDefault()
-            .getStructArrayTopic("Shooter/BallTrajectory", Pose3d.struct)
-            .publish()
-            .set(trajectory);
+                .getStructArrayTopic("Shooter/BallTrajectory", Pose3d.struct)
+                .publish()
+                .set(trajectory);
     }
 
     public void clearTrajectory() {
         NetworkTableInstance.getDefault()
-            .getStructArrayTopic("Shooter/BallTrajectory", Pose3d.struct)
-            .publish()
-            .set(new Pose3d[0]); 
+                .getStructArrayTopic("Shooter/BallTrajectory", Pose3d.struct)
+                .publish()
+                .set(new Pose3d[0]);
     }
 }
