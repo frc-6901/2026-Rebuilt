@@ -24,6 +24,8 @@ import frc.robot.Telemetry;
 public class ShooterSubsystem extends SubsystemBase {
     private final TalonFX motorRight = new TalonFX(RightMotorId);
     private final TalonFX motorLeft = new TalonFX(LeftMotorId);
+    private final TalonFX motorKicker = new TalonFX(KickerMotorId);
+    private final TalonFX motorReverse = new TalonFX(ReverseMotorId);
     private final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
     private final CommandSwerveDrivetrain drivetrain;
 
@@ -36,8 +38,11 @@ public class ShooterSubsystem extends SubsystemBase {
 
         motorRight.getConfigurator().apply(m_motorConfig);
         motorLeft.getConfigurator().apply(m_motorConfig);
+        motorKicker.getConfigurator().apply(m_motorConfig);
+        motorReverse.getConfigurator().apply(m_motorConfig);
 
         motorLeft.setControl(new Follower(RightMotorId, MotorAlignmentValue.Opposed));
+        motorReverse.setControl(new Follower(KickerMotorId, MotorAlignmentValue.Opposed));
     }
 
     // Sets the power of both motors.
@@ -47,11 +52,13 @@ public class ShooterSubsystem extends SubsystemBase {
     public void setPower(double power) {
         // motorRight.setControl(new DutyCycleOut(power));
         motorRight.setControl(m_request.withVelocity(rps));
+        motorKicker.setControl(m_request.withVelocity(0.75*rps));
     }
 
     // Disables both motors by setting their power to 0.
     public void stop() {
         motorRight.setControl(m_request.withVelocity(0));
+        motorKicker.setControl(m_request.withVelocity(0));
     }
 
     public void updateShotVisualization(double v0_mag, double launchAngleDegrees) {
