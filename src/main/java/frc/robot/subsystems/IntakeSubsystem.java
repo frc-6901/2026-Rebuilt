@@ -11,7 +11,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class IntakeSubsystem extends SubsystemBase{
+public class IntakeSubsystem extends SubsystemBase {
     private final TalonFX motorIntake = new TalonFX(IntakeMotorId, "rio");
     private final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
 
@@ -24,7 +24,7 @@ public class IntakeSubsystem extends SubsystemBase{
         motorIntake.getConfigurator().apply(m_motorConfig);
     }
 
-    //Sets the power of intake motor.
+    // Sets the power of intake motor.
     public void setPower(double power) {
         motorIntake.setControl(new DutyCycleOut(power));
     }
