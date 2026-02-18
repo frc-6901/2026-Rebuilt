@@ -127,6 +127,21 @@ public final class Constants {
                 public final static double homePosition = 0;
         }
 
+        public static final class IndexerConstants {
+                // The motor ID of the indexer motor.
+                public final static int IndexerMotorId = 105;
+
+                 /// The maximum power to apply to the indexer motor, as a percentage (i.e. 0.5
+                /// for 50%).
+                public final static double MaxPower = 0.5;
+
+                 /// The PID settings for the indexer motor.
+                public final static Slot0Configs IndexerGains = new Slot0Configs()
+                                .withKP(0.1).withKI(0).withKD(0)
+                                .withKS(0).withKV(0.1);
+
+        }
+
 
         public class TunerConstants {
                 // Both sets of gains need to be tuned to your individual robot.
