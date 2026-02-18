@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.robot.commands;
 
 import static frc.robot.Constants.IndexerConstants.*;
 
