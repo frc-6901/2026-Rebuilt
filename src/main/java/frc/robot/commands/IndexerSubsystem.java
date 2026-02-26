@@ -1,6 +1,6 @@
-package frc.robot.subsystems;
+package frc.robot.commands;
 
-import static frc.robot.Constants.IntakeConstants.*;
+import static frc.robot.Constants.IndexerConstants.*;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
@@ -11,34 +11,28 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class IntakeSubsystem extends SubsystemBase {
-    private final TalonFX motorIntake = new TalonFX(IntakeMotorId, "rio");
+public class IndexerSubsystem extends SubsystemBase{
+    private final TalonFX motorIndexer = new TalonFX(IndexerMotorId);
     private final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
 
-    public IntakeSubsystem() {
+    public IndexerSubsystem() {
         TalonFXConfiguration m_motorConfig = new TalonFXConfiguration();
-        m_motorConfig.Slot0 = IntakeGains;
+        m_motorConfig.Slot0 = IndexerGains;
         m_motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         m_motorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-        motorIntake.getConfigurator().apply(m_motorConfig);
+        motorIndexer.getConfigurator().apply(m_motorConfig);
     }
 
-    // Sets the power of intake motor.
+    // Sets the power of indexer motor.
     public void setPower(double power) {
-        motorIntake.setControl(new DutyCycleOut(power));
-    }
-
-    public void intake() {
-        motorIntake.setControl(m_request.withVelocity(rps));
-    }
-
-    public void outtake() {
-        motorIntake.setControl(m_request.withVelocity(-rps));
-
+        motorIndexer.setControl(new DutyCycleOut(power));
     }
 
     public void stop() {
-        motorIntake.setControl(m_request.withVelocity(0));
+        motorIndexer.setControl(m_request.withVelocity(0));
     }
 }
+
+
+

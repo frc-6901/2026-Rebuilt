@@ -30,16 +30,6 @@ import frc.robot.subsystems.SlapdownSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
 public class RobotContainer {
-        /* Setting up bindings for necessary control of the swerve drive platform */
-        // private final SwerveRequest.RobotCentric drive = new
-        // SwerveRequest.RobotCentric()
-        // .withDeadband(ControllerConstants.kDeadband).withRotationalDeadband(ControllerConstants.kDeadband)
-        // // Add a
-        // // 10%
-        // // deadband
-        // .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop
-        // control for drive motors
-
         private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
                         .withDeadband(ControllerConstants.kDeadband * DrivetrainConstants.MaxSpeed)
                         .withRotationalDeadband(ControllerConstants.kDeadband * DrivetrainConstants.MaxAngularRate) // Add a 10% deadband
@@ -55,7 +45,7 @@ public class RobotContainer {
         private final CommandXboxController operator = new CommandXboxController(ControllerConstants.kOperatorPort);
 
         public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-        // private final ShooterSubsystem shooter = new ShooterSubsystem(drivetrain);
+        @SuppressWarnings("unused")
         private final VisionSubsystem vision = new VisionSubsystem(drivetrain);
         private final ShooterSubsystem shooter = new ShooterSubsystem();
         private final IntakeSubsystem intake = new IntakeSubsystem();
@@ -144,23 +134,6 @@ public class RobotContainer {
                         shooter.stop();
                 }));
         }
-
-        // Generates the command request for moving the drive train based on the current
-        // controller input.
-        // public RobotCentric getDriverDrivetrainInput() {
-        // double rightTriggerDepth = driver.getRightTriggerAxis();
-        // double leftTriggerDepth = driver.getLeftTriggerAxis();
-
-        // double netForwardAcceleration = (rightTriggerDepth - leftTriggerDepth) *
-        // DrivetrainConstants.MaxSpeed;
-
-        // double angularAcceleration = -driver.getLeftX() *
-        // DrivetrainConstants.MaxAngularRate;
-
-        // return drive
-        // .withVelocityX(netForwardAcceleration)
-        // .withRotationalRate(angularAcceleration);
-        // }
 
         // Generates the command request for moving the drive train based on the current
         // controller input.

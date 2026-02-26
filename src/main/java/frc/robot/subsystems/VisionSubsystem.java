@@ -118,7 +118,7 @@ public class VisionSubsystem extends SubsystemBase {
         // take out of simulation when actually testing cam on field
         // simulation only to not accidentally waste rio processing
         if (Robot.isSimulation()) {
-        
+
             visibleTagPoses.clear();
             visibleTagIds.clear();
 
