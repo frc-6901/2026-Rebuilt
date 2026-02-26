@@ -71,7 +71,7 @@ public final class Constants {
 
         public static final class DrivetrainConstants {
                 // The desired top speed of the robot.
-                public final static double MaxSpeed = 2 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+                public final static double MaxSpeed = 2 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) / 8;
                 // The maximum turning rate (in radians per second).
                 public final static double MaxAngularRate = RotationsPerSecond.of(0.5).in(RadiansPerSecond);
         }
@@ -80,7 +80,7 @@ public final class Constants {
                 // The motor ID of the left motor.
                 public final static int LeftMotorId = 35;
                 // The motor ID of the right motor.
-                public final static int RightMotorId = 100;
+                public final static int RightMotorId = 36;
                 // The motor ID of the kicker motor(s)
                 public final static int KickerMotorId = 101;
                 // The motor ID of the reverse motor
@@ -90,19 +90,19 @@ public final class Constants {
                 /// for 50%).
                 public final static double MaxPower = 0.5;
 
-                public final static int rps = 100;
+                public final static int rps = 65;
 
                 /// The PID settings for the shooter motors.
                 public final static Slot0Configs ShooterGains = new Slot0Configs()
-                                .withKP(0.075).withKI(0).withKD(0)
-                                .withKS(0).withKV(0.05);
+                                .withKP(0.15).withKI(0).withKD(0)
+                                .withKS(0).withKV(0.075);
         }
 
         public static final class IntakeConstants {
                 // The motor ID of the intake motor.
                 public final static int IntakeMotorId = 103;
 
-                ///The maximum power to apply to the intake motor, as a percentage (i.e. 0.5
+                /// The maximum power to apply to the intake motor, as a percentage (i.e. 0.5
                 /// for 50%)
                 public final static double MaxPower = 0.5;
 
@@ -127,7 +127,6 @@ public final class Constants {
                 public final static double homePosition = 0;
         }
 
-
         public class TunerConstants {
                 // Both sets of gains need to be tuned to your individual robot.
 
@@ -135,13 +134,13 @@ public final class Constants {
                 // the
                 // output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
                 private static final Slot0Configs steerGains = new Slot0Configs()
-                                .withKP(100).withKI(0).withKD(0.5)
-                                .withKS(0.1).withKV(2.39).withKA(0)
+                                .withKP(50).withKI(0).withKD(0.5)
+                                .withKS(0.1).withKV(1.00).withKA(0)
                                 .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
                 // When using closed-loop control, the drive motor uses the control
                 // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
                 private static final Slot0Configs driveGains = new Slot0Configs()
-                                .withKP(0.1).withKI(0).withKD(0)
+                                .withKP(0.15).withKI(0).withKD(0)
                                 .withKS(0).withKV(0.124);
 
                 // The closed-loop output type to use for the steer motors;

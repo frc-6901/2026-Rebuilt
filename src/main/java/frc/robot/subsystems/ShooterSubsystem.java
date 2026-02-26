@@ -19,7 +19,7 @@ import frc.robot.Telemetry;
 
 public class ShooterSubsystem extends SubsystemBase {
     private final TalonFX motorRight = new TalonFX(RightMotorId, "rio");
-    private final TalonFX motorLeft = new TalonFX(LeftMotorId);
+    private final TalonFX motorLeft = new TalonFX(LeftMotorId, "rio");
     private final TalonFX motorKicker = new TalonFX(KickerMotorId);
     private final TalonFX motorReverse = new TalonFX(ReverseMotorId);
     private final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
@@ -46,9 +46,12 @@ public class ShooterSubsystem extends SubsystemBase {
         TalonFXConfiguration m_motorConfig = new TalonFXConfiguration();
         m_motorConfig.Slot0 = ShooterGains;
         m_motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        m_motorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        m_motorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
         motorRight.getConfigurator().apply(m_motorConfig);
+        motorLeft.getConfigurator().apply(m_motorConfig);
+
+        motorLeft.setControl(new Follower(RightMotorId, MotorAlignmentValue.Opposed));
     }
 
     // Sets the power of both motors.

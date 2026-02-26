@@ -4,32 +4,30 @@
 
 package frc.robot;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
-import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentric;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.*;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.SlapdownCommand;
-import frc.robot.subsystems.*;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.SlapdownSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
 public class RobotContainer {
         /* Setting up bindings for necessary control of the swerve drive platform */
@@ -43,8 +41,8 @@ public class RobotContainer {
         // control for drive motors
 
         private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-                        .withDeadband(ControllerConstants.kDeadband)
-                        .withRotationalDeadband(ControllerConstants.kDeadband) // Add a 10% deadband
+                        .withDeadband(ControllerConstants.kDeadband * DrivetrainConstants.MaxSpeed)
+                        .withRotationalDeadband(ControllerConstants.kDeadband * DrivetrainConstants.MaxAngularRate) // Add a 10% deadband
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive
                                                                                  // motors
 
@@ -71,7 +69,18 @@ public class RobotContainer {
         private void configureDriverBindings() {
                 // drivetrain.setDefaultCommand(drivetrain.applyRequest(() ->
                 // getDriverDrivetrainInput()));
-                drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> getDriverInput()));
+                // drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> getDriverInput()));
+                
+                // Note that X is defined as forward according to WPILib convention,
+                // and Y is defined as to the left according to WPILib convention.
+                drivetrain.setDefaultCommand(
+                        // Drivetrain will execute this command periodically
+                        drivetrain.applyRequest(() ->
+                                drive.withVelocityX(-driver.getLeftY() * DrivetrainConstants.MaxSpeed) // Drive forward with negative Y (forward)
+                                .withVelocityY(-driver.getLeftX() * DrivetrainConstants.MaxSpeed) // Drive left with negative X (left)
+                                .withRotationalRate(-driver.getRightX() * DrivetrainConstants.MaxAngularRate) // Drive counterclockwise with negative X (left)
+                        )
+                );
 
                 // Idle while the robot is disabled. This ensures the configured
                 // neutral mode is applied to the drive motors while disabled.
@@ -87,10 +96,10 @@ public class RobotContainer {
 
                 // Run SysId routines when holding back/start and X/Y.
                 // Note that each routine should be run exactly once in a single log.
-                driver.back().and(driver.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-                driver.back().and(driver.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-                driver.start().and(driver.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-                driver.start().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+                // driver.back().and(driver.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+                // driver.back().and(driver.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+                // driver.start().and(driver.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+                // driver.start().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
                 // Reset the field-centric heading on left bumper press.
                 driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
@@ -123,9 +132,17 @@ public class RobotContainer {
         }
 
         public void configureOperatorBindings() {
-                operator.rightTrigger().whileTrue(new ShooterCommand(shooter, operator.getRightTriggerAxis()));
-                operator.leftTrigger().whileTrue(new IntakeCommand(intake, operator.getLeftTriggerAxis()));
-                operator.a().onTrue(new SlapdownCommand(slapdown));
+                // operator.rightTrigger().whileTrue(new ShooterCommand(shooter, operator.getRightTriggerAxis()));
+                // operator.leftTrigger().whileTrue(new IntakeCommand(intake, operator.getLeftTriggerAxis()));
+                // operator.a().onTrue(new SlapdownCommand(slapdown));
+
+                operator.rightBumper().whileTrue(new InstantCommand(() -> {
+                        shooter.shoot();
+                }));
+
+                operator.rightBumper().whileFalse(new InstantCommand(() -> {
+                        shooter.stop();
+                }));
         }
 
         // Generates the command request for moving the drive train based on the current
