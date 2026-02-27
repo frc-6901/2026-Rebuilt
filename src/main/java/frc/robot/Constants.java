@@ -96,6 +96,13 @@ public final class Constants {
                 public final static Slot0Configs ShooterGains = new Slot0Configs()
                                 .withKP(0.15).withKI(0).withKD(0)
                                 .withKS(0).withKV(0.075);
+                
+                public final static double g = 9.81;
+                public final static double vertDis = 1.524;
+                public final static double scaling = 1.1;
+                
+                // should be in degrees
+                public final static double pitch = 70;
         }
 
         public static final class IntakeConstants {
@@ -442,6 +449,7 @@ public final class Constants {
         }
 
         public static final class gameConstants {
+                // so uh these are in meters; it seems the internal coordinates are all in meters because it worked ¯\_(ツ)_/¯
                 public static final Translation2d blueHubLocation = new Translation2d(4.03, 4.035);
                 public static final Translation2d redHubLocation = new Translation2d(12.51, 4.035);
         }

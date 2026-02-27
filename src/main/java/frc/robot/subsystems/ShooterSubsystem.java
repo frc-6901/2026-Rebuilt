@@ -64,8 +64,12 @@ public class ShooterSubsystem extends SubsystemBase {
         motorKicker.setControl(m_request.withVelocity(rps));
     }
 
-    public void shoot() {
-        motorRight.setControl(m_request.withVelocity(rps));
+    public void shoot(double axis) {
+        motorRight.setControl(m_request.withVelocity(axis * rps));
+    }
+
+    public void shootWithAutoAim(double calcRPS) {
+        motorRight.setControl(m_request.withVelocity(calcRPS));
     }
 
     // Disables both motors by setting their power to 0.
@@ -126,6 +130,12 @@ public class ShooterSubsystem extends SubsystemBase {
                 .getStructArrayTopic("Shooter/BallTrajectory", Pose3d.struct)
                 .publish()
                 .set(trajectory);
+    }
+
+    public double calculateRPS(double pitch, double groundDis) {
+        double rps = 0;
+        rps = (Math.sqrt((g * groundDis * groundDis) / (2 * Math.cos(pitch) * Math.cos(pitch) * (groundDis * Math.tan(pitch) - vertDis)))) / (2 * Math.PI * 0.051);
+        return (scaling * rps);
     }
 
     public void clearTrajectory() {

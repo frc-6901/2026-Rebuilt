@@ -22,4 +22,5 @@ public class ShooterCommand extends Command {
     public void end(boolean interrupted) {
         shooter.stop();
     }
+    
 }

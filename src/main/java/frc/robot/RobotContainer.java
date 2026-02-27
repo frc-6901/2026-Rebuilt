@@ -94,25 +94,25 @@ public class RobotContainer {
                 // Reset the field-centric heading on left bumper press.
                 driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
+                driver.y().whileTrue(new RunCommand(() -> {
+                        Pose2d currentPose = drivetrain.getState().Pose;
+                        Translation2d vectorToTarget = null;
+
+                        if (DriverStation.getAlliance().isPresent() &&
+                                        DriverStation.getAlliance().get() == Alliance.Blue) {
+                                vectorToTarget = gameConstants.blueHubLocation
+                                                .minus(currentPose.getTranslation());
+                        } else if (DriverStation.getAlliance().isPresent() &&
+                                        DriverStation.getAlliance().get() == Alliance.Red) {
+                                vectorToTarget = gameConstants.redHubLocation
+                                                .minus(currentPose.getTranslation());
+                        }
+                        Rotation2d targetAngle = vectorToTarget.getAngle();
+                        drivetrain.driveToPose(new Pose2d(currentPose.getX(), currentPose.getY(),
+                                        targetAngle));
+                }));
+                
                 if (Robot.isSimulation()) {
-                        driver.y().whileTrue(new RunCommand(() -> {
-                                Pose2d currentPose = drivetrain.getState().Pose;
-                                Translation2d vectorToTarget = null;
-
-                                if (DriverStation.getAlliance().isPresent() &&
-                                                DriverStation.getAlliance().get() == Alliance.Blue) {
-                                        vectorToTarget = gameConstants.blueHubLocation
-                                                        .minus(currentPose.getTranslation());
-                                } else if (DriverStation.getAlliance().isPresent() &&
-                                                DriverStation.getAlliance().get() == Alliance.Red) {
-                                        vectorToTarget = gameConstants.redHubLocation
-                                                        .minus(currentPose.getTranslation());
-                                }
-                                Rotation2d targetAngle = vectorToTarget.getAngle();
-                                drivetrain.driveToPose(new Pose2d(currentPose.getX(), currentPose.getY(),
-                                                targetAngle));
-                        }));
-
                         driver.x().onTrue(new InstantCommand(() -> {
                                 shooter.updateShotVisualization(7, 60);
                         })).onFalse(new InstantCommand(() -> shooter.clearTrajectory()));
@@ -126,12 +126,29 @@ public class RobotContainer {
                 // operator.leftTrigger().whileTrue(new IntakeCommand(intake, operator.getLeftTriggerAxis()));
                 // operator.a().onTrue(new SlapdownCommand(slapdown));
 
-                operator.rightBumper().whileTrue(new InstantCommand(() -> {
-                        shooter.shoot();
+                operator.rightTrigger().whileTrue(new InstantCommand(() -> {
+                        shooter.shoot(operator.getRightTriggerAxis());
                 }));
 
-                operator.rightBumper().whileFalse(new InstantCommand(() -> {
-                        shooter.stop();
+                operator.rightBumper().whileTrue(new RunCommand(() -> {
+                        Pose2d currentPose = drivetrain.getState().Pose;
+                        double shotGroundDistance = 0;
+
+                        if (DriverStation.getAlliance().isPresent() &&
+                                        DriverStation.getAlliance().get() == Alliance.Blue) {
+                                shotGroundDistance = gameConstants.blueHubLocation.getDistance(currentPose.getTranslation());
+                        } else if (DriverStation.getAlliance().isPresent() &&
+                                        DriverStation.getAlliance().get() == Alliance.Red) {
+                                shotGroundDistance = gameConstants.redHubLocation.getDistance(currentPose.getTranslation());
+                        }
+
+                        shooter.shootWithAutoAim(shooter.calculateRPS(ShooterConstants.pitch, shotGroundDistance));
+                }));
+
+                operator.rightTrigger().whileFalse(new InstantCommand(() -> {
+                        if (!operator.rightBumper().getAsBoolean()) {
+                                shooter.stop();
+                        }
                 }));
         }
 
