@@ -133,8 +133,10 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public double calculateRPS(double pitch, double groundDis) {
+        // a mix of rao's desmos thing and conversions to rps. no clue how well it will work bc load but can be tweaked a lot as needed
+        
         double rps = 0;
-        rps = (Math.sqrt((g * groundDis * groundDis) / (2 * Math.cos(pitch) * Math.cos(pitch) * (groundDis * Math.tan(pitch) - vertDis)))) / (2 * Math.PI * 0.051);
+        rps = (Math.sqrt((g * groundDis * groundDis) / (2 * Math.cos(pitch) * Math.cos(pitch) * (groundDis * Math.tan(pitch) - (vertDis - ballExtakeHeight))))) / (2 * Math.PI * 0.051);
         return (scaling * rps);
     }
 
