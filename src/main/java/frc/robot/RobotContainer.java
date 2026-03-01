@@ -5,6 +5,10 @@
 package frc.robot;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+
+import static frc.robot.Constants.ShooterConstants.indexRps;
+import static frc.robot.Constants.ShooterConstants.shootRps;
+
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
 
@@ -32,7 +36,10 @@ import frc.robot.subsystems.VisionSubsystem;
 public class RobotContainer {
         private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
                         .withDeadband(ControllerConstants.kDeadband * DrivetrainConstants.MaxSpeed)
-                        .withRotationalDeadband(ControllerConstants.kDeadband * DrivetrainConstants.MaxAngularRate) // Add a 10% deadband
+                        .withRotationalDeadband(ControllerConstants.kDeadband * DrivetrainConstants.MaxAngularRate) // Add
+                                                                                                                    // a
+                                                                                                                    // 10%
+                                                                                                                    // deadband
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive
                                                                                  // motors
 
@@ -45,7 +52,6 @@ public class RobotContainer {
         private final CommandXboxController operator = new CommandXboxController(ControllerConstants.kOperatorPort);
 
         public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-        @SuppressWarnings("unused")
         private final VisionSubsystem vision = new VisionSubsystem(drivetrain);
         private final ShooterSubsystem shooter = new ShooterSubsystem();
         private final IntakeSubsystem intake = new IntakeSubsystem();
@@ -59,18 +65,32 @@ public class RobotContainer {
         private void configureDriverBindings() {
                 // drivetrain.setDefaultCommand(drivetrain.applyRequest(() ->
                 // getDriverDrivetrainInput()));
-                // drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> getDriverInput()));
-                
+                // drivetrain.setDefaultCommand(drivetrain.applyRequest(() ->
+                // getDriverInput()));
+
                 // Note that X is defined as forward according to WPILib convention,
                 // and Y is defined as to the left according to WPILib convention.
                 drivetrain.setDefaultCommand(
-                        // Drivetrain will execute this command periodically
-                        drivetrain.applyRequest(() ->
-                                drive.withVelocityX(-driver.getLeftY() * DrivetrainConstants.MaxSpeed) // Drive forward with negative Y (forward)
-                                .withVelocityY(-driver.getLeftX() * DrivetrainConstants.MaxSpeed) // Drive left with negative X (left)
-                                .withRotationalRate(-driver.getRightX() * DrivetrainConstants.MaxAngularRate) // Drive counterclockwise with negative X (left)
-                        )
-                );
+                                // Drivetrain will execute this command periodically
+                                drivetrain.applyRequest(() -> drive
+                                                .withVelocityX(-driver.getLeftY() * DrivetrainConstants.MaxSpeed) // Drive
+                                                                                                                  // forward
+                                                                                                                  // with
+                                                                                                                  // negative
+                                                                                                                  // Y
+                                                                                                                  // (forward)
+                                                .withVelocityY(-driver.getLeftX() * DrivetrainConstants.MaxSpeed) // Drive
+                                                                                                                  // left
+                                                                                                                  // with
+                                                                                                                  // negative
+                                                                                                                  // X
+                                                                                                                  // (left)
+                                                .withRotationalRate(-driver.getRightX()
+                                                                * DrivetrainConstants.MaxAngularRate) // Drive
+                                                                                                      // counterclockwise
+                                                                                                      // with negative X
+                                                                                                      // (left)
+                                ));
 
                 // Idle while the robot is disabled. This ensures the configured
                 // neutral mode is applied to the drive motors while disabled.
@@ -111,7 +131,7 @@ public class RobotContainer {
                         drivetrain.driveToPose(new Pose2d(currentPose.getX(), currentPose.getY(),
                                         targetAngle));
                 }));
-                
+
                 if (Robot.isSimulation()) {
                         driver.x().onTrue(new InstantCommand(() -> {
                                 shooter.updateShotVisualization(7, 60);
@@ -122,8 +142,10 @@ public class RobotContainer {
         }
 
         public void configureOperatorBindings() {
-                // operator.rightTrigger().whileTrue(new ShooterCommand(shooter, operator.getRightTriggerAxis()));
-                // operator.leftTrigger().whileTrue(new IntakeCommand(intake, operator.getLeftTriggerAxis()));
+                // operator.rightTrigger().whileTrue(new ShooterCommand(shooter,
+                // operator.getRightTriggerAxis()));
+                // operator.leftTrigger().whileTrue(new IntakeCommand(intake,
+                // operator.getLeftTriggerAxis()));
                 // operator.a().onTrue(new SlapdownCommand(slapdown));
 
                 operator.rightTrigger().whileTrue(new InstantCommand(() -> {
@@ -136,10 +158,12 @@ public class RobotContainer {
 
                         if (DriverStation.getAlliance().isPresent() &&
                                         DriverStation.getAlliance().get() == Alliance.Blue) {
-                                shotGroundDistance = gameConstants.blueHubLocation.getDistance(currentPose.getTranslation());
+                                shotGroundDistance = gameConstants.blueHubLocation
+                                                .getDistance(currentPose.getTranslation());
                         } else if (DriverStation.getAlliance().isPresent() &&
                                         DriverStation.getAlliance().get() == Alliance.Red) {
-                                shotGroundDistance = gameConstants.redHubLocation.getDistance(currentPose.getTranslation());
+                                shotGroundDistance = gameConstants.redHubLocation
+                                                .getDistance(currentPose.getTranslation());
                         }
 
                         shooter.shootWithAutoAim(shooter.calculateRPS(ShooterConstants.pitch, shotGroundDistance));
@@ -149,6 +173,22 @@ public class RobotContainer {
                         if (!operator.rightBumper().getAsBoolean()) {
                                 shooter.stop();
                         }
+                }));
+
+                operator.a().whileTrue(new InstantCommand(() -> {
+                        shooter.shoot(shootRps);
+                }));
+
+                operator.a().whileFalse(new InstantCommand(() -> {
+                        shooter.stop();
+                }));
+
+                operator.y().whileTrue(new InstantCommand(() -> {
+                        shooter.indexer(indexRps);
+                }));
+
+                operator.y().whileFalse(new InstantCommand(() -> {
+                        shooter.stop();
                 }));
         }
 

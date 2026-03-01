@@ -81,22 +81,27 @@ public final class Constants {
                 public final static int LeftMotorId = 35;
                 // The motor ID of the right motor.
                 public final static int RightMotorId = 36;
-                // The motor ID of the kicker motor(s)
-                public final static int KickerMotorId = 101;
-                // The motor ID of the reverse motor
-                public final static int ReverseMotorId = 102;
+                // The motor ID of the index motor
+                public final static int indexMotorId = 37;
 
                 /// The maximum power to apply to the shooter motors, as a percentage (i.e. 0.5
                 /// for 50%).
                 public final static double MaxPower = 0.5;
 
-                public final static int rps = 65;
+                // rps at far distance is 50rps
+                // rps at clmber center is 47 rps
+                public final static int shootRps = 47;
+                public final static int indexRps = 20;
 
                 /// The PID settings for the shooter motors.
                 public final static Slot0Configs ShooterGains = new Slot0Configs()
-                                .withKP(0.15).withKI(0).withKD(0)
-                                .withKS(0).withKV(0.075);
-                
+                                .withKP(0.41).withKI(0).withKD(0.00165)
+                                .withKS(0).withKV(0.123);
+
+                public final static Slot0Configs IndexerGains = new Slot0Configs()
+                                .withKP(0.5).withKI(0).withKD(0)
+                                .withKS(0).withKV(0.15);
+
                 // all in meters
                 public final static double g = 9.81;
                 // distance from floor to hub target point
@@ -105,7 +110,7 @@ public final class Constants {
                 public final static double scaling = 1.1;
                 // vertical position of ball extake
                 public final static double ballExtakeHeight = 0.432;
-                
+
                 // should be in degrees
                 public final static double pitch = 70;
         }
@@ -143,17 +148,16 @@ public final class Constants {
                 // The motor ID of the indexer motor.
                 public final static int IndexerMotorId = 105;
 
-                 /// The maximum power to apply to the indexer motor, as a percentage (i.e. 0.5
+                /// The maximum power to apply to the indexer motor, as a percentage (i.e. 0.5
                 /// for 50%).
                 public final static double MaxPower = 0.5;
 
-                 /// The PID settings for the indexer motor.
+                /// The PID settings for the indexer motor.
                 public final static Slot0Configs IndexerGains = new Slot0Configs()
                                 .withKP(0.1).withKI(0).withKD(0)
                                 .withKS(0).withKV(0.1);
 
         }
-
 
         public class TunerConstants {
                 // Both sets of gains need to be tuned to your individual robot.
@@ -454,7 +458,8 @@ public final class Constants {
         }
 
         public static final class gameConstants {
-                // so uh these are in meters; it seems the internal coordinates are all in meters because it worked ¯\_(ツ)_/¯
+                // so uh these are in meters; it seems the internal coordinates are all in
+                // meters because it worked ¯\_(ツ)_/¯
                 public static final Translation2d blueHubLocation = new Translation2d(4.03, 4.035);
                 public static final Translation2d redHubLocation = new Translation2d(12.51, 4.035);
         }

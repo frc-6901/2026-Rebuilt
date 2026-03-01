@@ -20,8 +20,7 @@ import frc.robot.Telemetry;
 public class ShooterSubsystem extends SubsystemBase {
     private final TalonFX motorRight = new TalonFX(RightMotorId, "rio");
     private final TalonFX motorLeft = new TalonFX(LeftMotorId, "rio");
-    private final TalonFX motorKicker = new TalonFX(KickerMotorId);
-    private final TalonFX motorReverse = new TalonFX(ReverseMotorId);
+    private final TalonFX motorIndex = new TalonFX(indexMotorId, "rio");
     private final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
     private final CommandSwerveDrivetrain drivetrain;
 
@@ -34,11 +33,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
         motorRight.getConfigurator().apply(m_motorConfig);
         motorLeft.getConfigurator().apply(m_motorConfig);
-        motorKicker.getConfigurator().apply(m_motorConfig);
-        motorReverse.getConfigurator().apply(m_motorConfig);
+        // motorKicker.getConfigurator().apply(m_motorConfig);
+        // motorReverse.getConfigurator().apply(m_motorConfig);
 
         motorLeft.setControl(new Follower(RightMotorId, MotorAlignmentValue.Opposed));
-        motorReverse.setControl(new Follower(KickerMotorId, MotorAlignmentValue.Opposed));
+        // motorReverse.setControl(new Follower(KickerMotorId,
+        // MotorAlignmentValue.Opposed));
     }
 
     public ShooterSubsystem() {
@@ -52,6 +52,14 @@ public class ShooterSubsystem extends SubsystemBase {
         motorLeft.getConfigurator().apply(m_motorConfig);
 
         motorLeft.setControl(new Follower(RightMotorId, MotorAlignmentValue.Opposed));
+
+        TalonFXConfiguration m_indexerConfig = new TalonFXConfiguration();
+        m_indexerConfig.Slot0 = IndexerGains;
+        m_indexerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        m_indexerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        m_indexerConfig.CurrentLimits.withStatorCurrentLimit(60);
+
+        motorIndex.getConfigurator().apply(m_indexerConfig);
     }
 
     // Sets the power of both motors.
@@ -60,12 +68,24 @@ public class ShooterSubsystem extends SubsystemBase {
     // negative of that power to ensure they spin in opposite directions.
     public void setPower(double power) {
         // motorRight.setControl(new DutyCycleOut(power));
-        motorRight.setControl(m_request.withVelocity(rps));
-        motorKicker.setControl(m_request.withVelocity(rps));
+        // motorRight.setControl(m_request.withVelocity(rps));
+        // motorKicker.setControl(m_request.withVelocity(rps));
     }
 
     public void shoot(double axis) {
-        motorRight.setControl(m_request.withVelocity(axis * rps));
+        // motorRight.setControl(m_request.withVelocity(axis * rps));
+    }
+
+    public void shoot() {
+        // motorRight.setControl(m_request.withVelocity(rps));
+    }
+
+    public void shoot(int rps) {
+        motorRight.setControl(m_request.withVelocity(rps));
+    }
+
+    public void indexer(int rps) {
+        motorIndex.setControl(m_request.withVelocity(rps));
     }
 
     public void shootWithAutoAim(double calcRPS) {
@@ -75,7 +95,8 @@ public class ShooterSubsystem extends SubsystemBase {
     // Disables both motors by setting their power to 0.
     public void stop() {
         motorRight.setControl(m_request.withVelocity(0));
-        motorKicker.setControl(m_request.withVelocity(0));
+        motorIndex.setControl(m_request.withVelocity(0));
+        // motorKicker.setControl(m_request.withVelocity(0));
     }
 
     public void updateShotVisualization(double v0_mag, double launchAngleDegrees) {
@@ -133,10 +154,12 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public double calculateRPS(double pitch, double groundDis) {
-        // a mix of rao's desmos thing and conversions to rps. no clue how well it will work bc load but can be tweaked a lot as needed
-        
+        // a mix of rao's desmos thing and conversions to rps. no clue how well it will
+        // work bc load but can be tweaked a lot as needed
+
         double rps = 0;
-        rps = (Math.sqrt((g * groundDis * groundDis) / (2 * Math.cos(pitch) * Math.cos(pitch) * (groundDis * Math.tan(pitch) - (vertDis - ballExtakeHeight))))) / (2 * Math.PI * 0.051);
+        rps = (Math.sqrt((g * groundDis * groundDis) / (2 * Math.cos(pitch) * Math.cos(pitch)
+                * (groundDis * Math.tan(pitch) - (vertDis - ballExtakeHeight))))) / (2 * Math.PI * 0.051);
         return (scaling * rps);
     }
 
