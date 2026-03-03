@@ -1,9 +1,10 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.IndexerConstants.*;
-
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -11,28 +12,38 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class IndexerSubsystem extends SubsystemBase{
-    private final TalonFX motorIndexer = new TalonFX(IndexerMotorId);
+import static frc.robot.Constants.IndexerConstants.*;
+
+public class IndexerSubsystem extends SubsystemBase {
+    private final TalonFX motorIndex = new TalonFX(indexMotorId, "rio");
     private final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
 
-    public IndexerSubsystem() {
-        TalonFXConfiguration m_motorConfig = new TalonFXConfiguration();
-        m_motorConfig.Slot0 = IndexerGains;
-        m_motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        m_motorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+  /** Creates a new Indexer. */
+  public IndexerSubsystem() {
+    TalonFXConfiguration m_indexerConfig = new TalonFXConfiguration();
+    m_indexerConfig.Slot0 = IndexerGains;
+    m_indexerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    m_indexerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    m_indexerConfig.CurrentLimits.withStatorCurrentLimit(60);
+    m_indexerConfig.Feedback.SensorToMechanismRatio = gearRatio;
 
-        motorIndexer.getConfigurator().apply(m_motorConfig);
+    motorIndex.getConfigurator().apply(m_indexerConfig);
+  }
+
+  public void shoot() {
+        motorIndex.setControl(m_request.withVelocity(indexRPS));
     }
 
-    // Sets the power of indexer motor.
-    public void setPower(double power) {
-        motorIndexer.setControl(new DutyCycleOut(power));
+    public void shoot(int rps) {
+        motorIndex.setControl(m_request.withVelocity(rps));
     }
-
+    // Disables both motors by setting their power to 0.
     public void stop() {
-        motorIndexer.setControl(m_request.withVelocity(0));
+        motorIndex.setControl(m_request.withVelocity(0));
     }
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+  }
 }
-
-
-

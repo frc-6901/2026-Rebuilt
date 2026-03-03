@@ -13,14 +13,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class SlapdownSubsystem extends SubsystemBase {
     private final TalonFX motorSlapdown = new TalonFX(SlapdownMotorId, "rio");
-    // private final VelocityVoltage m_velocityRequest = new VelocityVoltage(0).withSlot(0);
     private final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
     public boolean isSlapdownDeployed = false;
 
     public SlapdownSubsystem() {
         TalonFXConfiguration m_motorConfig = new TalonFXConfiguration();
-        m_motorConfig.Slot0 = IntakeGains;
-        m_motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        m_motorConfig.Slot0 = slapdownGains;
+        m_motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         m_motorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         motorSlapdown.getConfigurator().apply(m_motorConfig);

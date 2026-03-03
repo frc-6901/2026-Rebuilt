@@ -24,18 +24,20 @@ public class IntakeSubsystem extends SubsystemBase {
         motorIntake.getConfigurator().apply(m_motorConfig);
     }
 
-    // Sets the power of intake motor.
-    public void setPower(double power) {
-        motorIntake.setControl(new DutyCycleOut(power));
-    }
-
     public void intake() {
-        motorIntake.setControl(m_request.withVelocity(rps));
+        motorIntake.setControl(m_request.withVelocity(intakeRPS));
     }
 
     public void outtake() {
-        motorIntake.setControl(m_request.withVelocity(-rps));
+        motorIntake.setControl(m_request.withVelocity(-intakeRPS));
+    }
 
+    public void intake(int rps) {
+        motorIntake.setControl(m_request.withVelocity(rps));
+    }   
+
+    public void outtake(int rps) {
+        motorIntake.setControl(m_request.withVelocity(-rps));
     }
 
     public void stop() {

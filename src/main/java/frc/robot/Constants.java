@@ -81,26 +81,15 @@ public final class Constants {
                 public final static int LeftMotorId = 35;
                 // The motor ID of the right motor.
                 public final static int RightMotorId = 36;
-                // The motor ID of the index motor
-                public final static int indexMotorId = 37;
-
-                /// The maximum power to apply to the shooter motors, as a percentage (i.e. 0.5
-                /// for 50%).
-                public final static double MaxPower = 0.5;
 
                 // rps at far distance is 50rps
                 // rps at clmber center is 47 rps
-                public final static int shootRps = 47;
-                public final static int indexRps = 20;
+                public final static int shootRPS = 47;
 
                 /// The PID settings for the shooter motors.
                 public final static Slot0Configs ShooterGains = new Slot0Configs()
                                 .withKP(0.41).withKI(0).withKD(0.00165)
                                 .withKS(0).withKV(0.123);
-
-                public final static Slot0Configs IndexerGains = new Slot0Configs()
-                                .withKP(0.5).withKI(0).withKD(0)
-                                .withKS(0).withKV(0.15);
 
                 // all in meters
                 public final static double g = 9.81;
@@ -119,11 +108,7 @@ public final class Constants {
                 // The motor ID of the intake motor.
                 public final static int IntakeMotorId = 103;
 
-                /// The maximum power to apply to the intake motor, as a percentage (i.e. 0.5
-                /// for 50%)
-                public final static double MaxPower = 0.5;
-
-                public final static int rps = 2;
+                public final static int intakeRPS = 2;
 
                 /// The PID settings for the slapdown motor.
                 public final static Slot0Configs IntakeGains = new Slot0Configs()
@@ -135,28 +120,30 @@ public final class Constants {
                 // The motor ID of the slapdown motor.
                 public final static int SlapdownMotorId = 104;
 
-                /// The PID settings for the slapdown motor.
-                public final static Slot0Configs IntakeGains = new Slot0Configs()
-                                .withKP(0.1).withKI(0).withKD(0)
-                                .withKS(0).withKV(0.1);
-
+                // postion locations
                 public final static double intakePosition = 0.25;
                 public final static double homePosition = 0;
+
+                /// The PID settings for the slapdown motor.
+                public final static Slot0Configs slapdownGains = new Slot0Configs()
+                                .withKP(0.1).withKI(0).withKD(0)
+                                .withKS(0).withKV(0.1);
         }
 
         public static final class IndexerConstants {
-                // The motor ID of the indexer motor.
-                public final static int IndexerMotorId = 105;
+                // The motor ID of the index motor
+                public final static int indexMotorId = 37;
 
-                /// The maximum power to apply to the indexer motor, as a percentage (i.e. 0.5
-                /// for 50%).
-                public final static double MaxPower = 0.5;
+                // Test RPS
+                public final static int indexRPS = 20;
 
-                /// The PID settings for the indexer motor.
+                public final static double gearRatio = 5.0;
+
+                // UNTUNED
+                // The PID settings for the indexer motor.
                 public final static Slot0Configs IndexerGains = new Slot0Configs()
-                                .withKP(0.1).withKI(0).withKD(0)
-                                .withKS(0).withKV(0.1);
-
+                                .withKP(0.5).withKI(0).withKD(0)
+                                .withKS(0).withKV(0.15);
         }
 
         public class TunerConstants {

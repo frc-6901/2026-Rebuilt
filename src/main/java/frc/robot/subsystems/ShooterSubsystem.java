@@ -20,29 +20,9 @@ import frc.robot.Telemetry;
 public class ShooterSubsystem extends SubsystemBase {
     private final TalonFX motorRight = new TalonFX(RightMotorId, "rio");
     private final TalonFX motorLeft = new TalonFX(LeftMotorId, "rio");
-    private final TalonFX motorIndex = new TalonFX(indexMotorId, "rio");
     private final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
-    private final CommandSwerveDrivetrain drivetrain;
-
-    public ShooterSubsystem(CommandSwerveDrivetrain drivetrain) {
-        this.drivetrain = drivetrain;
-        TalonFXConfiguration m_motorConfig = new TalonFXConfiguration();
-        m_motorConfig.Slot0 = ShooterGains;
-        m_motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        m_motorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-
-        motorRight.getConfigurator().apply(m_motorConfig);
-        motorLeft.getConfigurator().apply(m_motorConfig);
-        // motorKicker.getConfigurator().apply(m_motorConfig);
-        // motorReverse.getConfigurator().apply(m_motorConfig);
-
-        motorLeft.setControl(new Follower(RightMotorId, MotorAlignmentValue.Opposed));
-        // motorReverse.setControl(new Follower(KickerMotorId,
-        // MotorAlignmentValue.Opposed));
-    }
 
     public ShooterSubsystem() {
-        drivetrain = null;
         TalonFXConfiguration m_motorConfig = new TalonFXConfiguration();
         m_motorConfig.Slot0 = ShooterGains;
         m_motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -52,40 +32,18 @@ public class ShooterSubsystem extends SubsystemBase {
         motorLeft.getConfigurator().apply(m_motorConfig);
 
         motorLeft.setControl(new Follower(RightMotorId, MotorAlignmentValue.Opposed));
-
-        TalonFXConfiguration m_indexerConfig = new TalonFXConfiguration();
-        m_indexerConfig.Slot0 = IndexerGains;
-        m_indexerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        m_indexerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-        m_indexerConfig.CurrentLimits.withStatorCurrentLimit(60);
-
-        motorIndex.getConfigurator().apply(m_indexerConfig);
-    }
-
-    // Sets the power of both motors.
-    //
-    // The left motor is set to the given power, while the right motor is set to the
-    // negative of that power to ensure they spin in opposite directions.
-    public void setPower(double power) {
-        // motorRight.setControl(new DutyCycleOut(power));
-        // motorRight.setControl(m_request.withVelocity(rps));
-        // motorKicker.setControl(m_request.withVelocity(rps));
     }
 
     public void shoot(double axis) {
-        // motorRight.setControl(m_request.withVelocity(axis * rps));
+        motorRight.setControl(m_request.withVelocity(axis * shootRPS));
     }
 
     public void shoot() {
-        // motorRight.setControl(m_request.withVelocity(rps));
+        motorRight.setControl(m_request.withVelocity(shootRPS));
     }
 
     public void shoot(int rps) {
         motorRight.setControl(m_request.withVelocity(rps));
-    }
-
-    public void indexer(int rps) {
-        motorIndex.setControl(m_request.withVelocity(rps));
     }
 
     public void shootWithAutoAim(double calcRPS) {
@@ -95,16 +53,13 @@ public class ShooterSubsystem extends SubsystemBase {
     // Disables both motors by setting their power to 0.
     public void stop() {
         motorRight.setControl(m_request.withVelocity(0));
-        motorIndex.setControl(m_request.withVelocity(0));
-        // motorKicker.setControl(m_request.withVelocity(0));
     }
 
-    public void updateShotVisualization(double v0_mag, double launchAngleDegrees) {
+    public void updateShotVisualization(Pose2d robotPose, double v0_mag, double launchAngleDegrees) {
         // works but is scuffed, also it's not 100% AI anymore (i added some stuff +
         // made it work while moving yay)
 
         // 1. Fetch robot pose (The starting point)
-        Pose2d robotPose = drivetrain.getState().Pose;
         double robotX = robotPose.getX();
         double robotY = robotPose.getY();
 
