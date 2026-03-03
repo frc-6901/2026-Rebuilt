@@ -96,12 +96,12 @@ public final class Constants {
                 // distance from floor to hub target point
                 public final static double vertDis = 1.524;
                 // scaling to correct for damping
-                public final static double scaling = 1.1;
+                public final static double scaling = 2.024;
                 // vertical position of ball extake
                 public final static double ballExtakeHeight = 0.432;
 
                 // should be in degrees
-                public final static double pitch = 70;
+                public final static double pitch = Math.toRadians(73);
         }
 
         public static final class IntakeConstants {
