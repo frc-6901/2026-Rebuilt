@@ -14,7 +14,9 @@ import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,8 +31,8 @@ import frc.robot.subsystems.*;
 
 public class RobotContainer {
         private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-                        .withDeadband(ControllerConstants.kDeadband * DrivetrainConstants.MaxSpeed)
-                        .withRotationalDeadband(ControllerConstants.kDeadband * DrivetrainConstants.MaxAngularRate)
+                        .withDeadband(DrivetrainConstants.MaxSpeed.times(ControllerConstants.kDeadband))
+                        .withRotationalDeadband(DrivetrainConstants.MaxAngularRate.times(ControllerConstants.kDeadband))
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
         private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -62,10 +64,10 @@ public class RobotContainer {
                 drivetrain.setDefaultCommand(
                                 // Drivetrain will execute this command periodically
                                 drivetrain.applyRequest(() -> drive
-                                                .withVelocityX(-driver.getLeftY() * DrivetrainConstants.MaxSpeed)
-                                                .withVelocityY(-driver.getLeftX() * DrivetrainConstants.MaxSpeed)
-                                                .withRotationalRate(-driver.getRightX()
-                                                                * DrivetrainConstants.MaxAngularRate)));
+                                                .withVelocityX(DrivetrainConstants.MaxSpeed.times(-driver.getLeftY()))
+                                                .withVelocityY(DrivetrainConstants.MaxSpeed.times(-driver.getLeftX()))
+                                                .withRotationalRate(DrivetrainConstants.MaxAngularRate
+                                                                .times(driver.getRightX()))));
 
                 // Idle while the robot is disabled. This ensures the configured
                 // neutral mode is applied to the drive motors while disabled.
@@ -162,18 +164,13 @@ public class RobotContainer {
         // Generates the command request for moving the drive train based on the current
         // controller input.
         public FieldCentric getDriverInput() {
-                double translationX = 0;
-                double translationY = 0;
-                double angularRotation = 0;
+                LinearVelocity translationX = DrivetrainConstants.MaxSpeed.times(-driver.getLeftY());
+                LinearVelocity translationY = DrivetrainConstants.MaxSpeed.times(-driver.getLeftX());
+                AngularVelocity angularRotation = DrivetrainConstants.MaxAngularRate.times(driver.getRightX());
 
-                translationX = -driver.getLeftY() * DrivetrainConstants.MaxSpeed;
-                translationY = -driver.getLeftX() * DrivetrainConstants.MaxSpeed;
-
-                angularRotation = driver.getRightX() * DrivetrainConstants.MaxAngularRate;
-
-                return drive.withVelocityX(translationX) // Drive forward with negative Y (forward)
-                                .withVelocityY(translationY) // Drive left with negative X (left)
-                                .withRotationalRate(angularRotation); // Drive counterclockwise with negative X (left)
+                return drive.withVelocityX(translationX)
+                                .withVelocityY(translationY)
+                                .withRotationalRate(angularRotation);
         }
 
         public Command getAutonomousCommand() {

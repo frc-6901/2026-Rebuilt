@@ -17,13 +17,8 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.CANBus;
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.Pigeon2Configuration;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.configs.*;
+import com.ctre.phoenix6.hardware.*;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
@@ -36,23 +31,14 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstantsFactory;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Acceleration;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearAcceleration;
-import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.units.measure.MomentOfInertia;
-import edu.wpi.first.units.measure.Voltage;
+
+import edu.wpi.first.units.measure.*;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 /**
@@ -76,9 +62,9 @@ public final class Constants {
 
         public static final class DrivetrainConstants {
                 // The desired top speed of the robot.
-                public final static double MaxSpeed = 2 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) / 8;
+                public final static LinearVelocity MaxSpeed = TunerConstants.kSpeedAt12Volts.div(8);
                 // The maximum turning rate (in radians per second).
-                public final static double MaxAngularRate = RotationsPerSecond.of(0.5).in(RadiansPerSecond);
+                public final static AngularVelocity MaxAngularRate = RotationsPerSecond.of(0.5);
         }
 
         public static final class ShooterConstants {
@@ -89,7 +75,7 @@ public final class Constants {
 
                 // rps at far distance is 50rps
                 // rps at climber center is 47 rps
-                public final static int shootRPS = 47;
+                public final static AngularVelocity shootRPS = RotationsPerSecond.of(47.0);
 
                 /// The PID settings for the shooter motors.
                 public final static Slot0Configs ShooterGains = new Slot0Configs()

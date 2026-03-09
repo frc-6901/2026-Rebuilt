@@ -45,7 +45,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void shoot(double axis) {
-        motorRight.setControl(m_request.withVelocity(axis * shootRPS));
+        motorRight.setControl(m_request.withVelocity(shootRPS.times(axis)));
     }
 
     public void shoot() {
