@@ -18,7 +18,7 @@ public class SlapdownSubsystem extends SubsystemBase {
 
     public SlapdownSubsystem() {
         TalonFXConfiguration m_motorConfig = new TalonFXConfiguration();
-        m_motorConfig.Slot0 = slapdownGains;
+        m_motorConfig.Slot0 = SlapdownGains;
         m_motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         m_motorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
@@ -27,13 +27,13 @@ public class SlapdownSubsystem extends SubsystemBase {
     }
 
     public void slapdown() {
-        motorSlapdown.setControl(m_request.withPosition(intakePosition));
+        motorSlapdown.setControl(m_request.withPosition(IntakePosition));
         isSlapdownDeployed = true;
     }
 
-    //Retracts the slapdown.
+    // Retracts the slapdown.
     public void retractSlapdown() {
-        motorSlapdown.setControl(m_request.withPosition(homePosition));
+        motorSlapdown.setControl(m_request.withPosition(HomePosition));
         isSlapdownDeployed = false;
     }
 

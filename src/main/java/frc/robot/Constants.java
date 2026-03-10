@@ -11,7 +11,6 @@ import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
@@ -75,7 +74,7 @@ public final class Constants {
 
                 // rps at far distance is 50rps
                 // rps at climber center is 47 rps
-                public final static AngularVelocity shootRPS = RotationsPerSecond.of(47.0);
+                public final static AngularVelocity ShootRPS = RotationsPerSecond.of(47.0);
 
                 /// The PID settings for the shooter motors.
                 public final static Slot0Configs ShooterGains = new Slot0Configs()
@@ -83,24 +82,24 @@ public final class Constants {
                                 .withKS(0).withKV(0.123);
 
                 // The strength of gravity
-                public final static LinearAcceleration g = MetersPerSecondPerSecond.of(9.81);
+                public final static LinearAcceleration G = MetersPerSecondPerSecond.of(9.81);
 
                 // The distance from floor to hub target point
-                public final static Distance hubTargetHeight = Meters.of(1.524);
+                public final static Distance HubTargetHeight = Meters.of(1.524);
                 /// The vertical position of ball extake
-                public final static Distance ballExtakeHeight = Meters.of(0.432);
+                public final static Distance BallExtakeHeight = Meters.of(0.432);
                 /// The angle at which the shooter is mounted above the horizontal.
-                public final static Angle pitch = Degrees.of(73);
+                public final static Angle Pitch = Degrees.of(73);
 
                 /// The scaling constant to correct for damping
-                public final static double scaling = 1.82;
+                public final static double DampingCoefficient = 1.82;
         }
 
         public static final class IntakeConstants {
                 // The motor ID of the intake motor.
                 public final static int IntakeMotorId = 103;
 
-                public final static int intakeRPS = 2;
+                public final static AngularVelocity IntakeRPS = RotationsPerSecond.of(2);
 
                 /// The PID settings for the slapdown motor.
                 public final static Slot0Configs IntakeGains = new Slot0Configs()
@@ -112,24 +111,25 @@ public final class Constants {
                 // The motor ID of the slapdown motor.
                 public final static int SlapdownMotorId = 104;
 
-                // postion locations
-                public final static double intakePosition = 0.25;
-                public final static double homePosition = 0;
+                /// The position to lower the slapdown to when intaking a ball.
+                public final static Distance IntakePosition = Meters.of(0.25);
+                /// The default position of slapdown system.
+                public final static Distance HomePosition = Meters.of(0);
 
                 /// The PID settings for the slapdown motor.
-                public final static Slot0Configs slapdownGains = new Slot0Configs()
+                public final static Slot0Configs SlapdownGains = new Slot0Configs()
                                 .withKP(0.1).withKI(0).withKD(0)
                                 .withKS(0).withKV(0.1);
         }
 
         public static final class IndexerConstants {
                 // The motor ID of the index motor
-                public final static int indexMotorId = 37;
+                public final static int IndexMotorId = 37;
 
                 // Test RPS
-                public final static int indexRPS = 20;
+                public final static AngularVelocity IndexRPS = RotationsPerSecond.of(20);
 
-                public final static double gearRatio = 5.0;
+                public final static double GearRatio = 5.0;
 
                 // UNTUNED
                 // The PID settings for the indexer motor.

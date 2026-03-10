@@ -28,8 +28,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Telemetry;
 
 public class ShooterSubsystem extends SubsystemBase {
-    private final TalonFX motorRight = new TalonFX(RightMotorId, "rio");
-    private final TalonFX motorLeft = new TalonFX(LeftMotorId, "rio");
+    private final TalonFX motorRight = new TalonFX(RightMotorId);
+    private final TalonFX motorLeft = new TalonFX(LeftMotorId);
     private final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
 
     /// Initializes the shooter subsystem.
@@ -48,12 +48,12 @@ public class ShooterSubsystem extends SubsystemBase {
     /// Shoots with a variable RPS based on the input axis value (e.g., from a
     /// trigger).
     public void shoot(double axis) {
-        motorRight.setControl(m_request.withVelocity(shootRPS.times(axis)));
+        motorRight.setControl(m_request.withVelocity(ShootRPS.times(axis)));
     }
 
     /// Shoots with a preset RPS defined in Constants.
     public void shoot() {
-        motorRight.setControl(m_request.withVelocity(shootRPS));
+        motorRight.setControl(m_request.withVelocity(ShootRPS));
     }
 
     /// Shoots with a specified RPS.
@@ -130,10 +130,10 @@ public class ShooterSubsystem extends SubsystemBase {
     /// @param groundDistance The horizontal distance from the robot to the target.
     public AngularVelocity calculateRPS(Distance groundDistance) {
         double dx = groundDistance.in(Meters);
-        double dy = hubTargetHeight.minus(ballExtakeHeight).in(Meters);
+        double dy = HubTargetHeight.minus(BallExtakeHeight).in(Meters);
 
-        double gVal = g.in(MetersPerSecondPerSecond);
-        double pitchRad = pitch.in(Radians);
+        double gVal = G.in(MetersPerSecondPerSecond);
+        double pitchRad = Pitch.in(Radians);
 
         double velocity = Math.sqrt(
                 (gVal * dx * dx) /
@@ -142,7 +142,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         double rps = velocity / (2 * Math.PI * 0.051);
 
-        return RotationsPerSecond.of(scaling * rps);
+        return RotationsPerSecond.of(DampingCoefficient * rps);
     }
 
     /// Clears the trajectory visualization by publishing an empty array to the same
