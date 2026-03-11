@@ -112,12 +112,24 @@ public final class Constants {
                 public final static int SlapdownMotorId = 104;
 
                 /// The position to lower the slapdown to when intaking a ball.
-                public final static Distance IntakePosition = Meters.of(0.25);
+                public final static Angle IntakePosition = Rotations.of(0.25);
                 /// The default position of slapdown system.
-                public final static Distance HomePosition = Meters.of(0);
+                public final static Angle HomePosition = Rotations.of(0);
 
                 /// The PID settings for the slapdown motor.
                 public final static Slot0Configs SlapdownGains = new Slot0Configs()
+                                .withKP(0.1).withKI(0).withKD(0)
+                                .withKS(0).withKV(0.1);
+        }
+
+        public static final class KickerConstants {
+                // The motor ID of the kicker motor.
+                public final static int KickerMotorId = 105;
+
+                /// The PID settings for the kicker motor.
+                ///
+                /// UNTUNED
+                public final static Slot0Configs KickerGains = new Slot0Configs()
                                 .withKP(0.1).withKI(0).withKD(0)
                                 .withKS(0).withKV(0.1);
         }

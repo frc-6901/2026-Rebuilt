@@ -44,9 +44,10 @@ public class RobotContainer {
         public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
         private final VisionSubsystem vision = new VisionSubsystem(drivetrain);
         private final ShooterSubsystem shooter = new ShooterSubsystem();
-        // private final IndexerSubsystem indexer = new IndexerSubsystem();
+        private final IndexerSubsystem indexer = new IndexerSubsystem();
         private final IntakeSubsystem intake = new IntakeSubsystem();
         private final SlapdownSubsystem slapdown = new SlapdownSubsystem();
+        private final KickerSubsystem kicker = new KickerSubsystem();
 
         public RobotContainer() {
                 configureDriverBindings();
@@ -142,6 +143,8 @@ public class RobotContainer {
                 operator.y().whileFalse(new InstantCommand(() -> {
                         shooter.stop();
                 }));
+
+                operator.b().whileTrue(Commands.startEnd(kicker::kick, kicker::stop, kicker));
         }
 
         // Generates the command request for moving the drive train based on the current

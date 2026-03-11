@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class SlapdownSubsystem extends SubsystemBase {
     private final TalonFX motorSlapdown = new TalonFX(SlapdownMotorId, "rio");
     private final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
+
     public boolean isSlapdownDeployed = false;
 
     public SlapdownSubsystem() {
@@ -26,18 +27,15 @@ public class SlapdownSubsystem extends SubsystemBase {
         motorSlapdown.setPosition(0);
     }
 
+    /// Deploys the slapdown.
     public void slapdown() {
         motorSlapdown.setControl(m_request.withPosition(IntakePosition));
         isSlapdownDeployed = true;
     }
 
-    // Retracts the slapdown.
+    /// Retracts the slapdown.
     public void retractSlapdown() {
         motorSlapdown.setControl(m_request.withPosition(HomePosition));
         isSlapdownDeployed = false;
-    }
-
-    public boolean getSlapdownDeployed() {
-        return isSlapdownDeployed;
     }
 }
