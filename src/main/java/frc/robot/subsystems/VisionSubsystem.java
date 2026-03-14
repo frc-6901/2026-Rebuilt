@@ -18,6 +18,7 @@ import org.photonvision.simulation.VisionSystemSim;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -129,6 +130,19 @@ public class VisionSubsystem extends SubsystemBase {
             if (visionEstimatedPose.isEmpty()) {
                 visionEstimatedPose = visionPoseEstimator.estimateLowestAmbiguityPose(result);
             }
+
+            visionEstimatedPose.ifPresent(estimatedPose -> {
+                drivetrain.addVisionMeasurement(
+                    estimatedPose.estimatedPose.toPose2d(),
+                    estimatedPose.timestampSeconds,
+                    // these are values for how much the bot trusts vision
+                    // higher --> less trust in vision, more trust in telemetry
+                    // vision is naturally pretty stuttery so i gave somewhat high std devs
+                    // third value is rotation which apparently gyro is much much better for than vision anyways
+                    // it needs more real-field tuning tho
+                    VecBuilder.fill(5, 5, 9999)
+                );
+            });
 
             if (result.hasTargets()) {
             List<PhotonTrackedTarget> targets = result.getTargets();
