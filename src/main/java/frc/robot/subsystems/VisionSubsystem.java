@@ -130,6 +130,13 @@ public class VisionSubsystem extends SubsystemBase {
                 visionEstimatedPose = visionPoseEstimator.estimateLowestAmbiguityPose(result);
             }
 
+            visionEstimatedPose.ifPresent(estimatedPose -> {
+                drivetrain.addVisionMeasurement(
+                    estimatedPose.estimatedPose.toPose2d(),
+                    estimatedPose.timestampSeconds
+                );
+            });
+
             if (result.hasTargets()) {
             List<PhotonTrackedTarget> targets = result.getTargets();
 
