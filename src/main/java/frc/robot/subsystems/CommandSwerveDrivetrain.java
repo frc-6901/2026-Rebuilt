@@ -161,6 +161,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             SmartDashboard.putData("Field", m_field);
         }
 
+        configureAutoBuilder();
     }
 
     /**
@@ -186,6 +187,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+
+        configureAutoBuilder();
     }
 
     /**
