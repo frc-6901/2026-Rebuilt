@@ -69,7 +69,7 @@ public class RobotContainer {
                 SmartDashboard.putData("Auto Chooser", autoChooser);
 
                 NamedCommands.registerCommand("autoAimShoot",
-                                new AutonAutoAimShootCommand(drivetrain, shooter, Seconds.of(3.0)));
+                                new AutonAutoAimShootCommand(drivetrain, shooter).withTimeout(Seconds.of(3.0)));
         }
 
         private void configureDriverBindings() {

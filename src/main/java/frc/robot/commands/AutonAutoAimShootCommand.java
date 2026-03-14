@@ -18,19 +18,11 @@ public class AutonAutoAimShootCommand extends Command {
     private CommandSwerveDrivetrain drivetrain;
     private ShooterSubsystem shooter;
 
-    private Timer timer;
-    private Time duration;
-
-    public AutonAutoAimShootCommand(CommandSwerveDrivetrain drivetrain, ShooterSubsystem shooter, Time duration) {
+    public AutonAutoAimShootCommand(CommandSwerveDrivetrain drivetrain, ShooterSubsystem shooter) {
         this.drivetrain = drivetrain;
         this.shooter = shooter;
-        this.duration = duration;
-        this.timer = new Timer();
-    }
 
-    @Override
-    public void initialize() {
-        timer.reset();
+        addRequirements(shooter);
     }
 
     @Override
@@ -44,10 +36,5 @@ public class AutonAutoAimShootCommand extends Command {
                 .of(currentPose.getTranslation().getDistance(hubLocation));
 
         shooter.shootWithAutoAim(shooter.calculateRPS(shotGroundDistance));
-    }
-
-    @Override
-    public boolean isFinished() {
-        return timer.hasElapsed(duration);
     }
 }
