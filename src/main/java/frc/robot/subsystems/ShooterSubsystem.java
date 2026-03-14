@@ -28,8 +28,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Telemetry;
 
 public class ShooterSubsystem extends SubsystemBase {
-    private final TalonFX motorRight = new TalonFX(RightMotorId);
-    private final TalonFX motorLeft = new TalonFX(LeftMotorId);
+    private final TalonFX motorRight = new TalonFX(RightMotorId, "rio");
+    private final TalonFX motorLeft = new TalonFX(LeftMotorId, "rio");
     private final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
 
     /// Initializes the shooter subsystem.
