@@ -13,25 +13,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "leftOutpost"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 3.5
+            "pathName": "rightDepot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "outpostExitRight"
+            "pathName": "depotExitLeft"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "rotateToHub"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoAimShoot"
           }
         }
       ]
