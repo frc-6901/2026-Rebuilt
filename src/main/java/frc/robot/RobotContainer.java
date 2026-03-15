@@ -62,15 +62,14 @@ public class RobotContainer {
                 configureDriverBindings();
                 configureOperatorBindings();
 
+                NamedCommands.registerCommand("autoAimShoot", new AutonAutoAimShootCommand(drivetrain, shooter).withTimeout(Seconds.of(3.0)));
+                NamedCommands.registerCommand("shoot20RPS", new Auton20RPSShootCommand(shooter));
+
                 autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier(
                                 stream -> isCompetition ? stream.filter(auto -> auto.getName().startsWith("comp"))
                                                 : stream.filter(auto -> auto.getName().startsWith("test")));
 
                 SmartDashboard.putData("Auto Chooser", autoChooser);
-
-                NamedCommands.registerCommand("autoAimShoot",
-                                new AutonAutoAimShootCommand(drivetrain, shooter).withTimeout(Seconds.of(3.0)));
-                NamedCommands.registerCommand("20RPSshot", new Auton20RPSShootCommand(shooter));
         }
 
         private void configureDriverBindings() {
