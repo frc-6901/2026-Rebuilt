@@ -28,6 +28,15 @@ import frc.robot.Constants.*;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 
+/**
+ * Declares all subsystems, operator-interface devices, and command bindings.
+ *
+ * <p>
+ * Instantiates the drivetrain, vision, shooter, intake, indexer, slapdown,
+ * and kicker subsystems, wires them to Xbox controller inputs for both the
+ * driver and operator, registers PathPlanner named commands for autonomous
+ * routines, and exposes the autonomous chooser.
+ */
 public class RobotContainer {
         private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
                         .withDeadband(DrivetrainConstants.MaxSpeed.times(ControllerConstants.kDeadband))
@@ -66,6 +75,7 @@ public class RobotContainer {
 
         }
 
+        /** Registers named commands used by PathPlanner autonomous routines. */
         private void configurePathPlannerCommands() {
                 NamedCommands.registerCommand("stopSubsystems", new StopSubsystemsCommand(shooter, kicker, intake));
 
@@ -80,6 +90,10 @@ public class RobotContainer {
                 NamedCommands.registerCommand("slapdownTrigger", new TriggerSlapdownCommand(slapdown));
         }
 
+        /**
+         * Binds driver controller inputs to drivetrain commands including
+         * field-centric driving, SysId routines, heading reset, and hub tracking.
+         */
         private void configureDriverBindings() {
                 // Note that X is defined as forward according to WPILib convention,
                 // and Y is defined as to the left according to WPILib convention.
@@ -119,6 +133,10 @@ public class RobotContainer {
                 drivetrain.registerTelemetry(logger::telemeterize);
         }
 
+        /**
+         * Binds operator controller inputs to scoring-mechanism commands including
+         * shooting, intake, and auto-aim.
+         */
         private void configureOperatorBindings() {
                 kicker.setDefaultCommand(new RunCommand(() -> kicker.stop(), kicker));
                 indexer.setDefaultCommand(new RunCommand(() -> indexer.stop(), indexer));
@@ -135,8 +153,12 @@ public class RobotContainer {
                 }, shooter));
         }
 
-        // Generates the command request for moving the drive train based on the current
-        // controller input.
+        /**
+         * Builds a field-centric drive request from the driver controller's joystick
+         * axes.
+         *
+         * @return the {@link FieldCentric} request with velocity and rotation applied
+         */
         public FieldCentric getDriverInput() {
                 return drive
                                 .withVelocityX(DrivetrainConstants.MaxSpeed.times(driver.getLeftY()))
@@ -145,6 +167,11 @@ public class RobotContainer {
                                                 .times(-driver.getRightX()));
         }
 
+        /**
+         * Returns the autonomous command selected from the SmartDashboard chooser.
+         *
+         * @return the selected autonomous {@link Command}
+         */
         public Command getAutonomousCommand() {
                 return autoChooser.getSelected();
         }

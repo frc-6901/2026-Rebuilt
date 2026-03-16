@@ -29,6 +29,14 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+/**
+ * Subsystem responsible for AprilTag-based pose estimation using PhotonVision.
+ *
+ * <p>
+ * Fuses vision measurements into the drivetrain's Kalman-filter odometry,
+ * tracks visible tag IDs and poses, and publishes tag data to NetworkTables.
+ * Supports full camera simulation when running in sim.
+ */
 public class VisionSubsystem extends SubsystemBase {
     private final PhotonCamera photonCam;
     private final PhotonCamera driverCam;
@@ -47,6 +55,13 @@ public class VisionSubsystem extends SubsystemBase {
 
     public Optional<EstimatedRobotPose> visionEstimatedPose = Optional.empty();
 
+    /**
+     * Creates the vision subsystem, initializing PhotonVision cameras and the
+     * pose estimator from the current year's field layout. Starts camera
+     * simulation if running in sim.
+     *
+     * @param drivetrain the swerve drivetrain to feed vision measurements into
+     */
     public VisionSubsystem(CommandSwerveDrivetrain drivetrain) {
         this.drivetrain = drivetrain;
         photonCam = new PhotonCamera("photonCam");
@@ -77,17 +92,30 @@ public class VisionSubsystem extends SubsystemBase {
         tagPublisher = NetworkTableInstance.getDefault().getStructArrayTopic("visibleTags", Pose3d.struct).publish();
     }
 
+    /**
+     * Returns the 3D field poses of all AprilTags currently visible to the camera.
+     *
+     * @return list of visible tag poses (may be empty)
+     */
     public List<Pose3d> getVisibleTagPoses() {
         return visibleTagPoses;
     }
 
+    /**
+     * Returns the fiducial IDs of all AprilTags currently visible to the camera.
+     *
+     * @return list of visible tag IDs (may be empty)
+     */
     public List<Integer> getVisibleTagIds() {
         return visibleTagIds;
     }
 
-    // Initializes the vision simulation, which includes setting up the simulated
-    // camera and adding it to the vision system simulation. This is only called if
-    // the code is running in a simulation environment.
+    /**
+     * Sets up the PhotonVision simulation environment with a simulated camera
+     * matching the physical camera's transform.
+     *
+     * @param robotToCam the 3D transform from the robot origin to the camera
+     */
     private void initializeSimulation(Transform3d robotToCam) {
         visionSim = new VisionSystemSim("main");
         if (fieldLayout != null) {
@@ -132,28 +160,28 @@ public class VisionSubsystem extends SubsystemBase {
 
             visionEstimatedPose.ifPresent(estimatedPose -> {
                 drivetrain.addVisionMeasurement(
-                    estimatedPose.estimatedPose.toPose2d(),
-                    estimatedPose.timestampSeconds,
-                    // these are values for how much the bot trusts vision
-                    // higher --> less trust in vision, more trust in telemetry
-                    // vision is naturally pretty stuttery so i gave somewhat high std devs
-                    // third value is rotation which apparently gyro is much much better for than vision anyways
-                    // it needs more real-field tuning tho
-                    VecBuilder.fill(5, 5, 9999)
-                );
+                        estimatedPose.estimatedPose.toPose2d(),
+                        estimatedPose.timestampSeconds,
+                        // these are values for how much the bot trusts vision
+                        // higher --> less trust in vision, more trust in telemetry
+                        // vision is naturally pretty stuttery so i gave somewhat high std devs
+                        // third value is rotation which apparently gyro is much much better for than
+                        // vision anyways
+                        // it needs more real-field tuning tho
+                        VecBuilder.fill(5, 5, 9999));
             });
 
             if (result.hasTargets()) {
-            List<PhotonTrackedTarget> targets = result.getTargets();
+                List<PhotonTrackedTarget> targets = result.getTargets();
 
-            for (PhotonTrackedTarget target : targets) {
-                Optional<Pose3d> tagPose = fieldLayout.getTagPose(target.getFiducialId());
-                tagPose.ifPresent(visibleTagPoses::add);
-                visibleTagIds.add(target.getFiducialId());
+                for (PhotonTrackedTarget target : targets) {
+                    Optional<Pose3d> tagPose = fieldLayout.getTagPose(target.getFiducialId());
+                    tagPose.ifPresent(visibleTagPoses::add);
+                    visibleTagIds.add(target.getFiducialId());
+                }
+                tagPublisher.set(visibleTagPoses.toArray(new Pose3d[0]));
             }
-            tagPublisher.set(visibleTagPoses.toArray(new Pose3d[0]));
         }
-        }
-        
+
     }
 }

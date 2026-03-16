@@ -14,6 +14,11 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+/**
+ * Subsystem controlling the intake rollers, used to pull game pieces into
+ * the robot or eject them. Driven by a single TalonFX motor with closed-loop
+ * velocity control.
+ */
 public class IntakeSubsystem extends SubsystemBase {
     private final TalonFX m_motorIntake = new TalonFX(IntakeMotorId, "rio");
     private final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
@@ -32,22 +37,37 @@ public class IntakeSubsystem extends SubsystemBase {
         m_motorIntake.getConfigurator().apply(m_motorConfig);
     }
 
+    /** Runs the intake rollers inward at the default velocity. */
     public void intake() {
         m_motorIntake.setControl(m_request.withVelocity(IntakeRPS));
     }
 
+    /**
+     * Runs the intake rollers outward at the default velocity to eject game pieces.
+     */
     public void outtake() {
         m_motorIntake.setControl(m_request.withVelocity(IntakeRPS.times(-1.0)));
     }
 
+    /**
+     * Runs the intake rollers inward at a custom velocity.
+     *
+     * @param rps target angular velocity for the intake motor
+     */
     public void intake(AngularVelocity rps) {
         m_motorIntake.setControl(m_request.withVelocity(rps));
     }
 
+    /**
+     * Runs the intake rollers outward at a custom velocity to eject game pieces.
+     *
+     * @param rps target angular velocity magnitude (will be negated internally)
+     */
     public void outtake(AngularVelocity rps) {
         m_motorIntake.setControl(m_request.withVelocity(rps.times(-1.0)));
     }
 
+    /** Stops the intake motor by applying neutral output. */
     public void stop() {
         m_motorIntake.setControl(new NeutralOut());
     }
