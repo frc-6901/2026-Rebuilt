@@ -13,13 +13,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "middleDepot"
+            "pathName": "leftLeftHalfSwipe"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "depotExitLeft"
+            "pathName": "leftHalfSwipeExitLeft"
           }
         },
         {
@@ -38,6 +38,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Middle",
+  "folder": "Left",
   "choreoAuto": false
 }
