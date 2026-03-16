@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -11,6 +12,7 @@ import static frc.robot.Constants.KickerConstants.*;
 
 public class KickerSubsystem extends SubsystemBase {
     private final TalonFX motorKicker = new TalonFX(KickerMotorId, "rio");
+    private final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
 
     public KickerSubsystem() {
         TalonFXConfiguration m_motorConfig = new TalonFXConfiguration();
@@ -23,11 +25,11 @@ public class KickerSubsystem extends SubsystemBase {
 
     /// Enables the kicker to move balls from the intake to the shooter.
     public void kick() {
-        motorKicker.set(1.0);
+        motorKicker.setControl(m_request.withVelocity(KickerRPS));
     }
-
+    
     /// Disables the kicker.
     public void stop() {
-        motorKicker.set(0);
+        motorKicker.setControl(m_request.withVelocity(0));
     }
 }

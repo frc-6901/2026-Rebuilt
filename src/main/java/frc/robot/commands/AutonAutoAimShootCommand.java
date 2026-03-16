@@ -1,27 +1,32 @@
 package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.Meters;
+import static frc.robot.Constants.IntakeConstants.IndexRPS;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.GameConstants;
+
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.KickerSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 
 public class AutonAutoAimShootCommand extends Command {
     private CommandSwerveDrivetrain drivetrain;
     private ShooterSubsystem shooter;
+    private KickerSubsystem kicker;
+    private IntakeSubsystem intake;
 
-    public AutonAutoAimShootCommand(CommandSwerveDrivetrain drivetrain, ShooterSubsystem shooter) {
+    public AutonAutoAimShootCommand(CommandSwerveDrivetrain drivetrain, ShooterSubsystem shooter, KickerSubsystem kicker, IntakeSubsystem intake) {
         this.drivetrain = drivetrain;
         this.shooter = shooter;
-
+        this.kicker = kicker;
+        this.intake = intake;
         addRequirements(shooter);
     }
 
@@ -36,6 +41,8 @@ public class AutonAutoAimShootCommand extends Command {
                 .of(currentPose.getTranslation().getDistance(hubLocation));
 
         shooter.shootWithAutoAim(shooter.calculateRPS(shotGroundDistance));
+        intake.intake(IndexRPS);
+        kicker.kick();
     }
 
     @Override

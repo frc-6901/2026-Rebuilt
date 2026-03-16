@@ -15,7 +15,7 @@ public class AutonIntakeCommand extends Command {
 
     @Override
     public void execute() {
-        intake.intake(IntakeConstants.IndexRPS);
+        intake.intake(IntakeConstants.IntakeRPS);
     }
 
     @Override

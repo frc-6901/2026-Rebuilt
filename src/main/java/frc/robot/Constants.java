@@ -103,6 +103,7 @@ public final class Constants {
                 public final static int IntakeMotorId = 37;
 
                 public final static AngularVelocity IndexRPS = RotationsPerSecond.of(20);
+                public final static AngularVelocity IntakeRPS = RotationsPerSecond.of(2);
 
                 public final static double GearRatio = 5.0;
 
@@ -112,7 +113,6 @@ public final class Constants {
                                 .withKP(0.5).withKI(0).withKD(0)
                                 .withKS(0).withKV(0.15);
 
-                public final static AngularVelocity IntakeRPS = RotationsPerSecond.of(2);
         }
 
         public static final class SlapdownConstants {
@@ -133,6 +133,8 @@ public final class Constants {
         public static final class KickerConstants {
                 // The motor ID of the kicker motor.
                 public final static int KickerMotorId = 105;
+
+                public final static AngularVelocity KickerRPS = RotationsPerSecond.of(20);
 
                 /// The PID settings for the kicker motor.
                 ///

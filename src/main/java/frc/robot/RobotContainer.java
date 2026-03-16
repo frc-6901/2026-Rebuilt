@@ -70,9 +70,8 @@ public class RobotContainer {
 
         private void configurePathPlannerCommands() {
                 NamedCommands.registerCommand("autoAimShoot",
-                        new AutonAutoAimShootCommand(drivetrain, shooter).withTimeout(Seconds.of(3.0)));
-
-                NamedCommands.registerCommand("shoot20RPS", new Auton20RPSShootCommand(shooter));
+                        new AutonAutoAimShootCommand(drivetrain, shooter, kicker, intake).withTimeout(Seconds.of(3.0)));
+                NamedCommands.registerCommand("shoot20RPS", new AutonPresetShootCommand(shooter, kicker, intake, 20));
                 
                 NamedCommands.registerCommand("intake", new AutonIntakeCommand(intake));
                 NamedCommands.registerCommand("rotateToHub", new RotateToHubCommand(drivetrain));
