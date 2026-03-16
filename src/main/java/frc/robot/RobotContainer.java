@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -122,7 +123,26 @@ public class RobotContainer {
                 kicker.setDefaultCommand(new RunCommand(() -> kicker.stop(), kicker));
                 intake.setDefaultCommand(new RunCommand(() -> intake.stop(), intake));
 
-                operator.rightBumper().whileTrue(new TeleopAutoAimShootCommand(drivetrain, shooter));
+                operator.leftBumper().whileTrue(new TeleopAutoAimShootCommand(drivetrain, shooter));
+
+                operator.a().whileTrue(new InstantCommand(() -> {
+                        shooter.shoot();
+                }));
+
+                operator.rightBumper().whileTrue(new ParallelCommandGroup(
+                        new InstantCommand(() -> {
+                                kicker.kick();
+                        }),
+
+                        new InstantCommand(() -> {
+                                intake.intake();
+                        }),
+
+                        new InstantCommand(() -> {
+                                shooter.shoot();
+                        })
+                        
+                ));
 
                 operator.rightTrigger().whileTrue(new InstantCommand(() -> {
                         shooter.shoot(operator.getRightTriggerAxis() * ShooterConstants.maxRPS);
@@ -137,10 +157,10 @@ public class RobotContainer {
         // controller input.
         public FieldCentric getDriverInput() {
                 return drive
-                                .withVelocityX(DrivetrainConstants.MaxSpeed.times(-driver.getLeftY()))
-                                .withVelocityY(DrivetrainConstants.MaxSpeed.times(-driver.getLeftX()))
+                                .withVelocityX(DrivetrainConstants.MaxSpeed.times(driver.getLeftY()))
+                                .withVelocityY(DrivetrainConstants.MaxSpeed.times(driver.getLeftX()))
                                 .withRotationalRate(DrivetrainConstants.MaxAngularRate
-                                                .times(driver.getRightX()));
+                                                .times(-driver.getRightX()));
         }
 
         public Command getAutonomousCommand() {
