@@ -13,6 +13,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static frc.robot.Constants.KickerConstants.*;
 
+/**
+ * Subsystem controlling the kicker wheel, which provides the final push
+ * to transfer game pieces from the indexer into the shooter flywheel.
+ * Uses a single TalonFX motor with closed-loop velocity control.
+ */
 public class KickerSubsystem extends SubsystemBase {
     private final TalonFX m_motorKicker = new TalonFX(KickerMotorId, "rio");
     private final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
@@ -31,18 +36,21 @@ public class KickerSubsystem extends SubsystemBase {
         m_motorKicker.getConfigurator().apply(m_motorConfig);
     }
 
-    /// Enables the kicker to move balls from the intake to the shooter.
+    /**
+     * Spins the kicker wheel at the configured velocity to feed a game piece into
+     * the shooter.
+     */
     public void kick() {
         m_motorKicker.setControl(m_request.withVelocity(KickerRPS));
     }
 
-    /// Disables the kicker.
+    /** Stops the kicker motor by applying neutral output. */
     public void stop() {
         m_motorKicker.setControl(new NeutralOut());
     }
 
     @Override
-    public void periodic() {    
+    public void periodic() {
         kickerPub.set(m_motorKicker.getVelocity().getValueAsDouble());
     }
 }

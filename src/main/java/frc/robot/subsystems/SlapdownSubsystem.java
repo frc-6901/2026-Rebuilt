@@ -10,10 +10,14 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.networktables.BooleanPublisher;
-import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+/**
+ * Subsystem controlling the slapdown mechanism, a hinged arm that deploys
+ * to a fixed intake position and retracts to a home position. Driven by a
+ * single TalonFX motor with closed-loop position control.
+ */
 public class SlapdownSubsystem extends SubsystemBase {
     private final TalonFX m_motorSlapdown = new TalonFX(SlapdownMotorId, "rio");
     private final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
@@ -35,18 +39,23 @@ public class SlapdownSubsystem extends SubsystemBase {
         m_motorSlapdown.setPosition(0);
     }
 
-    /// Deploys the slapdown.
+    /** Moves the slapdown arm to the deployed intake position. */
     public void slapdown() {
         m_motorSlapdown.setControl(m_request.withPosition(IntakePosition));
         isSlapdownDeployed = true;
     }
 
-    /// Retracts the slapdown.
+    /** Retracts the slapdown arm to the stowed home position. */
     public void retractSlapdown() {
         m_motorSlapdown.setControl(m_request.withPosition(HomePosition));
         isSlapdownDeployed = false;
     }
 
+    /**
+     * Returns whether the slapdown is currently deployed.
+     *
+     * @return {@code true} if the slapdown is in the deployed position
+     */
     public boolean getDeploymentState() {
         return isSlapdownDeployed;
     }

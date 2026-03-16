@@ -11,6 +11,11 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IndexerConstants;
 
+/**
+ * Subsystem controlling the indexer mechanism, which transfers game pieces
+ * from the intake into the shooter using a single TalonFX motor with
+ * closed-loop velocity control.
+ */
 public class IndexerSubsystem extends SubsystemBase {
     private final TalonFX m_motorIndexer = new TalonFX(IndexerConstants.IndexerMotorId, "rio");
     private final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
@@ -29,18 +34,21 @@ public class IndexerSubsystem extends SubsystemBase {
         m_motorIndexer.getConfigurator().apply(m_motorConfig);
     }
 
-    /// Enables the indexer to move balls from the intake to the shooter.
+    /**
+     * Runs the indexer motor at the configured velocity to feed game pieces
+     * toward the shooter.
+     */
     public void enable() {
         m_motorIndexer.setControl(m_request.withVelocity(IndexerConstants.IndexerRPS));
     }
 
-    /// Disables the indexer.
+    /** Stops the indexer motor by commanding zero velocity. */
     public void stop() {
         m_motorIndexer.setControl(m_request.withVelocity(0));
     }
 
     @Override
-    public void periodic() {    
+    public void periodic() {
         indexerVelocityPub.set(m_motorIndexer.getVelocity().getValueAsDouble());
     }
 }
