@@ -11,27 +11,27 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.GameConstants;
 
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.KickerSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 
 public class AutoAimShootCommand extends Command {
     private CommandSwerveDrivetrain drivetrain;
     private ShooterSubsystem shooter;
     private KickerSubsystem kicker;
-    private IntakeSubsystem intake;
+    private IndexerSubsystem indexer;
 
     public AutoAimShootCommand(
             CommandSwerveDrivetrain drivetrain,
             ShooterSubsystem shooter,
             KickerSubsystem kicker,
-            IntakeSubsystem intake) {
+            IndexerSubsystem indexer) {
         this.drivetrain = drivetrain;
         this.shooter = shooter;
         this.kicker = kicker;
-        this.intake = intake;
+        this.indexer = indexer;
 
-        addRequirements(drivetrain, shooter, kicker, intake);
+        addRequirements(drivetrain, shooter, kicker, indexer);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class AutoAimShootCommand extends Command {
 
         shooter.shoot(shooter.calculateRPS(shotGroundDistance));
 
-        intake.intake();
+        indexer.enable();
         kicker.kick();
     }
 

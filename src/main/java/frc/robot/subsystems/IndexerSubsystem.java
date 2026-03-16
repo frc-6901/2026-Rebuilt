@@ -6,9 +6,10 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IndexerConstants;
 
-public class IndexerSubsystem {
+public class IndexerSubsystem extends SubsystemBase {
     private final TalonFX m_motorIndexer = new TalonFX(IndexerConstants.IndexerMotorId, "rio");
     private final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
 

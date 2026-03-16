@@ -14,17 +14,11 @@ import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -52,6 +46,7 @@ public class RobotContainer {
         private final VisionSubsystem vision = new VisionSubsystem(drivetrain);
         private final ShooterSubsystem shooter = new ShooterSubsystem();
         private final IntakeSubsystem intake = new IntakeSubsystem();
+        private final IndexerSubsystem indexer = new IndexerSubsystem();
         private final SlapdownSubsystem slapdown = new SlapdownSubsystem();
         private final KickerSubsystem kicker = new KickerSubsystem();
 
@@ -75,9 +70,8 @@ public class RobotContainer {
                 NamedCommands.registerCommand("stopSubsystems", new StopSubsystemsCommand(shooter, kicker, intake));
 
                 NamedCommands.registerCommand("autoAimShoot",
-                                new AutoAimShootCommand(drivetrain, shooter, kicker, intake)
+                                new AutoAimShootCommand(drivetrain, shooter, kicker, indexer)
                                                 .withTimeout(Seconds.of(3.0)));
-                NamedCommands.registerCommand("holdShooter", new HoldShooterCommand(kicker, intake));
                 NamedCommands.registerCommand("shoot20RPS",
                                 new PresetShootCommand(shooter, kicker, intake, RotationsPerSecond.of(20)));
 
@@ -127,9 +121,9 @@ public class RobotContainer {
 
         private void configureOperatorBindings() {
                 kicker.setDefaultCommand(new RunCommand(() -> kicker.stop(), kicker));
-                intake.setDefaultCommand(new RunCommand(() -> intake.stop(), intake));
+                indexer.setDefaultCommand(new RunCommand(() -> indexer.stop(), indexer));
 
-                operator.leftBumper().whileTrue(new AutoAimShootCommand(drivetrain, shooter, kicker, intake));
+                operator.leftBumper().whileTrue(new AutoAimShootCommand(drivetrain, shooter, kicker, indexer));
 
                 operator.a().whileTrue(new IntakeCommand(intake));
 
