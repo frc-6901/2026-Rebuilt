@@ -39,14 +39,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     /** Runs the intake rollers inward at the default velocity. */
     public void intake() {
-        m_motorIntake.setControl(m_request.withVelocity(IntakeRPS));
-    }
-
-    /**
-     * Runs the intake rollers outward at the default velocity to eject game pieces.
-     */
-    public void outtake() {
-        m_motorIntake.setControl(m_request.withVelocity(IntakeRPS.times(-1.0)));
+        intake(IntakeRPS);
     }
 
     /**
@@ -56,6 +49,13 @@ public class IntakeSubsystem extends SubsystemBase {
      */
     public void intake(AngularVelocity rps) {
         m_motorIntake.setControl(m_request.withVelocity(rps));
+    }
+
+    /**
+     * Runs the intake rollers outward at the default velocity to eject game pieces.
+     */
+    public void outtake() {
+        outtake(IntakeRPS);
     }
 
     /**

@@ -15,7 +15,8 @@ public class PresetShootCommand extends Command {
     private IntakeSubsystem intake;
     private AngularVelocity shotrps;
 
-    public PresetShootCommand(ShooterSubsystem shooter, KickerSubsystem kicker, IntakeSubsystem intake, AngularVelocity shotrps) {
+    public PresetShootCommand(ShooterSubsystem shooter, KickerSubsystem kicker, IntakeSubsystem intake,
+            AngularVelocity shotrps) {
         this.shooter = shooter;
         this.kicker = kicker;
         this.intake = intake;
@@ -26,8 +27,8 @@ public class PresetShootCommand extends Command {
 
     @Override
     public void execute() {
-        shooter.shoot(shotrps);
-        intake.intake(IndexRPS);
+        // shooter.shoot(shotrps);
+        // intake.intake(IndexRPS);
         kicker.kick();
     }
 

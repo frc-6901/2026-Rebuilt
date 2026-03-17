@@ -147,7 +147,7 @@ public final class Constants {
 
         public static final class KickerConstants {
                 // The motor ID of the kicker motor.
-                public final static int KickerMotorId = 105;
+                public final static int KickerMotorId = 37;
 
                 public final static AngularVelocity KickerRPS = RotationsPerSecond.of(20);
 

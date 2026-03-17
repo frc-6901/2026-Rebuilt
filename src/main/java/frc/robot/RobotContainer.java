@@ -14,7 +14,6 @@ import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -106,10 +105,10 @@ public class RobotContainer {
                 RobotModeTriggers.disabled().whileTrue(
                                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-                driver.a().whileTrue(drivetrain.applyRequest(() -> brake));
-                driver.b().whileTrue(drivetrain
-                                .applyRequest(() -> point.withModuleDirection(
-                                                new Rotation2d(-driver.getLeftY(), -driver.getLeftX()))));
+                driver.a().whileTrue(new IntakeCommand(intake));
+                driver.povDown().whileTrue(new OuttakeCommand(intake));
+
+                driver.b().whileTrue(drivetrain.applyRequest(() -> brake));
 
                 // Run SysId routines when holding back/start and X/Y.
                 // Note that each routine should be run exactly once in a single log.
@@ -140,13 +139,14 @@ public class RobotContainer {
         private void configureOperatorBindings() {
                 kicker.setDefaultCommand(new RunCommand(() -> kicker.stop(), kicker));
                 indexer.setDefaultCommand(new RunCommand(() -> indexer.stop(), indexer));
+                intake.setDefaultCommand(new RunCommand(() -> intake.stop(), intake));
+                shooter.setDefaultCommand(new RunCommand(() -> shooter.stop(), shooter));
 
-                operator.leftBumper().whileTrue(new AutoAimShootCommand(drivetrain, shooter, kicker, indexer));
+                operator.leftBumper().whileTrue(
+                                new AutoAimShootCommand(drivetrain, shooter, kicker, indexer));
 
-                operator.a().whileTrue(new IntakeCommand(intake));
-
-                operator.rightBumper()
-                                .whileTrue(new PresetShootCommand(shooter, kicker, intake, ShooterConstants.ShootRPS));
+                operator.rightBumper().whileTrue(
+                                new PresetShootCommand(shooter, kicker, intake, ShooterConstants.ShootRPS));
 
                 operator.rightTrigger().whileTrue(new InstantCommand(() -> {
                         shooter.shoot(operator.getRightTriggerAxis() * ShooterConstants.maxRPS);
