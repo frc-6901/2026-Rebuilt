@@ -33,7 +33,8 @@ public class PresetShootCommand extends Command {
      * @param intake  the intake subsystem
      * @param shotrps the preset angular velocity (RPM) for the shot
      */
-    public PresetShootCommand(ShooterSubsystem shooter, KickerSubsystem kicker, IndexerSubsystem indexer, AngularVelocity shotrps) {
+    public PresetShootCommand(ShooterSubsystem shooter, KickerSubsystem kicker, IndexerSubsystem indexer,
+            AngularVelocity shotrps) {
         this.shooter = shooter;
         this.kicker = kicker;
         this.indexer = indexer;
@@ -44,8 +45,6 @@ public class PresetShootCommand extends Command {
 
     @Override
     public void execute() {
-        // commented because we are using this command to test only the kicker functionality for now
-        
         // shooter.shoot(shotrps);
         // indexer.enable();
         kicker.kick();

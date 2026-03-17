@@ -40,7 +40,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class VisionSubsystem extends SubsystemBase {
     private final PhotonCamera photonCam;
 
+    @SuppressWarnings("unused")
     private final PhotonCamera driverCamHopper;
+    @SuppressWarnings("unused")
     private final PhotonCamera driverCameraBack;
 
     private final PhotonPoseEstimator visionPoseEstimator;
@@ -80,7 +82,8 @@ public class VisionSubsystem extends SubsystemBase {
 
         // put real values in here when cad + camera location is finalized
         // these are rough estimates based on current design team predictions (jan 26)
-        Transform3d robotToCam = new Transform3d(new Translation3d(0.2, 0.0, 0.45), new Rotation3d(0, 0, 0));
+        Transform3d robotToCam = new Transform3d(new Translation3d(-0.33, 0.0, 0.17),
+                new Rotation3d(0, Math.PI * 0.25, Math.PI));
 
         if (fieldLayout != null) {
             visionPoseEstimator = new PhotonPoseEstimator(fieldLayout, robotToCam);

@@ -74,8 +74,8 @@ public final class Constants {
                 // The motor ID of the right motor.
                 public final static int RightMotorId = 36;
 
-                // max rps for passing
-                public final static int maxRPS = 100;
+                // The maximum RPS that the shooter will shoot at
+                public final static AngularVelocity MaxRPS = RotationsPerSecond.of(80);
 
                 // rps at far distance is 50rps
                 // rps at climber center is 47 rps
