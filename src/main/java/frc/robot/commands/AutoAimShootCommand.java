@@ -15,12 +15,35 @@ import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.KickerSubsystem;
 
+/**
+ * Automatically aims and shoots toward the hub/goal.
+ * 
+ * <p>
+ * This command calculates the distance from the robot's current position to the
+ * target hub location (determined by alliance color), calculates the required
+ * shooter
+ * RPM based on that distance, and executes the shoot sequence including the
+ * indexer
+ * and kicker mechanisms.
+ * 
+ * <p>
+ * Requires: {@link CommandSwerveDrivetrain}, {@link ShooterSubsystem},
+ * {@link KickerSubsystem}, {@link IndexerSubsystem}
+ */
 public class AutoAimShootCommand extends Command {
     private CommandSwerveDrivetrain drivetrain;
     private ShooterSubsystem shooter;
     private KickerSubsystem kicker;
     private IndexerSubsystem indexer;
 
+    /**
+     * Constructs an AutoAimShootCommand.
+     *
+     * @param drivetrain the swerve drivetrain subsystem
+     * @param shooter    the shooter subsystem
+     * @param kicker     the kicker subsystem
+     * @param indexer    the indexer subsystem
+     */
     public AutoAimShootCommand(
             CommandSwerveDrivetrain drivetrain,
             ShooterSubsystem shooter,

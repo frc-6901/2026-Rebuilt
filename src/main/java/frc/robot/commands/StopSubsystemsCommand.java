@@ -10,16 +10,39 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
+/**
+ * Stops all shooter-related subsystems.
+ * 
+ * <p>
+ * This command disables the shooter, kicker, and intake subsystems. Use this
+ * command
+ * to halt all shooting-related mechanisms at once. If you need more
+ * fine-grained control
+ * where some subsystems continue while others stop, consider using alternative
+ * commands
+ * with more specific requirements.
+ * 
+ * <p>
+ * Requires: {@link ShooterSubsystem}, {@link KickerSubsystem},
+ * {@link IntakeSubsystem}
+ */
 public class StopSubsystemsCommand extends Command {
     private ShooterSubsystem shooter;
     private KickerSubsystem kicker;
     private IntakeSubsystem intake;
 
+    /**
+     * Constructs a StopSubsystemsCommand.
+     *
+     * @param shooter the shooter subsystem to stop
+     * @param kicker  the kicker subsystem to stop
+     * @param intake  the intake subsystem to stop
+     */
     public StopSubsystemsCommand(ShooterSubsystem shooter, KickerSubsystem kicker, IntakeSubsystem intake) {
         this.shooter = shooter;
         this.kicker = kicker;
         this.intake = intake;
-        addRequirements(shooter, kicker,intake);
+        addRequirements(shooter, kicker, intake);
     }
 
     @Override
