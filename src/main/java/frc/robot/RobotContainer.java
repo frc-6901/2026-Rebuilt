@@ -131,9 +131,9 @@ public class RobotContainer {
                 // TEMPORARY
                 // Slowly move slapdown down
                 driver.povLeft().whileTrue(
-                                new RunCommand(() -> slapdown.setSpeed(RotationsPerSecond.of(1)), slapdown));
+                                new RunCommand(() -> slapdown.setPower(0.15), slapdown));
                 driver.povRight().whileTrue(
-                                new RunCommand(() -> slapdown.setSpeed(RotationsPerSecond.of(-1)),
+                                new RunCommand(() -> slapdown.setPower(-0.15),
                                                 slapdown));
 
                 drivetrain.registerTelemetry(logger::telemeterize);
@@ -152,11 +152,16 @@ public class RobotContainer {
                 operator.leftTrigger().whileTrue(
                                 new AutoAimShootCommand(drivetrain, shooter, kicker, indexer));
 
-                operator.rightBumper().whileTrue(
-                                new PresetShootCommand(shooter, kicker, indexer,
-                                                ShooterConstants.MaxRPS.times(operator.getRightY())));
+                // operator.rightBumper().whileTrue(
+                // new PresetShootCommand(shooter, kicker, indexer,
+                // ShooterConstants.MaxRPS.times(operator.getRightY())));
 
-                operator.rightBumper().whileTrue(
+                operator.rightBumper().whileTrue(new RunCommand(() -> kicker.kick(), kicker));
+                operator.rightBumper().whileTrue(new RunCommand(() -> indexer.enable(), indexer));
+
+                operator.a().whileTrue(new RunCommand(() -> shooter.shoot(), shooter));
+
+                operator.rightTrigger().whileTrue(
                                 new PresetShootCommand(shooter, kicker, indexer, ShooterConstants.ShootRPS));
 
                 operator.povUp().onTrue(new PrimeShooterCommand(shooter, Seconds.of(5)));

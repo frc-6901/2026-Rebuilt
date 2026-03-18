@@ -81,7 +81,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /** Spins the flywheel at the default shoot velocity defined in constants. */
     public void shoot() {
-
         m_motorRight.setControl(m_request.withVelocity(ShootRPS));
     }
 

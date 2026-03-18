@@ -4,15 +4,14 @@ import static frc.robot.Constants.SlapdownConstants.*;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.NeutralOut;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
@@ -22,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  */
 public class SlapdownSubsystem extends SubsystemBase {
     private final TalonFX m_motorSlapdown = new TalonFX(SlapdownMotorId, new CANBus("rio"));
-    private final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
 
     public boolean isSlapdownDeployed = false;
 
@@ -55,9 +53,8 @@ public class SlapdownSubsystem extends SubsystemBase {
         throw new RuntimeException("ts not working lmao");
     }
 
-    /** Manually moves the slapdown motor with the given velocity. */
-    public void setSpeed(AngularVelocity velocity) {
-        m_motorSlapdown.setControl(m_request.withVelocity(velocity));
+    public void setPower(double power) {
+        m_motorSlapdown.setControl(new DutyCycleOut(power));
     }
 
     /** Stops the slapdown by applying neutral output. */
