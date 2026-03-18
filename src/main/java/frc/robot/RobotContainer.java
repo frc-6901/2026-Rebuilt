@@ -17,6 +17,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -95,7 +96,6 @@ public class RobotContainer {
          */
         private void configureDriverBindings() {
                 drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> getDriverInput()));
-                slapdown.setDefaultCommand(new RunCommand(() -> slapdown.stop(), slapdown));
 
                 // Idle while the robot is disabled. This ensures the configured
                 // neutral mode is applied to the drive motors while disabled.
@@ -105,7 +105,7 @@ public class RobotContainer {
                                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
                 driver.a().whileTrue(new IntakeCommand(intake));
-                driver.povDown().whileTrue(new OuttakeCommand(intake));
+                // driver.povDown().whileTrue(new OuttakeCommand(intake)); TODO ADD BACK LOL
 
                 driver.b().whileTrue(drivetrain.applyRequest(() -> brake));
 
@@ -130,11 +130,16 @@ public class RobotContainer {
 
                 // TEMPORARY
                 // Slowly move slapdown down
-                driver.povLeft().whileTrue(
-                                new RunCommand(() -> slapdown.setPower(0.15), slapdown));
-                driver.povRight().whileTrue(
-                                new RunCommand(() -> slapdown.setPower(-0.15),
+                driver.povLeft().onTrue(
+                                new RunCommand(() -> slapdown.slapdown(), slapdown));
+                driver.povRight().onTrue(
+                                new RunCommand(() -> slapdown.retractSlapdown(),
                                                 slapdown));
+
+                driver.povUp().whileTrue(
+                                Commands.startEnd(() -> slapdown.setPower(0.1), () -> slapdown.stop(), slapdown));
+                driver.povDown().whileTrue(
+                                Commands.startEnd(() -> slapdown.setPower(-0.1), () -> slapdown.stop(), slapdown));
 
                 drivetrain.registerTelemetry(logger::telemeterize);
         }
@@ -157,10 +162,11 @@ public class RobotContainer {
                 // ShooterConstants.MaxRPS.times(operator.getRightY())));
 
                 operator.rightBumper().whileTrue(new RunCommand(() -> kicker.kick(), kicker));
-                
+
                 operator.leftBumper().whileTrue(new RunCommand(() -> intake.intake(), intake));
 
-                // operator.rightBumper().whileTrue(new RunCommand(() -> indexer.enable(), indexer));
+                // operator.rightBumper().whileTrue(new RunCommand(() -> indexer.enable(),
+                // indexer));
 
                 operator.a().whileTrue(new RunCommand(() -> shooter.shoot(), shooter));
 
@@ -180,9 +186,11 @@ public class RobotContainer {
         public FieldCentric getDriverInput() {
                 return drive
                                 .withVelocityX(DrivetrainConstants.MaxSpeed.times(
-                                                driver.getLeftY() * DrivetrainConstants.TeleopMovementSensitivity).times(-1.0))
+                                                driver.getLeftY() * DrivetrainConstants.TeleopMovementSensitivity)
+                                                .times(-1.0))
                                 .withVelocityY(DrivetrainConstants.MaxSpeed.times(
-                                                driver.getLeftX() * DrivetrainConstants.TeleopMovementSensitivity).times(-1.0))
+                                                driver.getLeftX() * DrivetrainConstants.TeleopMovementSensitivity)
+                                                .times(-1.0))
                                 .withRotationalRate(DrivetrainConstants.MaxAngularRate
                                                 .times(-driver.getRightX()));
         }
