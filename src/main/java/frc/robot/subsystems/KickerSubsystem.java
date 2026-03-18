@@ -32,7 +32,7 @@ public class KickerSubsystem extends SubsystemBase {
 
     public KickerSubsystem() {
         TalonFXConfiguration m_motorConfig = new TalonFXConfiguration();
-        // m_motorConfig.Slot0 = KickerGains;
+        m_motorConfig.Slot0 = KickerGains;
         m_motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         m_motorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         m_motorConfig.withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimit(60).withSupplyCurrentLimitEnable(true));
@@ -45,7 +45,7 @@ public class KickerSubsystem extends SubsystemBase {
      * the shooter.
      */
     public void kick() {
-        m_motorKicker.setControl(new DutyCycleOut(.9));
+        m_motorKicker.setControl(m_request.withVelocity(KickerRPS));
     }
 
     /** Stops the kicker motor by applying neutral output. */

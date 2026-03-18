@@ -157,7 +157,7 @@ public class RobotContainer {
                 // ShooterConstants.MaxRPS.times(operator.getRightY())));
 
                 operator.rightBumper().whileTrue(new RunCommand(() -> kicker.kick(), kicker));
-                operator.rightBumper().whileTrue(new RunCommand(() -> indexer.enable(), indexer));
+                // operator.rightBumper().whileTrue(new RunCommand(() -> indexer.enable(), indexer));
 
                 operator.a().whileTrue(new RunCommand(() -> shooter.shoot(), shooter));
 
@@ -185,7 +185,9 @@ public class RobotContainer {
         }
 
         /**
-         * Returns the autonomous command selected from the SmartDashboard chooser.
+         * Retur
+         * 
+         * ns the autonomous command selected from the SmartDashboard chooser.
          *
          * @return the selected autonomous {@link Command}
          */
