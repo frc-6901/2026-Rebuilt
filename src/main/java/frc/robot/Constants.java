@@ -143,7 +143,7 @@ public final class Constants {
 
                 /// The PID settings for the slapdown motor.
                 public final static Slot0Configs SlapdownGains = new Slot0Configs()
-                                .withKP(0.1).withKI(0).withKD(0)
+                                .withKP(0.25).withKI(0).withKD(0)
                                 .withKS(0).withKV(0.1);
         }
 
