@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 0.7080240963855422,
-        "y": 5.991060240963854
+        "x": 0.8673047456287202,
+        "y": 5.964754813058037
       },
       "prevControl": {
-        "x": 1.5410483896565932,
-        "y": 5.850722023086044
+        "x": 1.7003290388997712,
+        "y": 5.824416595180227
       },
       "nextControl": null,
       "isLocked": false,
@@ -49,8 +49,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "slapdown",
-      "waypointRelativePos": 0.5419354838709658,
+      "name": "slapdownTrigger",
+      "waypointRelativePos": 0.20272514763779526,
       "endWaypointRelativePos": null,
       "command": null
     }

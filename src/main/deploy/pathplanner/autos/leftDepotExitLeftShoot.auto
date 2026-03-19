@@ -5,7 +5,11 @@
     "data": {
       "commands": [
         {
+<<<<<<< HEAD
           "type": "parallel",
+=======
+          "type": "race",
+>>>>>>> 5cd62c239d2e74b58d1d072f6f744b5ff46eded7
           "data": {
             "commands": [
               {
@@ -21,12 +25,15 @@
                 }
               }
             ]
+<<<<<<< HEAD
           }
         },
         {
           "type": "named",
           "data": {
             "name": "stopIntake"
+=======
+>>>>>>> 5cd62c239d2e74b58d1d072f6f744b5ff46eded7
           }
         },
         {

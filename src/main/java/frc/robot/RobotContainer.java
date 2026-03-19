@@ -162,7 +162,9 @@ public class RobotContainer {
                 driver.leftTrigger().onTrue(new RunCommand(() -> slapdown.resetSlapdownPosition(), slapdown));
 
                 // TEMPORARY
-                driver.rightTrigger().whileTrue(new RunCommand(() -> indexer.enable(), indexer));
+                driver.rightTrigger().onTrue(new RetakeCommand(intake));
+                // driver.rightTrigger().whileTrue(new RunCommand(() -> indexer.enable(),
+                // indexer));
                 driver.rightBumper().whileTrue(
                                 new PresetShootCommand(shooter, kicker, indexer,
                                                 ShooterConstants.MaxRPS));
