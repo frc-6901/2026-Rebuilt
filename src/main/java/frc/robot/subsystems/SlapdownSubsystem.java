@@ -91,6 +91,7 @@ public class SlapdownSubsystem extends SubsystemBase {
      */
     public void resetSlapdownPosition() {
         m_motorSlapdown.setPosition(0);
+        state = SlapdownState.UP;
     }
 
     /**

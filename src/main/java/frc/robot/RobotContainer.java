@@ -161,6 +161,12 @@ public class RobotContainer {
 
                 driver.leftTrigger().onTrue(new RunCommand(() -> slapdown.resetSlapdownPosition(), slapdown));
 
+                // TEMPORARY
+                driver.rightTrigger().whileTrue(new RunCommand(() -> indexer.enable(), indexer));
+                driver.rightBumper().whileTrue(
+                                new PresetShootCommand(shooter, kicker, indexer,
+                                                ShooterConstants.MaxRPS));
+
                 drivetrain.registerTelemetry(logger::telemeterize);
         }
 
@@ -183,11 +189,6 @@ public class RobotContainer {
 
                 operator.povUp().onTrue(new PrimeShooterCommand(shooter, kicker, Seconds.of(5)));
                 operator.povDown().whileTrue(new StopSubsystemsCommand(shooter, kicker, intake, indexer));
-
-                // TEMPORARY TEST INDEXER
-                operator.povLeft().whileTrue(Commands.startEnd(() -> indexer.enable(), () -> indexer.stop(), indexer));
-                operator.povRight().whileTrue(
-                                Commands.startEnd(() -> indexer.enableInverted(), () -> indexer.stop(), indexer));
         }
 
         /**
