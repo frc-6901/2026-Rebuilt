@@ -493,8 +493,8 @@ public final class Constants {
          */
         public static final class GameConstants {
                 /** The position of the hub/target on the blue alliance side of the field. */
-                public static final Translation2d blueHubLocation = new Translation2d(4.03, 4.035);
+                public static final Translation2d blueHubLocation = new Translation2d(4.012, 4.021);
                 /** The position of the hub/target on the red alliance side of the field. */
-                public static final Translation2d redHubLocation = new Translation2d(12.51, 4.035);
+                public static final Translation2d redHubLocation = new Translation2d(11.912, 4.021);
         }
 }
