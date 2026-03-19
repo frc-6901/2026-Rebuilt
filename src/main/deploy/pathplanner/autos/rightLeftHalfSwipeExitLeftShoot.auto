@@ -5,27 +5,34 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "slapdownTrigger"
+            "pathName": "crossRightLeft"
           }
         },
         {
-          "type": "named",
+          "type": "race",
           "data": {
-            "name": "intake"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "leftLeftHalfSwipe"
+                }
+              }
+            ]
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "middleDepot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "depotExitLeft"
+            "pathName": "leftHalfSwipeExitLeft"
           }
         },
         {
@@ -44,6 +51,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Middle",
+  "folder": "Right",
   "choreoAuto": false
 }

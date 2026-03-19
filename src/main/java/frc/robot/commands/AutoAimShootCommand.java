@@ -1,7 +1,6 @@
 package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.Meters;
-import static frc.robot.Constants.IntakeConstants.IndexRPS;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -12,22 +11,50 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.GameConstants;
 
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.KickerSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 
+/**
+ * Automatically aims and shoots toward the hub/goal.
+ * 
+ * <p>
+ * This command calculates the distance from the robot's current position to the
+ * target hub location (determined by alliance color), calculates the required
+ * shooter
+ * RPM based on that distance, and executes the shoot sequence including the
+ * indexer
+ * and kicker mechanisms.
+ * 
+ * <p>
+ * Requires: {@link CommandSwerveDrivetrain}, {@link ShooterSubsystem},
+ * {@link KickerSubsystem}, {@link IndexerSubsystem}
+ */
 public class AutoAimShootCommand extends Command {
     private CommandSwerveDrivetrain drivetrain;
     private ShooterSubsystem shooter;
     private KickerSubsystem kicker;
-    private IntakeSubsystem intake;
+    private IndexerSubsystem indexer;
 
-    public AutoAimShootCommand(CommandSwerveDrivetrain drivetrain, ShooterSubsystem shooter, KickerSubsystem kicker, IntakeSubsystem intake) {
+    /**
+     * Constructs an AutoAimShootCommand.
+     *
+     * @param drivetrain the swerve drivetrain subsystem
+     * @param shooter    the shooter subsystem
+     * @param kicker     the kicker subsystem
+     * @param indexer    the indexer subsystem
+     */
+    public AutoAimShootCommand(
+            CommandSwerveDrivetrain drivetrain,
+            ShooterSubsystem shooter,
+            KickerSubsystem kicker,
+            IndexerSubsystem indexer) {
         this.drivetrain = drivetrain;
         this.shooter = shooter;
         this.kicker = kicker;
-        this.intake = intake;
-        addRequirements(drivetrain, shooter, kicker, intake);
+        this.indexer = indexer;
+
+        addRequirements(drivetrain, shooter, kicker, indexer);
     }
 
     @Override
@@ -41,12 +68,13 @@ public class AutoAimShootCommand extends Command {
                 .of(currentPose.getTranslation().getDistance(hubLocation));
 
         shooter.shoot(shooter.calculateRPS(shotGroundDistance));
-        intake.intake(IndexRPS);
+
+        indexer.enable();
         kicker.kick();
     }
 
     @Override
     public boolean isFinished() {
-        return true;
+        return false;
     }
 }

@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "slapdown",
+      "name": "slapdownTrigger",
       "waypointRelativePos": 0.28089330024813614,
       "endWaypointRelativePos": null,
       "command": null

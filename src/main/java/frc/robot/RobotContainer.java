@@ -14,17 +14,11 @@ import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -34,6 +28,15 @@ import frc.robot.Constants.*;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 
+/**
+ * Declares all subsystems, operator-interface devices, and command bindings.
+ *
+ * <p>
+ * Instantiates the drivetrain, vision, shooter, intake, indexer, slapdown,
+ * and kicker subsystems, wires them to Xbox controller inputs for both the
+ * driver and operator, registers PathPlanner named commands for autonomous
+ * routines, and exposes the autonomous chooser.
+ */
 public class RobotContainer {
         private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
                         .withDeadband(DrivetrainConstants.MaxSpeed.times(ControllerConstants.kDeadband))
@@ -41,7 +44,6 @@ public class RobotContainer {
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
         private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-        private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
         private final Telemetry logger = new Telemetry(DrivetrainConstants.MaxSpeed);
 
@@ -52,6 +54,7 @@ public class RobotContainer {
         private final VisionSubsystem vision = new VisionSubsystem(drivetrain);
         private final ShooterSubsystem shooter = new ShooterSubsystem();
         private final IntakeSubsystem intake = new IntakeSubsystem();
+        private final IndexerSubsystem indexer = new IndexerSubsystem();
         private final SlapdownSubsystem slapdown = new SlapdownSubsystem();
         private final KickerSubsystem kicker = new KickerSubsystem();
 
@@ -63,6 +66,7 @@ public class RobotContainer {
                 configureDriverBindings();
                 configureOperatorBindings();
 
+                configureDefaultCommands();
                 configurePathPlannerCommands();
 
                 autoChooser = AutoBuilder.buildAutoChooser("zero");
@@ -71,35 +75,53 @@ public class RobotContainer {
 
         }
 
+        /** Registers named commands used by PathPlanner autonomous routines. */
         private void configurePathPlannerCommands() {
-                NamedCommands.registerCommand("stopSubsystems", new StopSubsystemsCommand(shooter, kicker, intake));
+                NamedCommands.registerCommand("stopSubsystems",
+                                new StopSubsystemsCommand(shooter, kicker, intake, indexer));
 
                 NamedCommands.registerCommand("autoAimShoot",
-                        new AutoAimShootCommand(drivetrain, shooter, kicker, intake).withTimeout(Seconds.of(3.0)));
-                NamedCommands.registerCommand("holdShooter", new HoldShooterCommand(kicker, intake));
-                NamedCommands.registerCommand("shoot20RPS", new PresetShootCommand(shooter, kicker, intake, RotationsPerSecond.of(20)));
-                
+                                new AutoAimShootCommand(drivetrain, shooter, kicker, indexer)
+                                                .withTimeout(Seconds.of(10.0)));
+                NamedCommands.registerCommand("shoot20RPS",
+                                new PresetShootCommand(shooter, kicker, indexer, RotationsPerSecond.of(20)));
+
                 NamedCommands.registerCommand("intake", new IntakeCommand(intake));
+                NamedCommands.registerCommand("stopIntake", new InstantCommand(() -> intake.stop(), intake));
+
                 NamedCommands.registerCommand("rotateToHub", new RotateToHubCommand(drivetrain));
-                NamedCommands.registerCommand("slapdownTrigger", new TriggerSlapdownCommand(slapdown));
+                NamedCommands.registerCommand("slapdownTrigger", new ToggleSlapdownCommand(slapdown));
         }
 
-        private void configureDriverBindings() {
-                // Note that X is defined as forward according to WPILib convention,
-                // and Y is defined as to the left according to WPILib convention.
+        /** Binds all the default commands. */
+        private void configureDefaultCommands() {
                 drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> getDriverInput()));
+                kicker.setDefaultCommand(new RunCommand(() -> kicker.stop(), kicker));
+                indexer.setDefaultCommand(new RunCommand(() -> indexer.stop(), indexer));
+                intake.setDefaultCommand(new RunCommand(() -> {
+                        if (intake.currentlyIntaking())
+                                intake.intake();
+                        else
+                                intake.stop();
+                }, intake));
+                shooter.setDefaultCommand(new RunCommand(() -> shooter.stop(), shooter));
+        }
 
-                // Idle while the robot is disabled. This ensures the configured
-                // neutral mode is applied to the drive motors while disabled.
+        /**
+         * Binds driver controller inputs to drivetrain commands including
+         * field-centric driving, SysId routines, heading reset, and hub tracking.
+         */
+        private void configureDriverBindings() {
                 final var idle = new SwerveRequest.Idle();
 
                 RobotModeTriggers.disabled().whileTrue(
                                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-                driver.a().whileTrue(drivetrain.applyRequest(() -> brake));
-                driver.b().whileTrue(drivetrain
-                                .applyRequest(() -> point.withModuleDirection(
-                                                new Rotation2d(-driver.getLeftY(), -driver.getLeftX()))));
+                driver.a().onTrue(new ToggleIntakeCommand(intake));
+                driver.x().whileTrue(new OuttakeCommand(intake));
+                driver.y().onTrue(new InstantCommand(() -> vision.resetVisionPose(), vision));
+
+                driver.b().whileTrue(drivetrain.applyRequest(() -> brake));
 
                 // Run SysId routines when holding back/start and X/Y.
                 // Note that each routine should be run exactly once in a single log.
@@ -120,41 +142,75 @@ public class RobotContainer {
                         })).onFalse(new InstantCommand(() -> shooter.clearTrajectory()));
                 }
 
+                // TODO: check if ToggleSlapdownCommand can be used here instead of separate POV
+                // TODO: bindings
+                driver.povUp().onTrue(
+                                new InstantCommand(() -> slapdown.retractSlapdown(), slapdown));
+                driver.povDown().onTrue(
+                                new InstantCommand(() -> slapdown.slapdown(),
+                                                slapdown));
+
+                driver.povLeft().whileTrue(Commands.startEnd(
+                                () -> slapdown.setPower(0.1),
+                                () -> slapdown.stop(),
+                                slapdown));
+                driver.povRight().whileTrue(Commands.startEnd(
+                                () -> slapdown.setPower(-0.1),
+                                () -> slapdown.stop(),
+                                slapdown));
+
+                driver.leftTrigger().onTrue(new RunCommand(() -> slapdown.resetSlapdownPosition(), slapdown));
+
                 drivetrain.registerTelemetry(logger::telemeterize);
         }
 
+        /**
+         * Binds operator controller inputs to scoring-mechanism commands including
+         * shooting, intake, and auto-aim.
+         */
         private void configureOperatorBindings() {
-                shooter.setDefaultCommand(new RunCommand(() -> shooter.stop(), shooter));
-                kicker.setDefaultCommand(new RunCommand(() -> kicker.stop(), kicker));
-                intake.setDefaultCommand(new RunCommand(() -> intake.stop(), intake));
+                operator.leftTrigger().whileTrue(
+                                new AutoAimShootCommand(drivetrain, shooter, kicker, indexer));
 
-                operator.leftBumper().whileTrue(new AutoAimShootCommand(drivetrain, shooter, kicker, intake));
+                operator.leftBumper().onTrue(new ToggleIntakeCommand(intake));
 
-                operator.a().whileTrue(new InstantCommand(() -> {
-                        shooter.shoot();
-                }));
+                operator.rightTrigger().whileTrue(
+                                new PresetShootCommand(shooter, kicker, indexer,
+                                                ShooterConstants.MaxRPS.times(-operator.getRightY())));
+                operator.rightBumper().whileTrue(
+                                new PresetShootCommand(shooter, kicker, indexer,
+                                                ShooterConstants.ShootRPS));
 
-                operator.rightBumper().whileTrue(new PresetShootCommand(shooter, kicker, intake, ShooterConstants.ShootRPS));
+                operator.povUp().onTrue(new PrimeShooterCommand(shooter, kicker, Seconds.of(5)));
+                operator.povDown().whileTrue(new StopSubsystemsCommand(shooter, kicker, intake, indexer));
 
-                operator.rightTrigger().whileTrue(new InstantCommand(() -> {
-                        shooter.shoot(operator.getRightTriggerAxis() * ShooterConstants.maxRPS);
-                }));
-
-                operator.b().whileTrue(new InstantCommand(() -> {
-                        kicker.kick();
-                }));
+                // TEMPORARY TEST INDEXER
+                operator.povLeft().whileTrue(Commands.startEnd(() -> indexer.enable(), () -> indexer.stop(), indexer));
+                operator.povRight().whileTrue(
+                                Commands.startEnd(() -> indexer.enableInverted(), () -> indexer.stop(), indexer));
         }
 
-        // Generates the command request for moving the drive train based on the current
-        // controller input.
+        /**
+         * Builds a field-centric drive request from the driver controller's joystick
+         * axes.
+         *
+         * @return the {@link FieldCentric} request with velocity and rotation applied
+         */
         public FieldCentric getDriverInput() {
                 return drive
-                                .withVelocityX(DrivetrainConstants.MaxSpeed.times(driver.getLeftY()))
-                                .withVelocityY(DrivetrainConstants.MaxSpeed.times(driver.getLeftX()))
+                                .withVelocityX(DrivetrainConstants.MaxSpeed.times(
+                                                -driver.getLeftY() * DrivetrainConstants.TeleopMovementSensitivity))
+                                .withVelocityY(DrivetrainConstants.MaxSpeed.times(
+                                                -driver.getLeftX() * DrivetrainConstants.TeleopMovementSensitivity))
                                 .withRotationalRate(DrivetrainConstants.MaxAngularRate
                                                 .times(-driver.getRightX()));
         }
 
+        /**
+         * Returns the autonomous command selected from the SmartDashboard chooser.
+         *
+         * @return the selected autonomous {@link Command}
+         */
         public Command getAutonomousCommand() {
                 return autoChooser.getSelected();
         }
