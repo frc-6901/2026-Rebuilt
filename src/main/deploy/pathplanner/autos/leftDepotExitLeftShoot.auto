@@ -5,15 +5,34 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "race",
           "data": {
-            "pathName": "leftDepot"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "leftDepot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake"
+                }
+              }
+            ]
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "depotExitLeft"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "rotateToHub"
           }
         },
         {
