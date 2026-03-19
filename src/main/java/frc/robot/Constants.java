@@ -103,7 +103,7 @@ public final class Constants {
                 public final static Angle Pitch = Degrees.of(73);
 
                 /** The scaling constant to correct for damping in the shooter mechanism. */
-                public final static double DampingCoefficient = 2.2;
+                public final static double DampingCoefficient = 2.2 - 0.05;
         }
 
         public static final class IndexerConstants {
