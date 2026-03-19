@@ -98,7 +98,12 @@ public class RobotContainer {
                 drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> getDriverInput()));
                 kicker.setDefaultCommand(new RunCommand(() -> kicker.stop(), kicker));
                 indexer.setDefaultCommand(new RunCommand(() -> indexer.stop(), indexer));
-                intake.setDefaultCommand(new RunCommand(() -> intake.stop(), intake));
+                intake.setDefaultCommand(new RunCommand(() -> {
+                        if (intake.currentlyIntaking())
+                                intake.intake();
+                        else
+                                intake.stop();
+                }, intake));
                 shooter.setDefaultCommand(new RunCommand(() -> shooter.stop(), shooter));
         }
 
@@ -154,7 +159,7 @@ public class RobotContainer {
                                 () -> slapdown.stop(),
                                 slapdown));
 
-                driver.leftStick().onTrue(new RunCommand(() -> slapdown.resetSlapdownPosition(), slapdown));
+                driver.leftTrigger().onTrue(new RunCommand(() -> slapdown.resetSlapdownPosition(), slapdown));
 
                 drivetrain.registerTelemetry(logger::telemeterize);
         }
@@ -172,6 +177,9 @@ public class RobotContainer {
                 operator.rightTrigger().whileTrue(
                                 new PresetShootCommand(shooter, kicker, indexer,
                                                 ShooterConstants.MaxRPS.times(-operator.getRightY())));
+                operator.rightBumper().whileTrue(
+                                new PresetShootCommand(shooter, kicker, indexer,
+                                                ShooterConstants.ShootRPS));
 
                 operator.povUp().onTrue(new PrimeShooterCommand(shooter, kicker, Seconds.of(5)));
                 operator.povDown().whileTrue(new StopSubsystemsCommand(shooter, kicker, intake, indexer));

@@ -84,7 +84,7 @@ public final class Constants {
                 public final static AngularVelocity MaxRPS = RotationsPerSecond.of(80);
 
                 /** The target rotations per second for shooting at typical game distances. */
-                public final static AngularVelocity ShootRPS = RotationsPerSecond.of(40.0);
+                public final static AngularVelocity ShootRPS = RotationsPerSecond.of(100.6901);
 
                 /** The PID and feedforward settings for the shooter motors. */
                 public final static Slot0Configs Gains = new Slot0Configs()
@@ -162,7 +162,7 @@ public final class Constants {
                 public final static int KickerMotorId = 37;
 
                 /** The target rotations per second for the kicker motor. */
-                public final static AngularVelocity KickerRPS = RotationsPerSecond.of(80);
+                public final static AngularVelocity KickerRPS = RotationsPerSecond.of(90);
 
                 /** The PID and feedforward settings for the kicker motor. */
                 public final static Slot0Configs Gains = new Slot0Configs()

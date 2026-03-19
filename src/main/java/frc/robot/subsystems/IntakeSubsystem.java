@@ -92,7 +92,7 @@ public class IntakeSubsystem extends SubsystemBase {
      * @return {@code true} if the intake is actively intaking, {@code false}
      *         otherwise
      */
-    public boolean intaking() {
+    public boolean currentlyIntaking() {
         return intaking;
     }
 

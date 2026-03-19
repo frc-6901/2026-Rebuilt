@@ -35,14 +35,14 @@ public class ToggleIntakeCommand extends Command {
      */
     @Override
     public void initialize() {
-        if (intake.intaking())
+        if (intake.currentlyIntaking())
             intake.stop();
         else
             intake.intake();
     }
 
     @Override
-    public void end(boolean interrupted) {
-        intake.stop();
+    public boolean isFinished() {
+        return true;
     }
 }

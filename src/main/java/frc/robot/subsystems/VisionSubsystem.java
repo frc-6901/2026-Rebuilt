@@ -43,8 +43,6 @@ public class VisionSubsystem extends SubsystemBase {
 
     @SuppressWarnings("unused")
     private final PhotonCamera driverCamHopper;
-    @SuppressWarnings("unused")
-    private final PhotonCamera driverCameraBack;
 
     private final PhotonPoseEstimator visionPoseEstimator;
     private final CommandSwerveDrivetrain drivetrain;
@@ -90,7 +88,6 @@ public class VisionSubsystem extends SubsystemBase {
 
         photonCam = new PhotonCamera("photonCam");
         driverCamHopper = new PhotonCamera("driverCamHopper");
-        driverCameraBack = new PhotonCamera("driverCamBack");
 
         try {
             fieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2026RebuiltAndymark.m_resourceFile);
