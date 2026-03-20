@@ -170,9 +170,6 @@ public class RobotContainer {
                 driver.rightTrigger().onTrue(new RetakeCommand(intake));
                 // driver.rightTrigger().whileTrue(new RunCommand(() -> indexer.enable(),
                 // indexer));
-                driver.rightBumper().whileTrue(
-                                new PresetShootCommand(shooter, kicker, indexer,
-                                                ShooterConstants.MaxRPS));
 
                 drivetrain.registerTelemetry(logger::telemeterize);
         }

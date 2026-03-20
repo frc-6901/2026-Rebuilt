@@ -192,7 +192,6 @@ public class VisionSubsystem extends SubsystemBase {
 
             if (!hasSeededPose && visionEstimatedPose.isPresent() && drivetrain.hasAppliedOperatorPerspective()) {
                 drivetrain.resetPose(visionEstimatedPose.get().estimatedPose.toPose2d());
-                drivetrain.seedFieldCentric();
                 hasSeededPose = true;
             }
 
@@ -206,7 +205,7 @@ public class VisionSubsystem extends SubsystemBase {
                         // third value is rotation which apparently gyro is much much better for than
                         // vision anyways
                         // it needs more real-field tuning tho
-                        VecBuilder.fill(1.5, 1.5, 3));
+                        VecBuilder.fill(1.5, 1.5, 0));
             });
 
             if (result.hasTargets()) {
