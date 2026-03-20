@@ -73,7 +73,8 @@ public class RobotContainer {
                 autoChooser = AutoBuilder.buildAutoChooser("zero");
 
                 // mirrored autos for left/right side
-                autoChooser.addOption("rightRightHalfSwipeExitRightShoot", new PathPlannerAuto("leftLeftHalfSwipeExitLeftShoot", true));
+                autoChooser.addOption("rightRightHalfSwipeExitRightShoot",
+                                new PathPlannerAuto("leftLeftHalfSwipeExitLeftShoot", true));
 
                 SmartDashboard.putData("Auto Chooser", autoChooser);
 
@@ -186,9 +187,7 @@ public class RobotContainer {
 
                 operator.leftBumper().onTrue(new ToggleIntakeCommand(intake));
 
-                operator.rightTrigger().whileTrue(
-                                new PresetShootCommand(shooter, kicker, indexer,
-                                                ShooterConstants.MaxRPS.times(-operator.getRightY())));
+                operator.rightTrigger().whileTrue(new ManualShootCommand(shooter, kicker, indexer, operator));
                 operator.rightBumper().whileTrue(
                                 new PresetShootCommand(shooter, kicker, indexer,
                                                 ShooterConstants.ShootRPS));

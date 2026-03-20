@@ -1,8 +1,9 @@
 package frc.robot.commands;
 
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.wpilibj2.command.Command;
+import static frc.robot.Constants.ShooterConstants.MaxRPS;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
@@ -19,34 +20,37 @@ import frc.robot.subsystems.IndexerSubsystem;
  * Requires: {@link ShooterSubsystem}, {@link KickerSubsystem},
  * {@link IndexerSubsystem}
  */
-public class PresetShootCommand extends Command {
+public class ManualShootCommand extends Command {
     private final ShooterSubsystem shooter;
     private final KickerSubsystem kicker;
     private final IndexerSubsystem indexer;
 
-    private final AngularVelocity shotRPS;
+    private final CommandXboxController operator;
 
     /**
-     * Constructs a PresetShootCommand with a specific shot RPM.
+     * Constructs a ManualShootCommand with a specific shot RPM.
      *
      * @param shooter the shooter subsystem
      * @param kicker  the kicker subsystem
      * @param intake  the intake subsystem
      * @param shotRPS the preset angular velocity (RPM) for the shot
      */
-    public PresetShootCommand(ShooterSubsystem shooter, KickerSubsystem kicker, IndexerSubsystem indexer,
-            AngularVelocity shotRPS) {
+    public ManualShootCommand(ShooterSubsystem shooter, KickerSubsystem kicker, IndexerSubsystem indexer,
+            CommandXboxController operator) {
         this.shooter = shooter;
         this.kicker = kicker;
         this.indexer = indexer;
-        this.shotRPS = shotRPS;
+        this.operator = operator;
 
         addRequirements(shooter, kicker, indexer);
     }
 
     @Override
     public void execute() {
-        shooter.shoot(shotRPS);
+        if (Math.abs(operator.getRightY()) < 0.2)
+            return;
+
+        shooter.shoot(MaxRPS.times(-operator.getRightY()));
         indexer.enable();
         kicker.kick();
     }
