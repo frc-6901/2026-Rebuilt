@@ -53,7 +53,7 @@ public class RobotContainer {
         private final CommandXboxController operator = new CommandXboxController(ControllerConstants.kOperatorPort);
 
         public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-        private final VisionSubsystem vision = new VisionSubsystem(drivetrain);
+        private final VisionSubsystem vision = new VisionSubsystem();
         private final ShooterSubsystem shooter = new ShooterSubsystem();
         private final IntakeSubsystem intake = new IntakeSubsystem();
         private final IndexerSubsystem indexer = new IndexerSubsystem();
@@ -176,8 +176,11 @@ public class RobotContainer {
          * shooting, intake, and auto-aim.
          */
         private void configureOperatorBindings() {
-                operator.leftTrigger().whileTrue(
-                                new AutoAimShootCommand(drivetrain, shooter, kicker, indexer));
+                operator.leftTrigger().whileTrue(new InstantCommand(() -> {
+                        vision.getVisionPose();
+                }));
+                // operator.leftTrigger().whileTrue(
+                // new AutoAimShootCommand(drivetrain, shooter, kicker, indexer));
                 operator.leftBumper().onTrue(new ToggleIntakeCommand(intake));
 
                 operator.rightTrigger().whileTrue(

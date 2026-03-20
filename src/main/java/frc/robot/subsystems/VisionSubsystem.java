@@ -42,11 +42,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class VisionSubsystem extends SubsystemBase {
     private final PhotonCamera photonCam;
 
-    @SuppressWarnings("unused")
-    private final PhotonCamera driverCamHopper;
-
     private final PhotonPoseEstimator visionPoseEstimator;
-    private final CommandSwerveDrivetrain drivetrain;
     // not final because setting fieldLayout wasn't working without try/catch
     private AprilTagFieldLayout fieldLayout;
 
@@ -70,12 +66,12 @@ public class VisionSubsystem extends SubsystemBase {
     public Optional<EstimatedRobotPose> visionEstimatedPose = Optional.empty();
 
     /** Tracks whether the vision system has provided an initial pose estimate. */
-    private boolean hasSeededPose = false;
+    // private boolean hasSeededPose = false;
 
-    private final BooleanPublisher seededPub = NetworkTableInstance.getDefault()
-            .getTable("Vision Debugging")
-            .getBooleanTopic("Has Seeded Pose")
-            .publish();
+    // private final BooleanPublisher seededPub = NetworkTableInstance.getDefault()
+    // .getTable("Vision Debugging")
+    // .getBooleanTopic("Has Seeded Pose")
+    // .publish();
 
     /**
      * Creates the vision subsystem, initializing PhotonVision cameras and the
@@ -84,11 +80,8 @@ public class VisionSubsystem extends SubsystemBase {
      *
      * @param drivetrain the swerve drivetrain to feed vision measurements into
      */
-    public VisionSubsystem(CommandSwerveDrivetrain drivetrain) {
-        this.drivetrain = drivetrain;
-
+    public VisionSubsystem() {
         photonCam = new PhotonCamera("photonCam");
-        driverCamHopper = new PhotonCamera("driverCamHopper");
 
         try {
             fieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2026RebuiltAndymark.m_resourceFile);
@@ -167,51 +160,54 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     /**
-     * Updates the vision simulation with the current robot pose.
-     * Called during simulation mode only.
-     */
-    @Override
-    public void simulationPeriodic() {
-        visionSim.update(drivetrain.getPose());
-    }
-
-    /**
      * Processes all new camera frames from PhotonVision, updates pose estimation,
      * seeds the drivetrain odometry if not yet seeded, and publishes visible tag
      * data.
      */
-    public void periodic() {
+    // public void periodic() {
+    // visibleTagPoses.clear();
+    // visibleTagIds.clear();
+
+    // for (var result : photonCam.getAllUnreadResults()) {
+    // visionEstimatedPose = visionPoseEstimator.estimateCoprocMultiTagPose(result);
+
+    // if (visionEstimatedPose.isEmpty()) {
+    // visionEstimatedPose =
+    // visionPoseEstimator.estimateLowestAmbiguityPose(result);
+    // }
+
+    // if (!hasSeededPose && visionEstimatedPose.isPresent()) {
+    // Pose2d pose = visionEstimatedPose.get().estimatedPose.toPose2d();
+    // hasSeededPose = true;
+    // }
+
+    // if (result.hasTargets()) {
+    // List<PhotonTrackedTarget> targets = result.getTargets();
+
+    // for (PhotonTrackedTarget target : targets) {
+    // Optional<Pose3d> tagPose = fieldLayout.getTagPose(target.getFiducialId());
+    // tagPose.ifPresent(visibleTagPoses::add);
+    // visibleTagIds.add(target.getFiducialId());
+    // }
+
+    // tagPublisher.set(visibleTagPoses.toArray(new Pose3d[0]));
+    // }
+    // }
+
+    // seededPub.set(hasSeededPose);
+    // }
+
+    public Optional<Pose2d> getVisionPose() {
         visibleTagPoses.clear();
         visibleTagIds.clear();
 
         for (var result : photonCam.getAllUnreadResults()) {
+            System.out.println("RESULT: " + result);
             visionEstimatedPose = visionPoseEstimator.estimateCoprocMultiTagPose(result);
 
             if (visionEstimatedPose.isEmpty()) {
                 visionEstimatedPose = visionPoseEstimator.estimateLowestAmbiguityPose(result);
             }
-
-            if (!hasSeededPose && visionEstimatedPose.isPresent() && drivetrain.hasAppliedOperatorPerspective()) {
-                Pose2d pose = visionEstimatedPose.get().estimatedPose.toPose2d();
-
-                drivetrain.resetPose(pose);
-                drivetrain.getPigeon2().setYaw(pose.getRotation().getDegrees());
-
-                hasSeededPose = true;
-            }
-
-            visionEstimatedPose.ifPresent(estimatedPose -> {
-                drivetrain.addVisionMeasurement(
-                        estimatedPose.estimatedPose.toPose2d(),
-                        estimatedPose.timestampSeconds,
-                        // these are values for how much the bot trusts vision
-                        // higher --> less trust in vision, more trust in telemetry
-                        // vision is naturally pretty stuttery so i gave somewhat high std devs
-                        // third value is rotation which apparently gyro is much much better for than
-                        // vision anyways
-                        // it needs more real-field tuning tho
-                        VecBuilder.fill(1.5, 1.5, 2.0));
-            });
 
             if (result.hasTargets()) {
                 List<PhotonTrackedTarget> targets = result.getTargets();
@@ -224,9 +220,15 @@ public class VisionSubsystem extends SubsystemBase {
 
                 tagPublisher.set(visibleTagPoses.toArray(new Pose3d[0]));
             }
+
+            if (visionEstimatedPose.isPresent()) {
+                System.out.println(visionEstimatedPose);
+
+                return Optional.of(visionEstimatedPose.get().estimatedPose.toPose2d());
+            }
         }
 
-        seededPub.set(hasSeededPose);
+        return Optional.empty();
     }
 
     /**
@@ -234,6 +236,6 @@ public class VisionSubsystem extends SubsystemBase {
      * system to re-seed the odometry.
      */
     public void resetVisionPose() {
-        hasSeededPose = false;
+        // hasSeededPose = false;
     }
 }
