@@ -68,8 +68,6 @@ public class VisionSubsystem extends SubsystemBase {
      * Creates the vision subsystem, initializing PhotonVision cameras and the
      * pose estimator from the current year's field layout. Starts camera
      * simulation if running in sim.
-     *
-     * @param drivetrain the swerve drivetrain to feed vision measurements into
      */
     public VisionSubsystem() {
         photonCam = new PhotonCamera("photonCam");

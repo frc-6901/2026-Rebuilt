@@ -70,7 +70,7 @@ public final class Constants {
                 /** The desired top speed of the robot in meters per second. */
                 public final static LinearVelocity MaxSpeed = TunerConstants.kSpeedAt12Volts;
                 /** The movement sensitivity multiplier for teleop control (between 0 and 1). */
-                public final static double TeleopMovementSensitivity = 0.5;
+                public final static double TeleopMovementSensitivity = 0.45;
                 /** The maximum angular turning rate in rotations per second. */
                 public final static AngularVelocity MaxAngularRate = RotationsPerSecond.of(0.5);
         }

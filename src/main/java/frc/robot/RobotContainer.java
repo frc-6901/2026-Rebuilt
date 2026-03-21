@@ -15,6 +15,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -86,7 +87,7 @@ public class RobotContainer {
                                 new StopSubsystemsCommand(shooter, kicker, intake, indexer));
 
                 NamedCommands.registerCommand("autoAimShoot",
-                                new AutoAimShootCommand(shooter, kicker, indexer, () -> drivetrain.getState().Pose)
+                                new AutoAimShootCommand(shooter, kicker, indexer, () -> getEstimatedVisionPose())
                                                 .withTimeout(Seconds.of(10.0)));
                 NamedCommands.registerCommand("shoot20RPS",
                                 new PresetShootCommand(shooter, kicker, indexer, RotationsPerSecond.of(20)));
@@ -94,9 +95,8 @@ public class RobotContainer {
                 NamedCommands.registerCommand("intake", new IntakeCommand(intake));
                 NamedCommands.registerCommand("stopIntake", new InstantCommand(() -> intake.stop(), intake));
 
-                NamedCommands.registerCommand("rotateToHub", new RotateToHubCommand(
-                                drivetrain,
-                                () -> vision.getEstimatedPose2d().orElse(drivetrain.getState().Pose)));
+                NamedCommands.registerCommand("rotateToHub",
+                                new RotateToHubCommand(drivetrain, () -> getEstimatedVisionPose()));
                 NamedCommands.registerCommand("slapdownTrigger", new ToggleSlapdownCommand(slapdown));
         }
 
@@ -142,7 +142,7 @@ public class RobotContainer {
                 // Point the wheels towards the hub when holding left bumper.
                 driver.leftBumper().whileTrue(new RotateToHubCommand(
                                 drivetrain,
-                                () -> vision.getEstimatedPose2d().orElse(drivetrain.getState().Pose)));
+                                () -> getEstimatedVisionPose()));
 
                 if (Robot.isSimulation()) {
                         driver.x().onTrue(new InstantCommand(() -> {
@@ -174,12 +174,8 @@ public class RobotContainer {
          * shooting, intake, and auto-aim.
          */
         private void configureOperatorBindings() {
-                operator.leftTrigger().whileTrue(new InstantCommand(() -> {
-                        vision.getVisionPose();
-                }));
-                // TODO: BRO IF WE DONT ADD THIS BACK WE'RE COOKED
-                // operator.leftTrigger().whileTrue(
-                // new AutoAimShootCommand(drivetrain, shooter, kicker, indexer));
+                operator.leftTrigger().whileTrue(
+                                new AutoAimShootCommand(shooter, kicker, indexer, () -> getEstimatedVisionPose()));
                 operator.leftBumper().onTrue(new ToggleIntakeCommand(intake));
 
                 operator.rightTrigger().whileTrue(
@@ -216,5 +212,9 @@ public class RobotContainer {
         public Command getAutonomousCommand() {
                 // return autoChooser.getSelected();
                 return null;
+        }
+
+        private Pose2d getEstimatedVisionPose() {
+                return vision.getEstimatedPose2d().orElse(drivetrain.getState().Pose);
         }
 }
