@@ -83,7 +83,7 @@ public class RotateToHubCommand extends Command {
                     .minus(currentPose.getTranslation());
         }
 
-        Rotation2d targetAngle = vectorToTarget.getAngle().minus(Rotation2d.fromRadians(Math.PI));
+        Rotation2d targetAngle = vectorToTarget.getAngle();
         this.errorAngle = Degrees.of(Math.abs(currentPose.getRotation().minus(targetAngle).getDegrees()));
 
         drivetrain.driveToPose(new Pose2d(currentPose.getX(), currentPose.getY(), targetAngle));
