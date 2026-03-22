@@ -186,7 +186,7 @@ public class RobotContainer {
                 operator.rightTrigger().whileTrue(
                                 new ManualShootCommand(shooter, kicker, indexer, () -> shooter.getShootRPS()));
                 operator.rightBumper().whileTrue(
-                                new ManualShootCommand(shooter, kicker, indexer, () -> RotationsPerSecond.of(50)));
+                                new ManualShootCommand(shooter, kicker, indexer, () -> ShooterConstants.DefaultRPS));
 
                 operator.povUp().onTrue(new PrimeShooterCommand(shooter, kicker, Seconds.of(5)));
                 operator.povDown().whileTrue(new StopSubsystemsCommand(shooter, kicker, intake, indexer));
