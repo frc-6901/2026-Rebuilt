@@ -21,9 +21,9 @@ import frc.robot.Constants.IndexerConstants;
 public class IndexerSubsystem extends SubsystemBase {
     private final TalonFX m_motorIndexer = new TalonFX(IndexerConstants.MotorId, new CANBus("rio"));
 
-    private final DoublePublisher indexerVelocityPub = NetworkTableInstance.getDefault()
+    private final DoublePublisher velocityPub = NetworkTableInstance.getDefault()
             .getTable("Indexer")
-            .getDoubleTopic("IndexerVelocity")
+            .getDoubleTopic("Velocity")
             .publish();
 
     /**
@@ -60,6 +60,6 @@ public class IndexerSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        indexerVelocityPub.set(m_motorIndexer.getVelocity().getValueAsDouble());
+        velocityPub.set(m_motorIndexer.getVelocity().getValueAsDouble());
     }
 }

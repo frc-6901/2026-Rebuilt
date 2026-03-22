@@ -64,8 +64,8 @@ public class AutoAimShootCommand extends Command {
     public void execute() {
         Pose2d currentPose = currentPoseSupplier.get();
         Translation2d hubLocation = (DriverStation.getAlliance().get() == Alliance.Blue)
-                ? GameConstants.blueHubLocation
-                : GameConstants.redHubLocation;
+                ? GameConstants.BlueHubLocation
+                : GameConstants.RedHubLocation;
 
         Distance shotGroundDistance = Meters
                 .of(currentPose.getTranslation().getDistance(hubLocation));

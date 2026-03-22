@@ -20,8 +20,8 @@ public class RotateToHubCommand extends RotateToTarget {
 
     private static Rotation2d computeHubRotation(Pose2d currentPose) {
         Translation2d targetHub = (DriverStation.getAlliance().get() == Alliance.Blue)
-                ? GameConstants.blueHubLocation
-                : GameConstants.redHubLocation;
+                ? GameConstants.BlueHubLocation
+                : GameConstants.RedHubLocation;
 
         return targetHub.minus(currentPose.getTranslation()).getAngle();
     }

@@ -11,7 +11,6 @@ import com.ctre.phoenix6.CANBus.CANBusStatus;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -82,7 +81,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     // PID velocity controllers
     private final PIDController xController = new PIDController(.5, 0, 0);
     private final PIDController yController = new PIDController(1, 0, 0);
-    private final PIDController thetaController = new PIDController(1.2, 0, 0.0);
+    private final PIDController thetaController = new PIDController(5, 0, 0.0);
 
     private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
 
@@ -237,13 +236,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public void rotateToPose(Pose2d currentPose, Pose2d targetPose) {
-        thetaController.setTolerance(.1);
+        thetaController.setTolerance(.01);
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-        double thetaVel = thetaController.calculate(currentPose.getRotation().getRadians(),
+        double thetaVel = thetaController.calculate(
+                currentPose.getRotation().getRadians(),
                 targetPose.getRotation().getRadians());
 
         setControl(new SwerveRequest.FieldCentric()
+                .withRotationalDeadband(0.1)
                 .withRotationalRate(thetaVel));
     }
 

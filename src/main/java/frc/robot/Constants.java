@@ -87,7 +87,7 @@ public final class Constants {
                  * The default rotations per second of the shooter to shoot a ball (tested
                  * experimentally).
                  */
-                public final static AngularVelocity DefaultRPS = RotationsPerSecond.of(55);
+                public final static AngularVelocity DefaultRPS = RotationsPerSecond.of(30.6901);
 
                 /** The PID and feedforward settings for the shooter motors. */
                 public final static Slot0Configs Gains = new Slot0Configs()
@@ -126,7 +126,7 @@ public final class Constants {
                 public final static int IntakeMotorId = 32;
 
                 /** The rotations per second for actively intaking balls. */
-                public final static AngularVelocity IntakeRPS = RotationsPerSecond.of(91.6901);
+                public final static AngularVelocity IntakeRPS = RotationsPerSecond.of(85.6901);
 
                 /** The gear ratio of the intake system. */
                 public final static double GearRatio = 5.0;
@@ -495,8 +495,8 @@ public final class Constants {
          */
         public static final class GameConstants {
                 /** The position of the hub/target on the blue alliance side of the field. */
-                public static final Translation2d blueHubLocation = new Translation2d(4.612, 4.021);
+                public static final Translation2d BlueHubLocation = new Translation2d(4.612, 4.021);
                 /** The position of the hub/target on the red alliance side of the field. */
-                public static final Translation2d redHubLocation = new Translation2d(11.901, 4.021);
+                public static final Translation2d RedHubLocation = new Translation2d(11.901, 4.021);
         }
 }
