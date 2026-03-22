@@ -216,18 +216,22 @@ public class RobotContainer {
          * @return the selected autonomous {@link Command}
          */
         public Command getAutonomousCommand() {
-                // // move back one meter
+                // move back one meter
                 Pose2d current = getEstimatedVisionPose();
-                Pose2d target = new Pose2d(current.getTranslation().minus(new Translation2d(0.0, 10.0)),
+                Pose2d target = new Pose2d(current.getTranslation().minus(new Translation2d(5.0, 0.0)),
                                 current.getRotation());
 
                 return new SequentialCommandGroup(
                                 new RunCommand(() -> drivetrain.driveToPose(current, target), drivetrain));
-                // return null;
         }
 
+        /**
+         * Gets the robot's estimated pose from the vision subsystem, or falls back to
+         * the drivetrain's odometry pose if no vision estimate is available.
+         *
+         * @return the estimated {@link Pose2d} of the robot on the field
+         */
         private Pose2d getEstimatedVisionPose() {
                 return vision.getEstimatedPose2d().orElse(drivetrain.getState().Pose);
-                // return vision.getEstimatedPose2d().orElse(null);
         }
 }
