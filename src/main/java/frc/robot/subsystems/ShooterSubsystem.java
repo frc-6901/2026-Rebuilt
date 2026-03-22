@@ -53,6 +53,8 @@ public class ShooterSubsystem extends SubsystemBase {
             .getDoubleTopic("RightVelocity")
             .publish();
 
+    private static AngularVelocity shootRPS = RotationsPerSecond.of(55);
+
     /**
      * Configures both shooter motors with PID gains from constants and sets the
      * left motor to follow the right motor in the opposed direction.
@@ -71,30 +73,8 @@ public class ShooterSubsystem extends SubsystemBase {
         m_motorLeft.setControl(new Follower(RightMotorId, MotorAlignmentValue.Opposed));
     }
 
-    /**
-     * Spins the flywheel at a velocity proportional to the given axis value,
-     * useful for variable-speed control from a trigger.
-     *
-     * @param axis scalar in [0, 1] applied to the maximum shoot velocity
-     */
-    public void shoot(double axis) {
-        m_motorRight.setControl(m_request.withVelocity(ShootRPS.times(axis)));
-    }
-
-    /**
-     * Spins the flywheel at the default shoot velocity defined in constants.
-     */
     public void shoot() {
-        m_motorRight.setControl(m_request.withVelocity(ShootRPS));
-    }
-
-    /**
-     * Spins the flywheel at an exact integer RPS setpoint.
-     *
-     * @param rps target rotations per second
-     */
-    public void shoot(int rps) {
-        m_motorRight.setControl(m_request.withVelocity(rps));
+        m_motorRight.setControl(m_request.withVelocity(shootRPS));
     }
 
     /**
@@ -105,11 +85,24 @@ public class ShooterSubsystem extends SubsystemBase {
      */
     public void shoot(AngularVelocity rps) {
         m_motorRight.setControl(m_request.withVelocity(rps));
+
     }
 
     /** Stops the flywheel by applying neutral output to both motors. */
     public void stop() {
         m_motorRight.setControl(new NeutralOut());
+    }
+
+    public void increaseShootRPS() {
+        shootRPS = shootRPS.plus(RotationsPerSecond.of(1));
+    }
+
+    public void decreaseShootRPS() {
+        shootRPS = shootRPS.minus(RotationsPerSecond.of(1));
+    }
+
+    public AngularVelocity getShootRPS() {
+        return shootRPS;
     }
 
     /**
