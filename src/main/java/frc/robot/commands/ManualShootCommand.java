@@ -9,7 +9,9 @@ import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 
 /**
- * Shoots at a preset RPM configured at command creation time.
+ * Shoots at a variable RPM provided by a supplier function, allowing for
+ * dynamic control of the shooter's speed based on real-time inputs or
+ * adjustments.
  * 
  * <p>
  * This command executes a shooting sequence using a predefined shooter speed
@@ -42,6 +44,7 @@ public class ManualShootCommand extends Command {
         this.kicker = kicker;
         this.indexer = indexer;
         this.rpsSupplier = rpsSupplier;
+
         addRequirements(shooter, kicker, indexer);
     }
 

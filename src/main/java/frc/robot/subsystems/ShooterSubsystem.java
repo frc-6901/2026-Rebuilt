@@ -53,7 +53,7 @@ public class ShooterSubsystem extends SubsystemBase {
             .getDoubleTopic("RightVelocity")
             .publish();
 
-    private static AngularVelocity shootRPS = ShooterConstants.DefaultRPS;
+    private AngularVelocity shootRPS = ShooterConstants.DefaultRPS;
 
     /**
      * Configures both shooter motors with PID gains from constants and sets the

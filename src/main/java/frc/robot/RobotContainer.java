@@ -177,10 +177,10 @@ public class RobotContainer {
                 operator.leftBumper().onTrue(new ToggleIntakeCommand(intake));
 
                 operator.povLeft().onTrue(new InstantCommand(() -> {
-                        shooter.increaseShootRPS();
+                        shooter.decreaseShootRPS();
                 }));
                 operator.povRight().onTrue(new InstantCommand(() -> {
-                        shooter.decreaseShootRPS();
+                        shooter.increaseShootRPS();
                 }));
 
                 operator.rightTrigger().whileTrue(
