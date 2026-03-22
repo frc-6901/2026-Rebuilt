@@ -11,17 +11,16 @@ import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -53,14 +52,14 @@ public class RobotContainer {
         private final CommandXboxController operator = new CommandXboxController(ControllerConstants.kOperatorPort);
 
         public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-        private final VisionSubsystem vision = new VisionSubsystem();
+        private final VisionSubsystem vision = new VisionSubsystem(drivetrain);
         private final ShooterSubsystem shooter = new ShooterSubsystem();
         private final IntakeSubsystem intake = new IntakeSubsystem();
         private final IndexerSubsystem indexer = new IndexerSubsystem();
         private final SlapdownSubsystem slapdown = new SlapdownSubsystem();
         private final KickerSubsystem kicker = new KickerSubsystem();
 
-        private final SendableChooser<Command> autoChooser;
+        // private final SendableChooser<Command> autoChooser;
 
         boolean isCompetition = false;
 
@@ -71,13 +70,13 @@ public class RobotContainer {
                 configureDefaultCommands();
                 configurePathPlannerCommands();
 
-                autoChooser = AutoBuilder.buildAutoChooser("zero");
+                // autoChooser = AutoBuilder.buildAutoChooser("zero");
 
                 // mirrored autos for left/right side
-                autoChooser.addOption("rightRightHalfSwipeExitRightShoot",
-                                new PathPlannerAuto("leftLeftHalfSwipeExitLeftShoot", true));
+                // autoChooser.addOption("rightRightHalfSwipeExitRightShoot",
+                // new PathPlannerAuto("leftLeftHalfSwipeExitLeftShoot", true));
 
-                SmartDashboard.putData("Auto Chooser", autoChooser);
+                // SmartDashboard.putData("Auto Chooser", autoChooser);
 
         }
 
@@ -126,7 +125,7 @@ public class RobotContainer {
 
                 driver.a().onTrue(new ToggleIntakeCommand(intake));
                 driver.x().whileTrue(new OuttakeCommand(intake));
-
+                driver.y().onTrue(new InstantCommand(() -> vision.reseedPose()));
                 driver.b().whileTrue(drivetrain.applyRequest(() -> brake));
 
                 // Run SysId routines when holding back/start and X/Y.
@@ -178,14 +177,23 @@ public class RobotContainer {
                                 new AutoAimShootCommand(shooter, kicker, indexer, () -> getEstimatedVisionPose()));
                 operator.leftBumper().onTrue(new ToggleIntakeCommand(intake));
 
+                operator.povLeft().onTrue(new InstantCommand(() -> {
+                        ShooterConstants.ShootRPS = ShooterConstants.ShootRPS.minus(RotationsPerSecond.of(1));
+                }));
+                operator.povRight().onTrue(new InstantCommand(() -> {
+                        ShooterConstants.ShootRPS = ShooterConstants.ShootRPS.plus(RotationsPerSecond.of(1));
+                }));
+
                 operator.rightTrigger().whileTrue(
-                                new ManualShootCommand(shooter, kicker, indexer, () -> -operator.getRightY()));
+                                new ManualShootCommand(shooter, kicker, indexer));
                 operator.rightBumper().whileTrue(
                                 new PresetShootCommand(shooter, kicker, indexer,
                                                 ShooterConstants.ShootRPS));
 
                 operator.povUp().onTrue(new PrimeShooterCommand(shooter, kicker, Seconds.of(5)));
                 operator.povDown().whileTrue(new StopSubsystemsCommand(shooter, kicker, intake, indexer));
+
+                operator.x().onTrue(new Rotate180Command(drivetrain, () -> drivetrain.getPose()));
         }
 
         /**
@@ -210,11 +218,19 @@ public class RobotContainer {
          * @return the selected autonomous {@link Command}
          */
         public Command getAutonomousCommand() {
-                // return autoChooser.getSelected();
-                return null;
+                // // move back one meter
+                Pose2d current = getEstimatedVisionPose();
+                Pose2d target = new Pose2d(current.getTranslation().minus(new Translation2d(0.0, 10.0)),
+                                current.getRotation());
+
+                return new SequentialCommandGroup(
+                        new RunCommand(() -> drivetrain.driveToPose(current, target), drivetrain)
+                );
+                // return null;
         }
 
         private Pose2d getEstimatedVisionPose() {
                 return vision.getEstimatedPose2d().orElse(drivetrain.getState().Pose);
+                // return vision.getEstimatedPose2d().orElse(null);
         }
 }

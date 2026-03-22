@@ -70,7 +70,7 @@ public final class Constants {
                 /** The desired top speed of the robot in meters per second. */
                 public final static LinearVelocity MaxSpeed = TunerConstants.kSpeedAt12Volts;
                 /** The movement sensitivity multiplier for teleop control (between 0 and 1). */
-                public final static double TeleopMovementSensitivity = 0.45;
+                public final static double TeleopMovementSensitivity = .6901;
                 /** The maximum angular turning rate in rotations per second. */
                 public final static AngularVelocity MaxAngularRate = RotationsPerSecond.of(0.5);
         }
@@ -85,7 +85,7 @@ public final class Constants {
                 public final static AngularVelocity MaxRPS = RotationsPerSecond.of(80);
 
                 /** The target rotations per second for shooting at typical game distances. */
-                public final static AngularVelocity ShootRPS = RotationsPerSecond.of(100.6901);
+                public static AngularVelocity ShootRPS = RotationsPerSecond.of(55);
 
                 /** The PID and feedforward settings for the shooter motors. */
                 public final static Slot0Configs Gains = new Slot0Configs()

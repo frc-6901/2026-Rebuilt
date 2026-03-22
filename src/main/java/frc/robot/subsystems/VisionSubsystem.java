@@ -27,6 +27,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -40,6 +41,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  */
 public class VisionSubsystem extends SubsystemBase {
     private final PhotonCamera photonCam;
+    private final CommandSwerveDrivetrain drivetrain;
 
     private final PhotonPoseEstimator visionPoseEstimator;
     // not final because setting fieldLayout wasn't working without try/catch
@@ -64,13 +66,19 @@ public class VisionSubsystem extends SubsystemBase {
     /** The most recently estimated robot pose from vision (optional). */
     private Optional<EstimatedRobotPose> visionEstimatedPose = Optional.empty();
 
+    public boolean hasSeededPose = true;
+
+    public final Field2d m_visionfield = new Field2d();
+
     /**
      * Creates the vision subsystem, initializing PhotonVision cameras and the
      * pose estimator from the current year's field layout. Starts camera
      * simulation if running in sim.
      */
-    public VisionSubsystem() {
+    public VisionSubsystem(CommandSwerveDrivetrain drivetrain) {
         photonCam = new PhotonCamera("photonCam");
+
+        this.drivetrain = drivetrain;
 
         try {
             fieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2026RebuiltAndymark.m_resourceFile);
@@ -97,6 +105,8 @@ public class VisionSubsystem extends SubsystemBase {
         }
 
         tagPublisher = NetworkTableInstance.getDefault().getStructArrayTopic("visibleTags", Pose3d.struct).publish();
+
+        SmartDashboard.putData("VisionField", m_visionfield);
     }
 
     /**
@@ -174,9 +184,21 @@ public class VisionSubsystem extends SubsystemBase {
             tagPublisher.set(visibleTagPoses.toArray(new Pose3d[0]));
         }
 
+        if (visionEstimatedPose.isPresent()) {
+            m_visionfield.setRobotPose(getEstimatedPose2d().get());
+
+            if (!hasSeededPose) {
+                hasSeededPose = true;
+                drivetrain.resetPose(getEstimatedPose2d().get());
+            }
+        }
     }
 
     public Optional<Pose2d> getEstimatedPose2d() {
         return visionEstimatedPose.map(pose -> pose.estimatedPose.toPose2d());
+    }
+
+    public void reseedPose() {
+        hasSeededPose = false;
     }
 }

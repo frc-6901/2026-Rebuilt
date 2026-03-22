@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.CANBus.CANBusStatus;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -29,11 +30,13 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.TunerConstants;
 import frc.robot.Constants.TunerConstants.TunerSwerveDrivetrain;
 
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 
@@ -57,6 +60,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final StructPublisher<Pose3d> m_posePublisher = NetworkTableInstance.getDefault()
             .getStructTopic("RobotPose", Pose3d.struct).publish();
 
+    private final DoublePublisher m_CanUtilizationPublisher = NetworkTableInstance.getDefault()
+            .getTable("Can")
+            .getDoubleTopic("Canivore Utilization")
+            .publish();
+
+    private CANBusStatus status = TunerConstants.kCANBus.getStatus();
+
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
     /* Red alliance sees forward as 180 degrees (toward blue alliance wall) */
@@ -70,9 +80,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
 
     // PID velocity controllers
-    private final PIDController xController = new PIDController(2, 0, 0);
-    private final PIDController yController = new PIDController(2, 0, 0);
-    private final PIDController thetaController = new PIDController(6.901, 0, 0.0);
+    private final PIDController xController = new PIDController(.5, 0, 0);
+    private final PIDController yController = new PIDController(1, 0, 0);
+    private final PIDController thetaController = new PIDController(1.2, 0, 0.0);
 
     private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
 
@@ -209,12 +219,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      *
      * @param targetPose the field-relative pose to drive toward
      */
-    public void driveToPose(Pose2d targetPose) {
-        Pose2d currentPose = this.getState().Pose;
-
-        xController.setTolerance(0.05);
-        yController.setTolerance(0.05);
-        thetaController.setTolerance(0.05);
+    public void driveToPose(Pose2d currentPose, Pose2d targetPose) {
+        xController.setTolerance(0.1);
+        yController.setTolerance(0.1);
+        thetaController.setTolerance(0.1);
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
         double xVel = -xController.calculate(currentPose.getX(), targetPose.getX());
@@ -225,6 +233,17 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         setControl(new SwerveRequest.FieldCentric()
                 .withVelocityX(xVel)
                 .withVelocityY(yVel)
+                .withRotationalRate(thetaVel));
+    }
+
+    public void rotateToPose(Pose2d currentPose, Pose2d targetPose) {
+        thetaController.setTolerance(.1);
+        thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+        double thetaVel = thetaController.calculate(currentPose.getRotation().getRadians(),
+                targetPose.getRotation().getRadians());
+
+        setControl(new SwerveRequest.FieldCentric()
                 .withRotationalRate(thetaVel));
     }
 
@@ -314,6 +333,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+
+        m_CanUtilizationPublisher.set(status.BusUtilization);
 
         m_field.setRobotPose(this.getState().Pose);
 

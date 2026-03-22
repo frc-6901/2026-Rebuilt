@@ -5,7 +5,6 @@ import static edu.wpi.first.units.Units.Degrees;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -44,21 +43,24 @@ public class RotateToHubCommand extends Command {
 
     /** Network table publisher for the angular error. */
     private final DoublePublisher errorPub = NetworkTableInstance.getDefault()
-            .getTable("rotateToHub")
-            .getDoubleTopic("error")
+            .getTable("RotateToHub")
+            .getDoubleTopic("Error")
             .publish();
 
     /** Network table publisher for the current robot heading. */
     private final DoublePublisher currentPub = NetworkTableInstance.getDefault()
-            .getTable("rotateToHub")
-            .getDoubleTopic("current")
+            .getTable("RotateToHub")
+            .getDoubleTopic("Current Angle")
             .publish();
 
     /** Network table publisher for the target heading angle. */
     private final DoublePublisher targetPub = NetworkTableInstance.getDefault()
-            .getTable("rotateToHub")
-            .getDoubleTopic("target")
+            .getTable("RotateToHub")
+            .getDoubleTopic("Target Angle")
             .publish();
+
+    // dont change after init
+    private Pose2d targetPose;
 
     /**
      * Constructs a RotateToHubCommand.
@@ -74,27 +76,49 @@ public class RotateToHubCommand extends Command {
     }
 
     @Override
+    public void initialize() {
+        // calculate target
+        Pose2d currentPose = currentPoseSupplier.get();
+        Translation2d targetHub = (DriverStation.getAlliance().get() == Alliance.Blue) ? GameConstants.blueHubLocation
+                : GameConstants.redHubLocation;
+
+        Translation2d vectorToTarget = targetHub.minus(currentPose.getTranslation());
+
+        targetPose = new Pose2d(currentPose.getTranslation(), vectorToTarget.getAngle());
+
+        targetPub.set(targetPose.getRotation().getDegrees());
+    }
+
+    @Override
     public void execute() {
         Pose2d currentPose = currentPoseSupplier.get();
-        Translation2d vectorToTarget = null;
+        this.errorAngle = targetPose.getRotation().minus(currentPose.getRotation()).getMeasure();
 
-        if (DriverStation.getAlliance().isPresent() &&
-                DriverStation.getAlliance().get() == Alliance.Blue) {
-            vectorToTarget = GameConstants.blueHubLocation
-                    .minus(currentPose.getTranslation());
-        } else if (DriverStation.getAlliance().isPresent() &&
-                DriverStation.getAlliance().get() == Alliance.Red) {
-            vectorToTarget = GameConstants.redHubLocation
-                    .minus(currentPose.getTranslation());
-        }
+        System.out.println(targetPose.minus(currentPose));
 
-        Rotation2d targetAngle = vectorToTarget.getAngle();
-        this.errorAngle = Degrees.of(Math.abs(currentPose.getRotation().minus(targetAngle).getDegrees()));
+        drivetrain.rotateToPose(currentPose, targetPose);
 
-        drivetrain.driveToPose(new Pose2d(currentPose.getX(), currentPose.getY(), targetAngle));
         errorPub.set(errorAngle.in(Degrees));
         currentPub.set(currentPose.getRotation().getDegrees());
-        targetPub.set(targetAngle.getDegrees());
+
+        // Pose2d currentPose = currentPoseSupplier.get();
+        // Translation2d vectorToTarget = null;
+
+        // if (DriverStation.getAlliance().isPresent() &&
+        // DriverStation.getAlliance().get() == Alliance.Blue) {
+        // vectorToTarget = GameConstants.blueHubLocation
+        // .minus(currentPose.getTranslation());
+        // } else if (DriverStation.getAlliance().isPresent() &&
+        // DriverStation.getAlliance().get() == Alliance.Red) {
+        // vectorToTarget = GameConstants.redHubLocation
+        // .minus(currentPose.getTranslation());
+        // }
+
+        // Rotation2d targetAngle = vectorToTarget.getAngle();// .plus(new
+        // Rotation2d(Radians.of(Math.PI+(Math.PI
+        // // /2))));
+        // drivetrain.rotateToPose(currentPose, new Pose2d(currentPose.getX(),
+        // currentPose.getY(), targetAngle));
     }
 
     /**
