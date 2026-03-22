@@ -16,7 +16,8 @@ public class RotateToTarget extends Command {
     private final CommandSwerveDrivetrain drivetrain;
 
     private final Supplier<Pose2d> currentPoseSupplier;
-    private final Rotation2d targetRotation;
+    private final Supplier<Rotation2d> targetRotationSupplier;
+    private Rotation2d targetRotation;
 
     private final Angle errorTolerance;
     private Angle error;
@@ -37,15 +38,10 @@ public class RotateToTarget extends Command {
             .publish();
 
     public RotateToTarget(CommandSwerveDrivetrain drivetrain, Supplier<Pose2d> currentPoseSupplier,
-            Rotation2d targetRotation) {
-        this(drivetrain, currentPoseSupplier, targetRotation, Degrees.of(2));
-    }
-
-    public RotateToTarget(CommandSwerveDrivetrain drivetrain, Supplier<Pose2d> currentPoseSupplier,
-            Rotation2d targetRotation, Angle errorTolerance) {
+            Supplier<Rotation2d> targetRotationSupplier, Angle errorTolerance) {
         this.drivetrain = drivetrain;
         this.currentPoseSupplier = currentPoseSupplier;
-        this.targetRotation = targetRotation;
+        this.targetRotationSupplier = targetRotationSupplier;
         this.errorTolerance = errorTolerance;
 
         addRequirements(drivetrain);
@@ -53,6 +49,7 @@ public class RotateToTarget extends Command {
 
     @Override
     public void initialize() {
+        targetRotation = targetRotationSupplier.get();
         targetPub.set(targetRotation.getDegrees());
     }
 

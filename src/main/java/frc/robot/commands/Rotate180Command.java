@@ -10,7 +10,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class Rotate180Command extends RotateToTarget {
     public Rotate180Command(CommandSwerveDrivetrain drivetrain, Supplier<Pose2d> currentPoseSupplier) {
-        super(drivetrain, currentPoseSupplier, compute180Rotation(currentPoseSupplier.get()));
+        super(drivetrain, currentPoseSupplier, () -> compute180Rotation(currentPoseSupplier.get()), Degrees.of(0.1));
     }
 
     private static Rotation2d compute180Rotation(Pose2d currentPose) {

@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -13,7 +15,7 @@ import frc.robot.Constants.GameConstants;
 
 public class RotateToHubCommand extends RotateToTarget {
     public RotateToHubCommand(CommandSwerveDrivetrain drivetrain, Supplier<Pose2d> currentPoseSupplier) {
-        super(drivetrain, currentPoseSupplier, computeHubRotation(currentPoseSupplier.get()));
+        super(drivetrain, currentPoseSupplier, () -> computeHubRotation(currentPoseSupplier.get()), Degrees.of(2));
     }
 
     private static Rotation2d computeHubRotation(Pose2d currentPose) {
