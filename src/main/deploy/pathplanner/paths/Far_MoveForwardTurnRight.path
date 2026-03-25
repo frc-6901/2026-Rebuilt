@@ -1,0 +1,122 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.508573466476462,
+        "y": 7.276134094151213
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.508573466476462,
+        "y": 7.276134094151213
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.7340228245363765,
+        "y": 7.276134094151213
+      },
+      "prevControl": {
+        "x": 4.942200257620999,
+        "y": 7.305460855888819
+      },
+      "nextControl": {
+        "x": 6.43271041369472,
+        "y": 7.250256776034237
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.218245363766048,
+        "y": 7.094992867332382
+      },
+      "prevControl": {
+        "x": 7.908449622198807,
+        "y": 7.598354705709185
+      },
+      "nextControl": {
+        "x": 8.528041105333289,
+        "y": 6.59163102895558
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.348,
+        "y": 4.21
+      },
+      "prevControl": {
+        "x": 8.29624536376605,
+        "y": 5.672068473609129
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0810234541577792,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.6695095948827237,
+      "rotationDegrees": -90.0
+    },
+    {
+      "waypointRelativePos": 2.366737739872073,
+      "rotationDegrees": -100.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "deploy slapdown",
+      "waypointRelativePos": 1.0128291694800748,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "slapdownTrigger"
+        }
+      }
+    },
+    {
+      "name": "start intake",
+      "waypointRelativePos": 1.968939905469286,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "toggleIntake"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": -100.0
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

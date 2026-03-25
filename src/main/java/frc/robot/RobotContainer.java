@@ -11,20 +11,25 @@ import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
+
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
+
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.Constants.*;
 
+import frc.robot.Constants.*;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 
@@ -58,7 +63,7 @@ public class RobotContainer {
         private final SlapdownSubsystem slapdown = new SlapdownSubsystem();
         private final KickerSubsystem kicker = new KickerSubsystem();
 
-        // private final SendableChooser<Command> autoChooser;
+        private final SendableChooser<Command> autoChooser;
 
         boolean isCompetition = false;
 
@@ -69,13 +74,13 @@ public class RobotContainer {
                 configureDefaultCommands();
                 configurePathPlannerCommands();
 
-                // autoChooser = AutoBuilder.buildAutoChooser("zero");
+                autoChooser = AutoBuilder.buildAutoChooser("zero");
 
                 // mirrored autos for left/right side
-                // autoChooser.addOption("rightRightHalfSwipeExitRightShoot",
-                // new PathPlannerAuto("leftLeftHalfSwipeExitLeftShoot", true));
+                autoChooser.addOption("rightFarHalfSwipe", new PathPlannerAuto("leftFarHalfSwipe", true));
+                autoChooser.addOption("rightNearHalfSwipe", new PathPlannerAuto("leftNearHalfSwipe", true));
 
-                // SmartDashboard.putData("Auto Chooser", autoChooser);
+                SmartDashboard.putData("Auto Chooser", autoChooser);
 
         }
 
@@ -92,6 +97,7 @@ public class RobotContainer {
 
                 NamedCommands.registerCommand("intake", new IntakeCommand(intake));
                 NamedCommands.registerCommand("stopIntake", new InstantCommand(() -> intake.stop(), intake));
+                NamedCommands.registerCommand("toggleIntake", new ToggleIntakeCommand(intake));
 
                 NamedCommands.registerCommand("rotateToHub",
                                 new RotateToHubCommand(drivetrain, () -> getEstimatedVisionPose()));
@@ -217,12 +223,7 @@ public class RobotContainer {
          */
         public Command getAutonomousCommand() {
                 // move back one meter
-                Pose2d current = getEstimatedVisionPose();
-                Pose2d target = new Pose2d(current.getTranslation().minus(new Translation2d(5.0, 0.0)),
-                                current.getRotation());
-
-                return new SequentialCommandGroup(
-                                new RunCommand(() -> drivetrain.driveToPose(current, target), drivetrain));
+                return autoChooser.getSelected();
         }
 
         /**
