@@ -104,6 +104,8 @@ public class RobotContainer {
 
                 NamedCommands.registerCommand("rotateToHub",
                                 new RotateToHubCommand(drivetrain, () -> getEstimatedVisionPose()));
+                NamedCommands.registerCommand("rotate180", new Rotate180Command(drivetrain, drivetrain::getPose));
+
                 NamedCommands.registerCommand("slapdownTrigger", new ToggleSlapdownCommand(slapdown));
         }
 
