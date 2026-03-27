@@ -17,15 +17,34 @@
           }
         },
         {
-          "type": "named",
+          "type": "race",
           "data": {
-            "name": "autoAimShoot"
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 5.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "autoAimShoot"
+                }
+              }
+            ]
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "LeftToMid"
+            "name": "slapdownTrigger"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoAimShoot"
           }
         }
       ]

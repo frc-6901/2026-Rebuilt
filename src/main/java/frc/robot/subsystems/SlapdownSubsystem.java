@@ -108,8 +108,6 @@ public class SlapdownSubsystem extends SubsystemBase {
     public SlapdownState getDeploymentState() {
         Angle error = (state == SlapdownState.DOWN ? IntakePosition : HomePosition).minus(getSlapdownPosition());
 
-        System.out.println("HERER FUCKGSHDKFDSJF " + state + " ERROR: " + error.in(Degrees) / 144);
-
         if (error.abs(Degrees) / 144 <= PositionTolerance.in(Degrees)) {
             return state;
         } else {

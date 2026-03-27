@@ -126,7 +126,7 @@ public final class Constants {
                 public final static int IntakeMotorId = 32;
 
                 /** The rotations per second for actively intaking balls. */
-                public final static AngularVelocity IntakeRPS = RotationsPerSecond.of(96.901);
+                public final static AngularVelocity IntakeRPS = RotationsPerSecond.of(100);
 
                 /** The gear ratio of the intake system. */
                 public final static double GearRatio = 5.0;
@@ -143,19 +143,19 @@ public final class Constants {
                 public final static int SlapdownMotorId = 31;
 
                 /** The position to lower the slapdown to when intaking a ball. */
-                public final static Angle IntakePosition = Rotations.of(-43.5);
+                public final static Angle IntakePosition = Rotations.of(-45);
                 /** The default home position of slapdown system. */
                 public final static Angle HomePosition = Rotations.of(0);
                 /**
                  * The tolerance for determining whether the slapdown is in the deployed
                  * position.
                  */
-                public final static Angle PositionTolerance = Degrees.of(10.0);
+                public final static Angle PositionTolerance = Degrees.of(4.0);
 
                 /** The PID and feedforward settings for the slapdown motor. */
                 public final static Slot0Configs Gains = new Slot0Configs()
-                                .withKP(0.125).withKI(0).withKD(0)
-                                .withKS(0).withKV(0.2);
+                                .withKP(0.1).withKI(0).withKD(0)
+                                .withKS(0).withKV(0.255);
         }
 
         public static final class KickerConstants {

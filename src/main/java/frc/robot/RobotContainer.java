@@ -94,8 +94,7 @@ public class RobotContainer {
                         kicker.kick(RotationsPerSecond.of(-20));
                 }, shooter, kicker).withTimeout(Seconds.of(1)));
                 NamedCommands.registerCommand("autoAimShoot",
-                                new AutoAimShootCommand(shooter, kicker, indexer, () -> getEstimatedVisionPose())
-                                                .withTimeout(Seconds.of(10.0)));
+                                new AutoAimShootCommand(shooter, kicker, indexer, () -> getEstimatedVisionPose()));
                 NamedCommands.registerCommand("shoot20RPS",
                                 new ManualShootCommand(shooter, kicker, indexer, () -> RotationsPerSecond.of(50)));
 
@@ -162,19 +161,20 @@ public class RobotContainer {
                 driver.povUp().onTrue(new InstantCommand(() -> slapdown.retractSlapdown(), slapdown));
                 driver.povDown().onTrue(new InstantCommand(() -> slapdown.slapdown(), slapdown));
 
-                driver.povLeft().whileTrue(Commands.startEnd(
+                driver.rightStick().onTrue(new RunCommand(() -> slapdown.resetSlapdownPosition(), slapdown));
+
+                driver.povRight().whileTrue(Commands.startEnd(
                                 () -> slapdown.setPower(0.1),
                                 () -> slapdown.stop(),
                                 slapdown));
-                driver.povRight().whileTrue(Commands.startEnd(
+                driver.povLeft().whileTrue(Commands.startEnd(
                                 () -> slapdown.setPower(-0.1),
                                 () -> slapdown.stop(),
                                 slapdown));
 
-                driver.leftTrigger().onTrue(new RunCommand(() -> slapdown.resetSlapdownPosition(), slapdown));
-
                 driver.leftTrigger().whileTrue(new RunCommand(() -> {
                         indexer.enableInverted();
+                        kicker.enableInverted();
                 }, indexer));
 
                 driver.rightTrigger().whileTrue(
@@ -199,6 +199,8 @@ public class RobotContainer {
 
                 operator.rightTrigger().whileTrue(
                                 new ManualShootCommand(shooter, kicker, indexer, () -> shooter.getShootRPS()));
+
+                operator.leftTrigger().onTrue(new RunCommand(() -> slapdown.resetSlapdownPosition(), slapdown));
 
                 operator.rightBumper().whileTrue(
                                 new ManualShootCommand(shooter, kicker, indexer, () -> ShooterConstants.DefaultRPS));

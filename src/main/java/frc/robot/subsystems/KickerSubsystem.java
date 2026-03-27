@@ -57,6 +57,10 @@ public class KickerSubsystem extends SubsystemBase {
         kick(KickerRPS);
     }
 
+    public void enableInverted() {
+        kick(KickerRPS.times(-0.25));
+    }
+
     /** Stops the kicker motor by applying neutral output. */
     public void stop() {
         m_motorKicker.setControl(new NeutralOut());

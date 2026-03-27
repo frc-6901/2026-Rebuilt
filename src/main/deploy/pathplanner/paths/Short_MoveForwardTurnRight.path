@@ -78,7 +78,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "deploy slapdown",
+      "name": "slapdownTrigger",
       "waypointRelativePos": 1.0128291694800748,
       "endWaypointRelativePos": null,
       "command": {
@@ -89,7 +89,7 @@
       }
     },
     {
-      "name": "start intake",
+      "name": "intake",
       "waypointRelativePos": 1.968939905469286,
       "endWaypointRelativePos": null,
       "command": {
