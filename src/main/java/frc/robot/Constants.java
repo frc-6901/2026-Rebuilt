@@ -70,7 +70,7 @@ public final class Constants {
                 /** The desired top speed of the robot in meters per second. */
                 public final static LinearVelocity MaxSpeed = TunerConstants.kSpeedAt12Volts;
                 /** The movement sensitivity multiplier for teleop control (between 0 and 1). */
-                public final static double TeleopMovementSensitivity = .6901;
+                public final static double TeleopMovementSensitivity = .76901;
                 /** The maximum angular turning rate in rotations per second. */
                 public final static AngularVelocity MaxAngularRate = RotationsPerSecond.of(0.5);
         }
@@ -143,7 +143,7 @@ public final class Constants {
                 public final static int SlapdownMotorId = 31;
 
                 /** The position to lower the slapdown to when intaking a ball. */
-                public final static Angle IntakePosition = Rotations.of(-46.901);
+                public final static Angle IntakePosition = Rotations.of(-60.901);
                 /** The default home position of slapdown system. */
                 public final static Angle HomePosition = Rotations.of(0);
                 /**
@@ -154,7 +154,7 @@ public final class Constants {
 
                 /** The PID and feedforward settings for the slapdown motor. */
                 public final static Slot0Configs Gains = new Slot0Configs()
-                                .withKP(0.1).withKI(0).withKD(0)
+                                .withKP(0.1).withKI(0).withKD(0.1)
                                 .withKS(0).withKV(0.27);
         }
 
@@ -228,7 +228,13 @@ public final class Constants {
                 // cannot be null.
                 // Some configs will be overwritten; check the `with*InitialConfigs()` API
                 // documentation.
-                private static final TalonFXConfiguration driveInitialConfigs = new TalonFXConfiguration();
+                private static final TalonFXConfiguration driveInitialConfigs = new TalonFXConfiguration()
+                                .withCurrentLimits(new CurrentLimitsConfigs()
+                                                .withStatorCurrentLimit(Amps.of(80))
+                                                .withStatorCurrentLimitEnable(true)
+                                                .withSupplyCurrentLimit(Amps.of(40))
+                                                .withSupplyCurrentLimitEnable(true));
+
                 private static final TalonFXConfiguration steerInitialConfigs = new TalonFXConfiguration()
                                 .withCurrentLimits(
                                                 new CurrentLimitsConfigs()

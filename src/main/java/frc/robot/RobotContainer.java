@@ -77,6 +77,9 @@ public class RobotContainer {
 
                 // mirrored autos for left/right side
                 manor_autoChooser.addOption("manor_rightHS", new PathPlannerAuto("manor_leftHS", true));
+                manor_autoChooser.addOption("manor_rightHS_ND", new PathPlannerAuto("manor_leftHS_ND", true));
+                manor_autoChooser.addOption("manor_rightChaos", new PathPlannerAuto("manor_leftChaos", true));
+                manor_autoChooser.addOption("manor_rightChaos_ND", new PathPlannerAuto("manor_leftChaos_ND", true));
 
                 SmartDashboard.putData("Auto Chooser", manor_autoChooser);
 

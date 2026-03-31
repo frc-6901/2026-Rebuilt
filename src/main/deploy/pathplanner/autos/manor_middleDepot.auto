@@ -1,0 +1,31 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "toggleIntake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "manor_middleDepotLeave"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "manor_depotExit"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Middle",
+  "choreoAuto": false
+}
