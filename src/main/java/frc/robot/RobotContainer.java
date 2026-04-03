@@ -62,7 +62,7 @@ public class RobotContainer {
         private final SlapdownSubsystem slapdown = new SlapdownSubsystem();
         private final KickerSubsystem kicker = new KickerSubsystem();
 
-        private final SendableChooser<Command> manor_autoChooser;
+        private final SendableChooser<Command> dcmp_autoChooser;
 
         boolean isCompetition = false;
 
@@ -73,16 +73,15 @@ public class RobotContainer {
                 configureDefaultCommands();
                 configurePathPlannerCommands();
 
-                manor_autoChooser = AutoBuilder.buildAutoChooser("zero");
+                dcmp_autoChooser = AutoBuilder.buildAutoChooser("zero");
 
-                // mirrored autos for left/right side
-                manor_autoChooser.addOption("manor_rightHS", new PathPlannerAuto("manor_leftHS", true));
-                manor_autoChooser.addOption("manor_rightHS_ND", new PathPlannerAuto("manor_leftHS_ND", true));
-                manor_autoChooser.addOption("manor_rightChaos", new PathPlannerAuto("manor_leftChaos", true));
-                manor_autoChooser.addOption("manor_rightChaos_ND", new PathPlannerAuto("manor_leftChaos_ND", true));
+                // mirrored left autos for right side
+                dcmp_autoChooser.addOption("dcmp_rightHS", new PathPlannerAuto("dcmp_leftHS", true));
+                dcmp_autoChooser.addOption("dcmp_rightHS_ND", new PathPlannerAuto("dcmp_leftHS_ND", true));
+                dcmp_autoChooser.addOption("dcmp_rightChaos", new PathPlannerAuto("dcmp_leftChaos", true));
+                dcmp_autoChooser.addOption("dcmp_rightChaos_ND", new PathPlannerAuto("dcmp_leftChaos_ND", true));
 
-                SmartDashboard.putData("Auto Chooser", manor_autoChooser);
-
+                SmartDashboard.putData("Auto Chooser", dcmp_autoChooser);
         }
 
         /** Registers named commands used by PathPlanner autonomous routines. */
@@ -96,7 +95,8 @@ public class RobotContainer {
                 }, shooter, kicker).withTimeout(Seconds.of(1)));
                 NamedCommands.registerCommand("autoAimShoot",
                                 new ShootAutoRPSCommand(shooter, kicker, indexer, () -> getEstimatedVisionPose()));
-                NamedCommands.registerCommand("shoot20RPS",
+                NamedCommands.registerCommand("autoPassShoot", new ShootPassRPSCommand(shooter, kicker, indexer, () -> getEstimatedVisionPose()));
+                NamedCommands.registerCommand("fiftyRPSShoot",
                                 new ShootManualRPSCommand(shooter, kicker, indexer, () -> RotationsPerSecond.of(50)));
                 NamedCommands.registerCommand("primeShooter", new ShootPrimedRPSCommand(shooter, kicker, Seconds.of(3)));
 
@@ -250,7 +250,7 @@ public class RobotContainer {
          * @return the selected autonomous {@link Command}
          */
         public Command getAutonomousCommand() {
-                return manor_autoChooser.getSelected();
+                return dcmp_autoChooser.getSelected();
         }
 
         /**
