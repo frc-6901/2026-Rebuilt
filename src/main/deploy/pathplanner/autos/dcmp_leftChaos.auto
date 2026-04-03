@@ -15,12 +15,6 @@
           "data": {
             "pathName": "dcmp_leftStraight"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": null
-          }
         }
       ]
     }
