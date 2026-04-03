@@ -105,9 +105,8 @@ public class RobotContainer {
                 NamedCommands.registerCommand("toggleIntake", new ToggleIntakeCommand(intake));
 
                 NamedCommands.registerCommand("rotateToHub",
-                                new RotateToHubCommand(drivetrain, () -> getEstimatedVisionPose()));
-                NamedCommands.registerCommand("rotate180", new Rotate180Command(drivetrain, drivetrain::getPose));
-
+                                new RotateToHubCommand(drivetrain, () -> getEstimatedVisionPose(), this::nullDriverInput));
+                NamedCommands.registerCommand("rotate180", new Rotate180Command(drivetrain, drivetrain::getPose, this::nullDriverInput));
                 NamedCommands.registerCommand("slapdownTrigger", new ToggleSlapdownCommand(slapdown));
         }
 
@@ -154,7 +153,8 @@ public class RobotContainer {
                 // Point the wheels towards the hub when holding left bumper.
                 driver.leftBumper().onTrue(new RotateToHubCommand(
                                 drivetrain,
-                                () -> getEstimatedVisionPose()));
+                                () -> getEstimatedVisionPose(),
+                                this::getDriverInput));
 
                 // if (Robot.isSimulation()) {
                 //         driver.x().onTrue(new InstantCommand(() -> {
@@ -221,7 +221,7 @@ public class RobotContainer {
                 operator.povUp().onTrue(new ShootPrimedRPSCommand(shooter, kicker, Seconds.of(5)));
                 operator.povDown().whileTrue(new StopSubsystemsCommand(shooter, kicker, intake, indexer));
 
-                operator.x().onTrue(new Rotate180Command(drivetrain, () -> drivetrain.getPose()));
+                operator.x().onTrue(new Rotate180Command(drivetrain, () -> drivetrain.getPose(), this::getDriverInput));
 
                 operator.b().whileTrue(new RunCommand(() -> {
                         indexer.enableInverted();
@@ -242,6 +242,13 @@ public class RobotContainer {
                                                 -driver.getLeftX() * DrivetrainConstants.TeleopMovementSensitivity))
                                 .withRotationalRate(DrivetrainConstants.MaxAngularRate
                                                 .times(-driver.getRightX()));
+        }
+
+        public FieldCentric nullDriverInput() {
+                return drive
+                                .withVelocityX(0)
+                                .withVelocityY(0)
+                                .withRotationalRate(0);
         }
 
         /**

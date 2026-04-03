@@ -5,6 +5,8 @@ import static edu.wpi.first.units.Units.Meters;
 
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.swerve.SwerveRequest;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -19,6 +21,9 @@ public class DriveToTarget extends Command {
     private final Supplier<Pose2d> currentPoseSupplier;
     private final Supplier<Pose2d> targetPoseSupplier;
     private Pose2d targetPose;
+
+    private final boolean[] controllersToUse;
+    private final Supplier<SwerveRequest.FieldCentric> driverInput;
 
     public final Angle ThetaErrorTolerance = Degrees.of(10);
     public final Distance DisplacementErrorTolerance = Meters.of(0.5);
@@ -41,10 +46,14 @@ public class DriveToTarget extends Command {
     public DriveToTarget(
             CommandSwerveDrivetrain drivetrain,
             Supplier<Pose2d> currentPoseSupplier,
-            Supplier<Pose2d> targetPoseSupplier) {
+            Supplier<Pose2d> targetPoseSupplier,
+            boolean[] controllersToUse,
+            Supplier<SwerveRequest.FieldCentric> driverInput) {
         this.drivetrain = drivetrain;
         this.currentPoseSupplier = currentPoseSupplier;
         this.targetPoseSupplier = targetPoseSupplier;
+        this.controllersToUse = controllersToUse;
+        this.driverInput = driverInput;
 
         addRequirements(drivetrain);
     }
@@ -67,7 +76,7 @@ public class DriveToTarget extends Command {
         isCompleted = thetaError.abs(Degrees) <= ThetaErrorTolerance.in(Degrees)
                 && displacementError.abs(Meters) <= DisplacementErrorTolerance.in(Meters);
         if (!isCompleted) {
-            drivetrain.driveToPose(currentPose, targetPose);
+            drivetrain.driveToPose(currentPose, targetPose, controllersToUse, driverInput.get());
         }
 
         thetaErrorPub.set(thetaError.in(Degrees));
