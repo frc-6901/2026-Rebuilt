@@ -76,13 +76,13 @@ public class RobotContainer {
                 dcmp_autoChooser = AutoBuilder.buildAutoChooser("zero");
 
                 // mirrored left autos for right side
-                dcmp_autoChooser.addOption("dcmp_rightHS", new PathPlannerAuto("dcmp_leftHS", true));
+                dcmp_autoChooser.addOption("dcmp_rightHS_D", new PathPlannerAuto("dcmp_leftHS_D", true));
                 dcmp_autoChooser.addOption("dcmp_rightHS_ND", new PathPlannerAuto("dcmp_leftHS_ND", true));
 
-                dcmp_autoChooser.addOption("dcmp_rightChaos", new PathPlannerAuto("dcmp_leftChaos", true));
+                dcmp_autoChooser.addOption("dcmp_rightChaos_D", new PathPlannerAuto("dcmp_leftChaos_D", true));
                 dcmp_autoChooser.addOption("dcmp_rightChaos_ND", new PathPlannerAuto("dcmp_leftChaos_ND", true));
                 
-                dcmp_autoChooser.addOption("dcmp_rightPass", new PathPlannerAuto("dcmp_leftPass", true));
+                dcmp_autoChooser.addOption("dcmp_rightPass_D", new PathPlannerAuto("dcmp_leftPass_D", true));
                 dcmp_autoChooser.addOption("dcmp_rightPass_ND", new PathPlannerAuto("dcmp_leftPass_ND", true));
 
 
