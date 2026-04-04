@@ -246,18 +246,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         setControl(m_fieldCentricRequest);
     }
 
-    public void rotateToPose(Pose2d currentPose, Pose2d targetPose) {
-        thetaController.setTolerance(.01);
-        thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    // public void rotateToPose(Pose2d currentPose, Pose2d targetPose) {
+    //     thetaController.setTolerance(.01);
+    //     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-        double thetaVel = thetaController.calculate(
-                currentPose.getRotation().getRadians(),
-                targetPose.getRotation().getRadians());
+    //     double thetaVel = thetaController.calculate(
+    //             currentPose.getRotation().getRadians(),
+    //             targetPose.getRotation().getRadians());
 
-        setControl(new SwerveRequest.FieldCentric()
-                .withRotationalDeadband(0.1)
-                .withRotationalRate(thetaVel));
-    }
+    //     setControl(new SwerveRequest.FieldCentric()
+    //             .withRotationalDeadband(0.1)
+    //             .withRotationalRate(thetaVel));
+    // }
 
     public void resetPIDControllers() {
         xController.reset();
