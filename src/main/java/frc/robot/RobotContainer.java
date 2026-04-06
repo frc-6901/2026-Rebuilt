@@ -183,10 +183,8 @@ public class RobotContainer {
                                 () -> slapdown.stop(),
                                 slapdown));
 
-                driver.leftTrigger().whileTrue(new RunCommand(() -> {
-                        indexer.enableInverted();
-                        kicker.enableInverted();
-                }, indexer));
+                driver.leftTrigger().whileTrue(
+                                new ShootManualRPSCommand(shooter, kicker, indexer, () -> shooter.getShootRPS(driver.getLeftTriggerAxis())));
 
                 driver.rightTrigger().whileTrue(
                                 new ShootAutoRPSCommand(shooter, kicker, indexer, () -> getEstimatedVisionPose()));

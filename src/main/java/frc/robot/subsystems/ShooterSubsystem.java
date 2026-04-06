@@ -161,6 +161,10 @@ public class ShooterSubsystem extends SubsystemBase {
         return shootRPS;
     }
 
+    public AngularVelocity getShootRPS(double axisInput) {
+        return RotationsPerSecond.of(ShooterConstants.DampingCoefficient * axisInput);
+    }
+
     // /**
     //  * Publishes a 3D trajectory to NetworkTables for dashboard visualization.
     //  *
