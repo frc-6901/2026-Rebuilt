@@ -22,10 +22,10 @@ public class AlignToTrench extends DriveToTarget {
     }
 
     private static Pose2d getTrenchAlignedPose(Pose2d currentPose) {
-        double closerX = Math.abs(currentPose.getX() - 0.634) < Math.abs(currentPose.getX() - 7.435)
+        double closerY = Math.abs(currentPose.getY() - 0.634) < Math.abs(currentPose.getY() - 7.435)
                 ? 0.634
                 : 7.435;
 
-        return new Pose2d(closerX, currentPose.getY(), currentPose.getRotation());
+        return new Pose2d(currentPose.getX(), closerY, currentPose.getRotation());
     }
 }
