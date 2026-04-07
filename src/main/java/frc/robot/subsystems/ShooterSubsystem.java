@@ -161,8 +161,8 @@ public class ShooterSubsystem extends SubsystemBase {
         return shootRPS;
     }
 
-    public AngularVelocity getShootRPS(double axisInput) {
-        return RotationsPerSecond.of(ShooterConstants.MaxRPS.times(axisInput));
+    public AngularVelocity getAPManualRPS(double axisInput) {
+        return ShooterConstants.MaxRPS.times(axisInput);
     }
 
     // /**

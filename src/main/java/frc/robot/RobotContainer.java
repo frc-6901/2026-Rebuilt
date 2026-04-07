@@ -184,7 +184,7 @@ public class RobotContainer {
                                 slapdown));
 
                 driver.leftTrigger().whileTrue(
-                                new ShootManualRPSCommand(shooter, kicker, indexer, () -> shooter.getShootRPS(driver.getLeftTriggerAxis())));
+                                new ShootManualRPSCommand(shooter, kicker, indexer, () -> shooter.getAPManualRPS(driver.getLeftTriggerAxis())));
 
                 driver.rightTrigger().whileTrue(
                                 new ShootAutoRPSCommand(shooter, kicker, indexer, () -> getEstimatedVisionPose()));
