@@ -103,7 +103,7 @@ public class RobotContainer {
                 NamedCommands.registerCommand("autoPassShoot", new ShootPassRPSCommand(shooter, kicker, indexer, () -> getEstimatedVisionPose()));
                 NamedCommands.registerCommand("fiftyRPSShoot",
                                 new ShootManualRPSCommand(shooter, kicker, indexer, () -> RotationsPerSecond.of(50)));
-                NamedCommands.registerCommand("primeShooter", new ShootPrimedRPSCommand(shooter, kicker, Seconds.of(3)));
+                NamedCommands.registerCommand("primeShooter", new ShootPrimedRPSCommand(shooter, Seconds.of(3)));
 
                 NamedCommands.registerCommand("intake", new IntakeCommand(intake));
                 NamedCommands.registerCommand("stopIntake", new InstantCommand(() -> intake.stop(), intake));
@@ -183,10 +183,8 @@ public class RobotContainer {
                                 () -> slapdown.stop(),
                                 slapdown));
 
-                driver.leftTrigger().whileTrue(new RunCommand(() -> {
-                        indexer.enableInverted();
-                        kicker.enableInverted();
-                }, indexer));
+                driver.leftTrigger().whileTrue(
+                                new ShootManualRPSCommand(shooter, kicker, indexer, () -> shooter.getAPManualRPS(driver.getLeftTriggerAxis())));
 
                 driver.rightTrigger().whileTrue(
                                 new ShootAutoRPSCommand(shooter, kicker, indexer, () -> getEstimatedVisionPose()));
@@ -223,7 +221,7 @@ public class RobotContainer {
                 operator.leftTrigger().whileTrue(
                                 new ShootAutoRPSCommand(shooter, kicker, indexer, () -> getEstimatedVisionPose()));
 
-                operator.povUp().onTrue(new ShootPrimedRPSCommand(shooter, kicker, Seconds.of(5)));
+                operator.povUp().onTrue(new ShootPrimedRPSCommand(shooter, Seconds.of(5)));
                 operator.povDown().whileTrue(new StopSubsystemsCommand(shooter, kicker, intake, indexer));
 
                 operator.x().onTrue(new Rotate180Command(drivetrain, () -> drivetrain.getPose(), this::getDriverInput));

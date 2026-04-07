@@ -161,6 +161,10 @@ public class ShooterSubsystem extends SubsystemBase {
         return shootRPS;
     }
 
+    public AngularVelocity getAPManualRPS(double axisInput) {
+        return ShooterConstants.MaxRPS.times(axisInput);
+    }
+
     // /**
     //  * Publishes a 3D trajectory to NetworkTables for dashboard visualization.
     //  *
