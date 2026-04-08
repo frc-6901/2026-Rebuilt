@@ -209,7 +209,7 @@ public class VisionSubsystem extends SubsystemBase {
             }
         }
 
-        m_hubRotationPublisher.set(computeHubRotation(getEstimatedPose2d().orElse(drivetrain.getState().Pose)).getDegrees());
+        m_hubRotationPublisher.set(computeHubRotation(drivetrain.getState().Pose).getDegrees());
     }
 
     public Optional<Pose2d> getEstimatedPose2d() {
