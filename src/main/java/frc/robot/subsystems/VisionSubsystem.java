@@ -211,7 +211,6 @@ public class VisionSubsystem extends SubsystemBase {
                     drivetrain.resetTranslation(translation);
                 }
             }
-            
         }
 
         m_hubRotationPublisher.set(computeHubRotation(drivetrain.getState().Pose).getDegrees());
