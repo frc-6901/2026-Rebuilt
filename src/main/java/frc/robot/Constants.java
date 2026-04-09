@@ -102,7 +102,7 @@ public final class Constants {
                 /** The vertical position of the ball exit point from the shooter. */
                 public final static Distance BallExtakeHeight = Meters.of(0.432);
                 /** The angle at which the shooter is mounted above the horizontal plane. */
-                public final static Angle Pitch = Degrees.of(73);
+                public final static Angle Pitch = Degrees.of(71.5);
 
                 /** The scaling constant to correct for damping in the shooter mechanism. */
                 public final static double DampingCoefficient = 2.2 - 0.05;

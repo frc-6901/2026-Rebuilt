@@ -20,7 +20,6 @@ import org.photonvision.simulation.VisionSystemSim;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -199,6 +198,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         if (visionEstimatedPose.isPresent()) {
             m_visionfield.setRobotPose(getEstimatedPose2d().get());
+            adjustDrivetrainPose();
 
             if (!hasSeededPose) {
                 hasSeededPose = true;
@@ -210,6 +210,7 @@ public class VisionSubsystem extends SubsystemBase {
         }
 
         m_hubRotationPublisher.set(computeHubRotation(drivetrain.getState().Pose).getDegrees());
+
     }
 
     public Optional<Pose2d> getEstimatedPose2d() {
@@ -218,8 +219,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     public void adjustDrivetrainPose() {
         if (visionEstimatedPose.isPresent()) {
-            drivetrain.addVisionMeasurement(getEstimatedPose2d().get(), visionEstimatedPose.get().timestampSeconds,
-            VecBuilder.fill(0.2, 0.2, 99999));
+            drivetrain.addVisionMeasurement(getEstimatedPose2d().get(), visionEstimatedPose.get().timestampSeconds);
         }
     }
 
