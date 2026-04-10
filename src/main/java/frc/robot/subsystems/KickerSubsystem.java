@@ -5,8 +5,6 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import edu.wpi.first.networktables.DoublePublisher;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static frc.robot.Constants.KickerConstants.*;
@@ -18,11 +16,6 @@ import static frc.robot.Constants.KickerConstants.*;
  */
 public class KickerSubsystem extends SubsystemBase {
     private final TalonFX m_motorKicker = new TalonFX(MotorId, new CANBus("rio"));
-
-    private final DoublePublisher kickerPub = NetworkTableInstance.getDefault()
-            .getTable("Kicker")
-            .getDoubleTopic("KickerVelocity")
-            .publish();
 
     /**
      * Initializes the kicker subsystem with motor configuration, PID settings,
@@ -43,10 +36,5 @@ public class KickerSubsystem extends SubsystemBase {
     /** Stops the kicker motor by applying neutral output. */
     public void stop() {
         m_motorKicker.setControl(new NeutralOut());
-    }
-
-    @Override
-    public void periodic() {
-        kickerPub.set(m_motorKicker.getVelocity().getValueAsDouble());
     }
 }
