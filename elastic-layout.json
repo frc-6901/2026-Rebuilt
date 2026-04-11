@@ -5,7 +5,49 @@
     {
       "name": "Match",
       "grid_layout": {
-        "layouts": [],
+        "layouts": [
+          {
+            "title": "Match Time",
+            "x": 1280.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Phase Name",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Match Time/Phase Name",
+                  "period": 0.06,
+                  "data_type": "string",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Phase Time",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Match Time/Phase Time",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          }
+        ],
         "containers": [
           {
             "title": "Field",
@@ -55,8 +97,8 @@
           },
           {
             "title": "Auto Chooser",
-            "x": 1152.0,
-            "y": 128.0,
+            "x": 0.0,
+            "y": 384.0,
             "width": 384.0,
             "height": 128.0,
             "type": "ComboBox Chooser",
@@ -64,6 +106,62 @@
               "topic": "/SmartDashboard/Auto Chooser",
               "period": 0.06,
               "sort_options": false
+            }
+          },
+          {
+            "title": "Shooter?",
+            "x": 1280.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Shooter/Shooter?",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Intake?",
+            "x": 1152.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Intake/Intake?",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "hub_dtheta",
+            "x": 1152.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Debug/hub_dtheta",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Canivore Utilization",
+            "x": 384.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Can/Canivore Utilization",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
             }
           }
         ]
