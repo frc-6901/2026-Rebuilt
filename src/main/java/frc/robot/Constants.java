@@ -127,9 +127,9 @@ public final class Constants {
                 public final static TalonFXConfiguration MotorConfig = new TalonFXConfiguration()
                                 .withMotorOutput(new MotorOutputConfigs()
                                                 .withNeutralMode(NeutralModeValue.Coast)
-                                                .withInverted(InvertedValue.CounterClockwise_Positive))
-                                .withCurrentLimits(new CurrentLimitsConfigs()
-                                                .withSupplyCurrentLimit(Amps.of(20)));
+                                                .withInverted(InvertedValue.CounterClockwise_Positive));
+                // .withCurrentLimits(new CurrentLimitsConfigs()
+                // .withSupplyCurrentLimit(Amps.of(20)));
         }
 
         public static final class IntakeConstants {
@@ -152,9 +152,9 @@ public final class Constants {
                                 .withSlot0(IntakeConstants.Gains)
                                 .withMotorOutput(new MotorOutputConfigs()
                                                 .withNeutralMode(NeutralModeValue.Brake)
-                                                .withInverted(InvertedValue.Clockwise_Positive))
-                                .withCurrentLimits(new CurrentLimitsConfigs()
-                                                .withSupplyCurrentLimit(Amps.of(40)));
+                                                .withInverted(InvertedValue.Clockwise_Positive));
+                // .withCurrentLimits(new CurrentLimitsConfigs()
+                // .withSupplyCurrentLimit(Amps.of(40)));
         }
 
         public static final class SlapdownConstants {
@@ -194,9 +194,9 @@ public final class Constants {
                 public final static TalonFXConfiguration MotorConfig = new TalonFXConfiguration()
                                 .withMotorOutput(new MotorOutputConfigs()
                                                 .withNeutralMode(NeutralModeValue.Coast)
-                                                .withInverted(InvertedValue.Clockwise_Positive))
-                                .withCurrentLimits(new CurrentLimitsConfigs()
-                                                .withSupplyCurrentLimit(Amps.of(25)));
+                                                .withInverted(InvertedValue.Clockwise_Positive));
+                // .withCurrentLimits(new CurrentLimitsConfigs()
+                // .withSupplyCurrentLimit(Amps.of(25)));
         }
 
         public static final class PeriodicReverseIndexerConstants {
