@@ -39,7 +39,6 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.util.Units;
-
 import edu.wpi.first.units.measure.*;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
@@ -89,7 +88,7 @@ public final class Constants {
                  * The default rotations per second of the shooter to shoot a ball (tested
                  * experimentally).
                  */
-                public final static AngularVelocity DefaultRPS = RotationsPerSecond.of(36.901);
+                public final static AngularVelocity DefaultRPS = RotationsPerSecond.of(30.6901);
 
                 /** The PID and feedforward settings for the shooter motors. */
                 public final static Slot0Configs Gains = new Slot0Configs()
@@ -188,7 +187,7 @@ public final class Constants {
         public static final class KickerConstants {
                 /** The CAN ID of the kicker motor. */
                 public final static int MotorId = 37;
-                
+
                 public final static double KickerPower = 0.85;
 
                 /** The complete motor configuration for the kicker system. */
@@ -537,5 +536,12 @@ public final class Constants {
                 public static final Translation2d BlueHubLocation = new Translation2d(4.612, 4.021);
                 /** The position of the hub/target on the red alliance side of the field. */
                 public static final Translation2d RedHubLocation = new Translation2d(11.901, 4.021);
+
+                /** The y-position of the left trench on the blue alliance side of the field. */
+                public static final Distance BlueLeftTrenchY = Meters.of(7.435);
+                /**
+                 * The y-position of the right trench on the blue alliance side of the field.
+                 */
+                public static final Distance BlueRightTrenchY = Meters.of(0.634);
         }
 }
