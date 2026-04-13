@@ -40,6 +40,8 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.*;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 /**
@@ -546,5 +548,11 @@ public final class Constants {
                  * The y-position of the right trench on the blue alliance side of the field.
                  */
                 public static final Distance BlueRightTrenchY = Meters.of(0.634);
+
+                /** Returns the position of the hub based on the current alliance. */
+                public static Translation2d getHubLocation() {
+                        return (DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Blue) ? BlueHubLocation
+                                        : RedHubLocation;
+                }
         }
 }
