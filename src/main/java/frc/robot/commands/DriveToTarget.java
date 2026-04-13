@@ -2,14 +2,17 @@ package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Radians;
 
-import java.util.Arrays;
-import java.util.EnumSet;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.Angle;
@@ -17,32 +20,26 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
+import static frc.robot.Constants.GameConstants;
+
 public class DriveToTarget extends Command {
-        /**
-         * The axes that can be controlled by this command. If an axis is not included,
-         * the driver input will be used for that axis instead.
-         */
-        public enum Axis {
-                X, Y, THETA
-        }
-
         private final CommandSwerveDrivetrain drivetrain;
-
-        private final Supplier<Pose2d> currentPoseSupplier;
-        private final Supplier<Pose2d> targetPoseSupplier;
-        private Pose2d targetPose;
-
-        private final EnumSet<Axis> controlledAxes;
         private final Supplier<SwerveRequest.FieldCentric> driverInput;
 
-        public final Angle ThetaErrorTolerance = Degrees.of(5);
-        public final Distance DisplacementErrorTolerance = Meters.of(0.5);
+        // null = use driver input for that axis
+        private final Supplier<Double> targetX;
+        private final Supplier<Double> targetY;
+        private final Supplier<Angle> targetTheta;
+
+        // PID controllers for each axis, only used if the axis is being controlled by
+        // the command
+        private final PIDController xController = new PIDController(1.0, 0.0, 0.0);
+        private final PIDController yController = new PIDController(1.0, 0.0, 0.0);
+        private final PIDController thetaController = new PIDController(1.0, 0.0, 0.0);
 
         private Angle thetaError;
         private Distance xError;
         private Distance yError;
-
-        private boolean isCompleted;
 
         private final DoublePublisher thetaErrorPub = NetworkTableInstance.getDefault()
                         .getTable("DriveToTarget")
@@ -61,63 +58,50 @@ public class DriveToTarget extends Command {
 
         public DriveToTarget(
                         CommandSwerveDrivetrain drivetrain,
-                        Supplier<Pose2d> currentPoseSupplier,
-                        Supplier<Pose2d> targetPoseSupplier,
-                        Supplier<SwerveRequest.FieldCentric> driverInput,
-                        Axis... controlledAxes) {
+                        Supplier<FieldCentric> driverInput,
+                        Optional<Supplier<Double>> targetX,
+                        Optional<Supplier<Double>> targetY,
+                        Optional<Supplier<Angle>> targetTheta) {
                 this.drivetrain = drivetrain;
-                this.currentPoseSupplier = currentPoseSupplier;
-                this.targetPoseSupplier = targetPoseSupplier;
                 this.driverInput = driverInput;
-                this.controlledAxes = controlledAxes.length > 0
-                                ? EnumSet.copyOf(Arrays.asList(controlledAxes))
-                                : EnumSet.noneOf(Axis.class);
+
+                this.targetX = targetX.orElse(null);
+                this.targetY = targetY.orElse(null);
+                this.targetTheta = targetTheta.orElse(null);
 
                 addRequirements(drivetrain);
         }
 
         @Override
         public void initialize() {
-                targetPose = targetPoseSupplier.get();
-                drivetrain.resetPIDControllers();
-
-                isCompleted = false;
+                xController.reset();
+                yController.reset();
+                thetaController.reset();
         }
 
         @Override
         public void execute() {
-                Pose2d currentPose = currentPoseSupplier.get();
+                Pose2d currentPose = drivetrain.getPose();
+                FieldCentric input = driverInput.get();
 
-                thetaError = currentPose.getRotation().minus(targetPose.getRotation()).getMeasure();
-                xError = Meters.of(currentPose.getTranslation().getX() - targetPose.getTranslation().getX());
-                yError = Meters.of(currentPose.getTranslation().getY() - targetPose.getTranslation().getY());
+                double vX = targetX != null ? xController.calculate(currentPose.getX(), targetX.get())
+                                : input.VelocityX;
 
-                isCompleted = (!controlledAxes.contains(Axis.X)
-                                || xError.abs(Meters) <= DisplacementErrorTolerance.in(Meters))
-                                && (!controlledAxes.contains(Axis.Y)
-                                                || yError.abs(Meters) <= DisplacementErrorTolerance.in(Meters))
-                                && (!controlledAxes.contains(Axis.THETA)
-                                                || thetaError.abs(Degrees) <= ThetaErrorTolerance.in(Degrees));
+                double vY = targetY != null ? yController.calculate(currentPose.getY(), targetY.get())
+                                : input.VelocityY;
 
-                if (!isCompleted) {
-                        SwerveRequest.FieldCentric input = driverInput.get();
+                double omega = targetTheta != null
+                                ? thetaController.calculate(currentPose.getRotation().getRadians(),
+                                                targetTheta.get().in(Radians))
+                                : input.RotationalRate;
 
-                        double vx = controlledAxes.contains(Axis.X)
-                                        ? drivetrain.calculateXVelocity(currentPose.getX(), targetPose.getX())
-                                        : input.VelocityX;
+                drivetrain.setControl(input.withVelocityX(vX).withVelocityY(vY).withRotationalRate(omega));
 
-                        double vy = controlledAxes.contains(Axis.Y)
-                                        ? drivetrain.calculateYVelocity(currentPose.getY(), targetPose.getY())
-                                        : input.VelocityY;
-
-                        double omega = controlledAxes.contains(Axis.THETA)
-                                        ? drivetrain.calculateRotationalRate(
-                                                        currentPose.getRotation().getRadians(),
-                                                        targetPose.getRotation().getRadians())
-                                        : input.RotationalRate;
-
-                        drivetrain.setControl(input.withVelocityX(vx).withVelocityY(vy).withRotationalRate(omega));
-                }
+                xError = targetX != null ? Meters.of(targetX.get() - currentPose.getX()) : Meters.of(0);
+                yError = targetY != null ? Meters.of(targetY.get() - currentPose.getY()) : Meters.of(0);
+                thetaError = targetTheta != null
+                                ? targetTheta.get().minus(currentPose.getRotation().getMeasure())
+                                : Degrees.of(0);
 
                 thetaErrorPub.set(thetaError.in(Degrees));
                 xErrorPub.set(xError.in(Meters));
@@ -126,6 +110,45 @@ public class DriveToTarget extends Command {
 
         @Override
         public boolean isFinished() {
-                return isCompleted;
+                boolean xComplete = targetX == null || xController.atSetpoint();
+                boolean yComplete = targetY == null || yController.atSetpoint();
+                boolean thetaComplete = targetTheta == null || thetaController.atSetpoint();
+
+                return xComplete && yComplete && thetaComplete;
+        }
+
+        /** Rotates the robot to the alliance's hub. */
+        public static Command rotateToHub(
+                        CommandSwerveDrivetrain drivetrain,
+                        Supplier<FieldCentric> driverInputSupplier) {
+                return new DriveToTarget(
+                                drivetrain,
+                                driverInputSupplier,
+                                Optional.empty(),
+                                Optional.empty(),
+                                Optional.of(() -> {
+                                        Translation2d current = drivetrain.getPose().getTranslation();
+                                        Translation2d hub = GameConstants.getHubLocation();
+
+                                        double targetAngle = Math.atan2(
+                                                        hub.getY() - current.getY(),
+                                                        hub.getX() - current.getX());
+
+                                        return Radians.of(targetAngle);
+                                }));
+        }
+
+        /** Rotates the robot by 180 degrees. */
+        public static Command rotateBy180(
+                        CommandSwerveDrivetrain drivetrain,
+                        Supplier<FieldCentric> driverInputSupplier) {
+                return new DriveToTarget(
+                                drivetrain,
+                                driverInputSupplier,
+                                Optional.empty(),
+                                Optional.empty(),
+                                Optional.of(() -> {
+                                        return drivetrain.getPose().getRotation().getMeasure().plus(Degrees.of(180));
+                                }));
         }
 }

@@ -30,8 +30,6 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.Rotate180Command;
-import frc.robot.commands.RotateToHubCommand;
 import frc.robot.commands.ShootAutoRPSCommand;
 import frc.robot.commands.ShootManualRPSCommand;
 import frc.robot.commands.ShootPassRPSCommand;
@@ -39,6 +37,7 @@ import frc.robot.commands.ShootPrimedRPSCommand;
 import frc.robot.commands.StopSubsystemsCommand;
 import frc.robot.commands.ToggleIntakeCommand;
 import frc.robot.commands.ToggleSlapdownCommand;
+import frc.robot.commands.DriveToTarget;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -116,10 +115,6 @@ public class RobotContainer {
                 NamedCommands.registerCommand("stopSubsystems",
                                 new StopSubsystemsCommand(shooter, kicker, intake, indexer));
 
-                // NamedCommands.registerCommand("reverseShoot", new RunCommand(() -> {
-                // shooter.shoot(RotationsPerSecond.of(-20));
-                // kicker.kick(RotationsPerSecond.of(-20));
-                // }, shooter, kicker).withTimeout(Seconds.of(1)));
                 NamedCommands.registerCommand("autoAimShoot",
                                 new ShootAutoRPSCommand(shooter, kicker, indexer, () -> getEstimatedVisionPose()));
                 NamedCommands.registerCommand("autoPassShoot",
@@ -133,10 +128,9 @@ public class RobotContainer {
                 NamedCommands.registerCommand("toggleIntake", new ToggleIntakeCommand(intake));
 
                 NamedCommands.registerCommand("rotateToHub",
-                                new RotateToHubCommand(drivetrain, () -> getEstimatedVisionPose(),
-                                                this::nullDriverInput));
+                                DriveToTarget.rotateToHub(drivetrain, this::nullDriverInput));
                 NamedCommands.registerCommand("rotate180",
-                                new Rotate180Command(drivetrain, drivetrain::getPose, this::nullDriverInput));
+                                DriveToTarget.rotateBy180(drivetrain, this::nullDriverInput));
                 NamedCommands.registerCommand("slapdownTrigger", new ToggleSlapdownCommand(slapdown));
         }
 
@@ -180,11 +174,7 @@ public class RobotContainer {
                 // Reset the field-centric heading on right bumper press.
                 driver.rightBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-                // Point the wheels towards the hub when holding left bumper.
-                driver.leftBumper().onTrue(new RotateToHubCommand(
-                                drivetrain,
-                                () -> getEstimatedVisionPose(),
-                                this::getDriverInput));
+                driver.leftBumper().onTrue(DriveToTarget.rotateToHub(drivetrain, this::getDriverInput));
 
                 driver.povUp().onTrue(new InstantCommand(() -> slapdown.retractSlapdown(), slapdown));
                 driver.povDown().onTrue(new InstantCommand(() -> slapdown.slapdown(), slapdown));
@@ -202,7 +192,8 @@ public class RobotContainer {
                                 () -> slapdown.stop(),
                                 slapdown));
 
-                driver.leftTrigger().whileTrue(new ShootPassRPSCommand(shooter, kicker, indexer, () -> getEstimatedVisionPose()));
+                driver.leftTrigger().whileTrue(
+                                new ShootPassRPSCommand(shooter, kicker, indexer, () -> getEstimatedVisionPose()));
 
                 driver.rightTrigger().whileTrue(
                                 new ShootAutoRPSCommand(shooter, kicker, indexer, () -> getEstimatedVisionPose()));
@@ -213,9 +204,6 @@ public class RobotContainer {
         /**
          * Binds operator controller inputs to scoring-mechanism commands including
          * shooting, intake, and auto-aim.
-         * 
-         * KICKER, INDEXER, 20
-         * INTAKE 40
          */
         private void configureOperatorBindings() {
                 operator.leftBumper().onTrue(new ToggleIntakeCommand(intake));
@@ -232,17 +220,13 @@ public class RobotContainer {
 
                 operator.rightBumper().onTrue(new RunCommand(() -> slapdown.resetSlapdownPosition(), slapdown));
 
-                // operator.rightBumper().whileTrue(
-                // new ManualShootCommand(shooter, kicker, indexer, () ->
-                // ShooterConstants.DefaultRPS));
-
                 operator.leftTrigger().whileTrue(
                                 new ShootAutoRPSCommand(shooter, kicker, indexer, () -> getEstimatedVisionPose()));
 
                 operator.povUp().onTrue(new ShootPrimedRPSCommand(shooter, Seconds.of(5)));
                 operator.povDown().whileTrue(new StopSubsystemsCommand(shooter, kicker, intake, indexer));
 
-                operator.x().onTrue(new Rotate180Command(drivetrain, () -> drivetrain.getPose(), this::getDriverInput));
+                operator.x().onTrue(DriveToTarget.rotateBy180(drivetrain, this::nullDriverInput));
 
                 operator.b().whileTrue(new RunCommand(() -> {
                         indexer.enableInverted();
@@ -265,6 +249,7 @@ public class RobotContainer {
                                                 .times(-driver.getRightX()));
         }
 
+        /** Returns a driver input with all values set to zero. */
         public FieldCentric nullDriverInput() {
                 return drive
                                 .withVelocityX(0)

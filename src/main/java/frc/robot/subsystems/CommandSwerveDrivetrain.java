@@ -38,8 +38,6 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 
-import edu.wpi.first.math.controller.PIDController;
-
 /**
  * Swerve drivetrain subsystem built on the CTRE Phoenix 6
  * {@code SwerveDrivetrain}.
@@ -76,11 +74,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
     private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
-
-    // PID velocity controllers
-    private final PIDController xController = new PIDController(.5, 0, 0);
-    private final PIDController yController = new PIDController(1, 0, 0);
-    private final PIDController thetaController = new PIDController(5, 0, 0.0);
 
     private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
 
@@ -208,34 +201,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SmartDashboard.putData("Field", m_field);
 
         configureAutoBuilder();
-    }
-
-    public double calculateXVelocity(double currentX, double targetX) {
-        return -xController.calculate(currentX, targetX);
-    }
-
-    public double calculateYVelocity(double currentY, double targetY) {
-        return -yController.calculate(currentY, targetY);
-    }
-
-    public double calculateRotationalRate(double currentTheta, double targetTheta) {
-        return thetaController.calculate(currentTheta, targetTheta);
-    }
-
-    /**
-     * Resets the PID controllers with appropriate tolerances and continuous input
-     * settings for rotation. Should be called whenever the target pose is updated
-     * for path following or the DriveToTarget command.
-     */
-    public void resetPIDControllers() {
-        xController.setTolerance(0.5);
-        yController.setTolerance(0.5);
-        thetaController.setTolerance(Math.PI / 18);
-        thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
-        xController.reset();
-        yController.reset();
-        thetaController.reset();
     }
 
     private void configureAutoBuilder() {
