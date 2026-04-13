@@ -97,7 +97,7 @@ public final class Constants {
 
                 /** The PID and feedforward settings for the shooter motors. */
                 public final static Slot0Configs Gains = new Slot0Configs()
-                                .withKP(0.36901).withKI(0).withKD(0.01)
+                                .withKP(0.36901).withKI(0).withKD(0.0085)
                                 .withKS(0).withKV(0.116);
 
                 /** The strength of gravity (9.81 m/s²). */
