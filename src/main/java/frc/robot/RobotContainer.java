@@ -126,7 +126,10 @@ public class RobotContainer {
                                 drivetrain.rotateToHub(this::nullDriverInput));
                 NamedCommands.registerCommand("rotate180",
                                 drivetrain.rotateBy180(this::nullDriverInput));
+
                 NamedCommands.registerCommand("slapdownTrigger", slapdown.slapdownCommand());
+                NamedCommands.registerCommand("slapdownRetract", slapdown.retractSlapdownCommand());
+
         }
 
         /** Binds all the default commands. */
