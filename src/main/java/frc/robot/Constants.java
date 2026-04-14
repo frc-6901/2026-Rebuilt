@@ -204,6 +204,9 @@ public final class Constants {
                  */
                 public final static Angle PositionTolerance = Rotations.of(2.0);
 
+                /** The gear ratio of the slapdown system. */
+                public final static double GearRatio = 81.0;
+
                 /** The PID and feedforward settings for the slapdown motor. */
                 public final static Slot0Configs Gains = new Slot0Configs()
                                 .withKP(0.15).withKI(0).withKD(0.1)

@@ -15,8 +15,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -36,15 +34,12 @@ import frc.robot.commands.ShootPassRPSCommand;
 import frc.robot.commands.ShootPrimedRPSCommand;
 import frc.robot.commands.StopSubsystemsCommand;
 import frc.robot.commands.ToggleIntakeCommand;
-import frc.robot.commands.ToggleSlapdownCommand;
-import frc.robot.commands.DriveToTarget;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SlapdownSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
 
 /**
  * Declares all subsystems, operator-interface devices, and command bindings.
@@ -128,10 +123,10 @@ public class RobotContainer {
                 NamedCommands.registerCommand("toggleIntake", new ToggleIntakeCommand(intake));
 
                 NamedCommands.registerCommand("rotateToHub",
-                                DriveToTarget.rotateToHub(drivetrain, this::nullDriverInput));
+                                drivetrain.rotateToHub(this::nullDriverInput));
                 NamedCommands.registerCommand("rotate180",
-                                DriveToTarget.rotateBy180(drivetrain, this::nullDriverInput));
-                NamedCommands.registerCommand("slapdownTrigger", new ToggleSlapdownCommand(slapdown));
+                                drivetrain.rotateBy180(this::nullDriverInput));
+                NamedCommands.registerCommand("slapdownTrigger", slapdown.slapdownCommand());
         }
 
         /** Binds all the default commands. */
@@ -163,6 +158,8 @@ public class RobotContainer {
                 driver.x().onTrue(new ShootPrimedRPSCommand(shooter, Seconds.of(100)));
                 // driver.y().onTrue(new InstantCommand(() -> vision.reseedPose()));
                 driver.b().whileTrue(drivetrain.applyRequest(() -> brake));
+                driver.leftStick().onTrue(
+                                new InstantCommand(() -> drivetrain.applyRequest(() -> getDriverInput()), drivetrain));
 
                 // Run SysId routines when holding back/start and X/Y.
                 // Note that each routine should be run exactly once in a single log.
@@ -174,14 +171,12 @@ public class RobotContainer {
                 // Reset the field-centric heading on right bumper press.
                 driver.rightBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-                driver.leftBumper().onTrue(DriveToTarget.rotateToHub(drivetrain, this::getDriverInput));
+                driver.leftBumper().onTrue(drivetrain.rotateToHub(this::getDriverInput));
 
-                driver.povUp().onTrue(new InstantCommand(() -> slapdown.retractSlapdown(), slapdown));
-                driver.povDown().onTrue(new InstantCommand(() -> slapdown.slapdown(), slapdown));
+                driver.povUp().onTrue(slapdown.retractSlapdownCommand());
+                driver.povUp().onTrue(slapdown.slapdownCommand());
 
                 driver.rightStick().onTrue(new RunCommand(() -> slapdown.resetSlapdownPosition(), slapdown));
-                driver.leftStick().onTrue(
-                                new InstantCommand(() -> drivetrain.applyRequest(() -> getDriverInput()), drivetrain));
 
                 driver.povLeft().whileTrue(Commands.startEnd(
                                 () -> slapdown.setPower(0.36901),
@@ -226,19 +221,8 @@ public class RobotContainer {
                 operator.povUp().onTrue(new ShootPrimedRPSCommand(shooter, Seconds.of(5)));
                 operator.povDown().whileTrue(new StopSubsystemsCommand(shooter, kicker, intake, indexer));
 
-                operator.x().onTrue(DriveToTarget.rotateBy180(drivetrain, this::nullDriverInput));
-
-                operator.y().onTrue(DriveToTarget.alignToTrench(drivetrain, this::getDriverInput));
-
-                // operator.b().whileTrue(new RunCommand(() -> {
-                // indexer.enableInverted();
-                // }, indexer));
-
-                operator.b().onTrue(new InstantCommand(
-                                () -> {
-
-                                        // drivetrain.resetPose();
-                                }));
+                operator.x().onTrue(drivetrain.rotateBy180(this::nullDriverInput));
+                operator.y().onTrue(drivetrain.alignToTrench(this::getDriverInput));
         }
 
         /**

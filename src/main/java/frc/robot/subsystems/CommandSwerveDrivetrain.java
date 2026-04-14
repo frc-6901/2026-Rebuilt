@@ -11,6 +11,7 @@ import com.ctre.phoenix6.CANBus.CANBusStatus;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -19,6 +20,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -27,8 +29,10 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.GameConstants;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.Constants.TunerConstants.TunerSwerveDrivetrain;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -37,6 +41,10 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
+
+import frc.robot.commands.DriveToTarget;
 
 /**
  * Swerve drivetrain subsystem built on the CTRE Phoenix 6
@@ -350,5 +358,59 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      */
     public Pose2d getPose() {
         return this.getState().Pose;
+    }
+
+    /** Rotates the robot to the alliance's hub. */
+    public Command rotateToHub(Supplier<FieldCentric> driverInputSupplier) {
+        return new DriveToTarget(
+                this,
+                driverInputSupplier,
+                null,
+                null,
+                () -> {
+                    Translation2d current = this.getPose().getTranslation();
+                    Translation2d hub = GameConstants.getHubLocation();
+
+                    double targetAngle = Math.atan2(
+                            hub.getY() - current.getY(),
+                            hub.getX() - current.getX());
+
+                    return Radians.of(targetAngle + Math.PI);
+                });
+    }
+
+    /** Rotates the robot by 180 degrees. */
+    public Command rotateBy180(Supplier<FieldCentric> driverInputSupplier) {
+        Angle[] target = { null };
+
+        return Commands.runOnce(
+                () -> target[0] = this.getPose().getRotation().getMeasure().plus(Degrees.of(180)))
+                .andThen(new DriveToTarget(
+                        this, driverInputSupplier,
+                        null, null,
+                        () -> target[0]));
+    }
+
+    /** Drives the robot to be aligned with the alliance's closer trench. */
+    public Command alignToTrench(Supplier<FieldCentric> driverInputSupplier) {
+
+        Supplier<Distance> targetY = () -> {
+            Distance currentY = this.getPose().getMeasureY();
+            double toLeft = currentY.minus(GameConstants.BlueLeftTrenchY).abs(Meters);
+            double toRight = currentY.minus(GameConstants.BlueRightTrenchY).abs(Meters);
+            return toLeft < toRight ? GameConstants.BlueLeftTrenchY : GameConstants.BlueRightTrenchY;
+        };
+
+        Supplier<Angle> targetTheta = () -> {
+            double theta = ((this.getPose().getRotation().getDegrees() % 360) + 360) % 360;
+            if (theta > 180)
+                theta -= 360;
+            return Degrees.of(Math.abs(theta) < 90 ? 0 : 180);
+        };
+
+        return new DriveToTarget(this, driverInputSupplier,
+                null,
+                targetY,
+                targetTheta);
     }
 }

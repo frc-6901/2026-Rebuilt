@@ -10,7 +10,10 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.SlapdownConstants;
 
 /**
@@ -22,14 +25,14 @@ public class SlapdownSubsystem extends SubsystemBase {
     /** The possible states of the slapdown mechanism. */
     public static enum SlapdownState {
         UP,
-        DOWN
+        DOWN,
+        MOVING
     }
 
     private final TalonFX m_motorSlapdown = new TalonFX(MotorId, new CANBus("rio"));
     private final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
 
-    /** The current state of the slapdown mechanism. */
-    public SlapdownState state = SlapdownState.UP;
+    public final Trigger atTarget = new Trigger(() -> getDeploymentState() != SlapdownState.MOVING);
 
     /**
      * 
@@ -44,13 +47,11 @@ public class SlapdownSubsystem extends SubsystemBase {
     /** Moves the slapdown arm to the deployed intake position. */
     public void slapdown() {
         m_motorSlapdown.setControl(m_request.withPosition(IntakePosition));
-        state = SlapdownState.DOWN;
     }
 
     /** Retracts the slapdown arm to the stowed home position. */
     public void retractSlapdown() {
         m_motorSlapdown.setControl(m_request.withPosition(HomePosition));
-        state = SlapdownState.UP;
     }
 
     /**
@@ -72,26 +73,36 @@ public class SlapdownSubsystem extends SubsystemBase {
      */
     public void resetSlapdownPosition() {
         m_motorSlapdown.setPosition(0);
-        state = SlapdownState.UP;
     }
 
     /**
-     * Returns whether the slapdown is currently deployed.
-     *
-     * @return
+     * Returns whether the slapdown is currently moving, based on the error between
+     * the current position and the target position for the current state.
      */
     public SlapdownState getDeploymentState() {
-        Angle error = (state == SlapdownState.DOWN ? IntakePosition : HomePosition).minus(getSlapdownPosition());
+        Angle position = getSlapdownPosition();
 
-        if (error.abs(Degrees) / 144 <= PositionTolerance.in(Degrees)) {
-            return state;
+        if (position.minus(IntakePosition).abs(Degrees) < PositionTolerance.in(Degrees)) {
+            return SlapdownState.DOWN;
+        } else if (position.minus(HomePosition).abs(Degrees) < PositionTolerance.in(Degrees)) {
+            return SlapdownState.UP;
         } else {
-            return state == SlapdownState.DOWN ? SlapdownState.UP : SlapdownState.DOWN;
+            return SlapdownState.MOVING;
         }
     }
 
     /* Returns the current position of the slapdown motor. */
     public Angle getSlapdownPosition() {
         return m_motorSlapdown.getPosition().getValue();
+    }
+
+    /* Returns a command that deploys the slapdown when executed. */
+    public Command slapdownCommand() {
+        return run(() -> slapdown()).until(atTarget);
+    }
+
+    /* Returns a command that retracts the slapdown when executed. */
+    public Command retractSlapdownCommand() {
+        return run(() -> retractSlapdown()).until(atTarget);
     }
 }
