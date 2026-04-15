@@ -71,6 +71,31 @@
               }
             ]
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "slapdownRetract"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "autoPassShoot"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 2.0
+                }
+              }
+            ]
+          }
         }
       ]
     }

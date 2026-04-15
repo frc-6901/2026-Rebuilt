@@ -7,13 +7,38 @@
         {
           "type": "path",
           "data": {
-            "pathName": null
+            "pathName": "leftHS_disrupt"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": null
+            "pathName": "leftHS_returnBUMP"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 3.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "autoAimShoot"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "slapdownRetract"
           }
         },
         {
@@ -39,25 +64,6 @@
           "type": "named",
           "data": {
             "name": "slapdownTrigger"
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 3.0
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "autoAimShoot"
-                }
-              }
-            ]
           }
         },
         {

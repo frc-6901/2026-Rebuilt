@@ -38,7 +38,7 @@
         {
           "type": "named",
           "data": {
-            "name": "slapdownTrigger"
+            "name": "slapdownRetract"
           }
         },
         {
@@ -64,6 +64,12 @@
           "type": "named",
           "data": {
             "name": "toggleIntake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "slapdownTrigger"
           }
         },
         {
