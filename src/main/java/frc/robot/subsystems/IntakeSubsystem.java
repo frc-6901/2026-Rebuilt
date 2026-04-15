@@ -46,7 +46,6 @@ public class IntakeSubsystem extends SubsystemBase {
     /** Runs the intake rollers inward at the default velocity. */
     public void intake() {
         intake(IntakeRPS);
-        // m_motorIntake.setControl(new DutyCycleOut(.85));
     }
 
     /**

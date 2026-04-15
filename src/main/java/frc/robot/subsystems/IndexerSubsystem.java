@@ -28,6 +28,7 @@ public class IndexerSubsystem extends SubsystemBase {
      * toward the shooter.
      */
     public void enable() {
+        System.out.println("HERE");
         m_motorIndexer.setControl(new VelocityVoltage(Power));
     }
 

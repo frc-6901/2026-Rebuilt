@@ -28,10 +28,6 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.ShootAutoRPSCommand;
-import frc.robot.commands.ShootManualRPSCommand;
-import frc.robot.commands.ShootPassRPSCommand;
-import frc.robot.commands.ShootPrimedRPSCommand;
 import frc.robot.commands.StopSubsystemsCommand;
 import frc.robot.commands.ToggleIntakeCommand;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -111,12 +107,15 @@ public class RobotContainer {
                                 new StopSubsystemsCommand(shooter, kicker, intake, indexer));
 
                 NamedCommands.registerCommand("autoAimShoot",
-                                new ShootAutoRPSCommand(shooter, kicker, indexer, () -> getEstimatedVisionPose()));
+                                shooter.autoAimShoot(this::getEstimatedVisionPose, kicker, indexer));
+
                 NamedCommands.registerCommand("autoPassShoot",
-                                new ShootPassRPSCommand(shooter, kicker, indexer, () -> getEstimatedVisionPose()));
+                                shooter.passShoot(this::getEstimatedVisionPose, kicker, indexer));
+
                 NamedCommands.registerCommand("fiftyRPSShoot",
-                                new ShootManualRPSCommand(shooter, kicker, indexer, () -> RotationsPerSecond.of(50)));
-                NamedCommands.registerCommand("primeShooter", new ShootPrimedRPSCommand(shooter, Seconds.of(3)));
+                                shooter.manuallyShoot(() -> RotationsPerSecond.of(50), kicker, indexer));
+
+                NamedCommands.registerCommand("primeShooter", shooter.prime().withTimeout(Seconds.of(3)));
 
                 NamedCommands.registerCommand("intake", new IntakeCommand(intake));
                 NamedCommands.registerCommand("stopIntake", new InstantCommand(() -> intake.stop(), intake));
@@ -136,7 +135,6 @@ public class RobotContainer {
         private void configureDefaultCommands() {
                 drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> getDriverInput()));
                 kicker.setDefaultCommand(new RunCommand(() -> kicker.stop(), kicker));
-                // indexer.setDefaultCommand(new PeriodicReverseIndexerCommand(indexer));
                 indexer.setDefaultCommand(new RunCommand(() -> indexer.stop(), indexer));
                 intake.setDefaultCommand(new RunCommand(() -> {
                         if (intake.currentlyIntaking())
@@ -158,7 +156,7 @@ public class RobotContainer {
                                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
                 driver.a().onTrue(new ToggleIntakeCommand(intake));
-                driver.x().onTrue(new ShootPrimedRPSCommand(shooter, Seconds.of(100)));
+                driver.x().onTrue(shooter.prime());
                 // driver.y().onTrue(new InstantCommand(() -> vision.reseedPose()));
                 driver.b().whileTrue(drivetrain.applyRequest(() -> brake));
                 driver.leftStick().onTrue(
@@ -191,10 +189,9 @@ public class RobotContainer {
                                 slapdown));
 
                 driver.leftTrigger().whileTrue(
-                                new ShootPassRPSCommand(shooter, kicker, indexer, () -> getEstimatedVisionPose()));
-
+                                shooter.passShoot(this::getEstimatedVisionPose, kicker, indexer));
                 driver.rightTrigger().whileTrue(
-                                new ShootAutoRPSCommand(shooter, kicker, indexer, () -> getEstimatedVisionPose()));
+                                shooter.autoAimShoot(this::getEstimatedVisionPose, kicker, indexer));
 
                 drivetrain.registerTelemetry(logger::telemeterize);
         }
@@ -214,14 +211,14 @@ public class RobotContainer {
                 }));
 
                 operator.rightTrigger().whileTrue(
-                                new ShootManualRPSCommand(shooter, kicker, indexer, () -> shooter.getShootRPS()));
+                                shooter.manuallyShoot(() -> shooter.getShootRPS(), kicker, indexer));
 
                 operator.rightBumper().onTrue(new RunCommand(() -> slapdown.resetSlapdownPosition(), slapdown));
 
                 operator.leftTrigger().whileTrue(
-                                new ShootAutoRPSCommand(shooter, kicker, indexer, () -> getEstimatedVisionPose()));
+                                shooter.autoAimShoot(this::getEstimatedVisionPose, kicker, indexer));
 
-                operator.povUp().onTrue(new ShootPrimedRPSCommand(shooter, Seconds.of(5)));
+                operator.povUp().onTrue(shooter.prime());
                 operator.povDown().whileTrue(new StopSubsystemsCommand(shooter, kicker, intake, indexer));
 
                 operator.x().onTrue(drivetrain.rotateBy180(this::nullDriverInput));

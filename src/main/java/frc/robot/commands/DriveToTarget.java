@@ -11,16 +11,12 @@ import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-
-import static frc.robot.Constants.GameConstants;
 
 public class DriveToTarget extends Command {
         private final CommandSwerveDrivetrain drivetrain;
@@ -79,7 +75,7 @@ public class DriveToTarget extends Command {
                 thetaController.reset();
                 thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-                thetaController.setTolerance(Degrees.of(1).in(Radians));
+                thetaController.setTolerance(Degrees.of(5).in(Radians));
         }
 
         @Override

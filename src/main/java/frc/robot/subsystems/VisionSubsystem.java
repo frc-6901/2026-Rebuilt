@@ -92,7 +92,7 @@ public class VisionSubsystem extends SubsystemBase {
         }
 
         Transform3d robotToCam = new Transform3d(
-                new Translation3d(Inches.of(-13), Meters.of(0.0), Meters.of(0.14)),
+                new Translation3d(Inches.of(-13), Meters.of(0.0), Inches.of(6.5)),
                 new Rotation3d(0, Math.PI / 3, 0));
 
         if (fieldLayout != null) {

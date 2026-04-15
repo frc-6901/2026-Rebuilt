@@ -41,6 +41,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -112,6 +113,15 @@ public final class Constants {
                  */
                 public final static AngularVelocity DefaultRPS = RotationsPerSecond.of(30.6901);
 
+                /**
+                 * The tolerance for determining whether the shooter is "primed" and ready to
+                 * shoot.
+                 */
+                public final static AngularVelocity PrimingTolerance = RotationsPerSecond.of(3);
+
+                /** The default prime RPS for the shooter. */
+                public final static AngularVelocity DefaultPrimeRPS = RotationsPerSecond.of(40);
+
                 /** The PID and feedforward settings for the shooter motors. */
                 public final static Slot0Configs Gains = new Slot0Configs()
                                 .withKP(0.36901).withKI(0).withKD(0.0085)
@@ -120,8 +130,6 @@ public final class Constants {
                 /** The strength of gravity (9.81 m/s²). */
                 public final static LinearAcceleration G = MetersPerSecondPerSecond.of(9.81);
 
-                /** The height of the target hub from the ground. */
-                public final static Distance HubTargetHeight = Meters.of(1.524);
                 /** The vertical position of the ball exit point from the shooter. */
                 public final static Distance BallExtakeHeight = Meters.of(0.432);
                 /** The angle at which the shooter is mounted above the horizontal plane. */
@@ -588,10 +596,30 @@ public final class Constants {
                  */
                 public static final Distance BlueRightTrenchY = Meters.of(0.634);
 
+                /** The x-position of the pass-line on the blue alliance side of the field. */
+                public static final Distance BluePassLineX = Meters.of(2.306);
+                /** The x-position of the pass-line on the red alliance side of the field. */
+                public static final Distance RedPassLineX = Meters.of(14.207);
+
+                /** The height of the target hub from the ground. */
+                public final static Distance HubTargetHeight = Meters.of(1.524);
+
                 /** Returns the position of the hub based on the current alliance. */
                 public static Translation2d getHubLocation() {
                         return (DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Blue) ? BlueHubLocation
                                         : RedHubLocation;
+                }
+
+                /**
+                 * Returns the position of the pass line based on the current alliance and
+                 * drivetrain position.
+                 */
+                public static Translation2d getPassLocation(Pose2d drivetrainPose) {
+                        Distance y = drivetrainPose.getMeasureY();
+
+                        return (DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Blue)
+                                        ? new Translation2d(GameConstants.BluePassLineX, y)
+                                        : new Translation2d(GameConstants.RedPassLineX, y);
                 }
         }
 }

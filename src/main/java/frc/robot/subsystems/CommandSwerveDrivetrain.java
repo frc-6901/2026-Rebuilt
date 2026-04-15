@@ -375,7 +375,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                             hub.getY() - current.getY(),
                             hub.getX() - current.getX());
 
-                    return Radians.of(targetAngle + Math.PI);
+                    return Radians.of(targetAngle).plus(Radians.of(Math.PI));
                 });
     }
 

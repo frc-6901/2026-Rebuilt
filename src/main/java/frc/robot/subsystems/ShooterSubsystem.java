@@ -5,6 +5,8 @@ import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -16,17 +18,20 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.DoublePublisher;
-// import edu.wpi.first.math.geometry.Pose2d;
-// import edu.wpi.first.math.geometry.Rotation3d;
-// import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
-
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.GameConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.commands.ShootCommand;
 
 /**
  * Subsystem controlling the dual-motor shooter flywheel.
@@ -71,8 +76,17 @@ public class ShooterSubsystem extends SubsystemBase {
     public ShooterState shooterState = ShooterState.OFF;
 
     private AngularVelocity shootRPS = ShooterConstants.DefaultRPS;
-
     public AngularVelocity targetRPS;
+
+    public final Trigger primed = new Trigger(() -> {
+        if (targetRPS == null) {
+            return false;
+        }
+
+        double rpsError = getCurrentRPS().minus(targetRPS).abs(RotationsPerSecond);
+
+        return rpsError <= ShooterConstants.PrimingTolerance.in(RotationsPerSecond);
+    });
 
     /**
      * Configures both shooter motors with PID gains from constants and sets the
@@ -137,10 +151,10 @@ public class ShooterSubsystem extends SubsystemBase {
         double gVal = ShooterConstants.G.in(MetersPerSecondPerSecond);
         double pitchRad = ShooterConstants.Pitch.in(Radians);
 
-        double velocity = Math.sqrt(
-                (gVal * dx * dx) /
-                        (2 * Math.pow(Math.cos(pitchRad), 2) *
-                                (dx * Math.tan(pitchRad) - dy)));
+        double numerator = gVal * dx * dx;
+        double denominator = 2 * Math.pow(Math.cos(pitchRad), 2) * (dx * Math.tan(pitchRad) - dy);
+
+        double velocity = Math.sqrt(numerator / denominator);
 
         double rps = velocity / (2 * Math.PI * 0.051);
 
@@ -156,9 +170,8 @@ public class ShooterSubsystem extends SubsystemBase {
      * @return the flywheel angular velocity needed to reach the target
      */
     public AngularVelocity calculateRPS(Distance groundDistance) {
-        return calculateRPS(groundDistance, ShooterConstants.HubTargetHeight);
+        return calculateRPS(groundDistance, GameConstants.HubTargetHeight);
     }
-
 
     public AngularVelocity getShootRPS() {
         return shootRPS;
@@ -168,24 +181,9 @@ public class ShooterSubsystem extends SubsystemBase {
         return ShooterConstants.MaxRPS.times(axisInput);
     }
 
-    public double getCurrentRPS() {
-        return m_motorLeft.getVelocity().getValueAsDouble();
+    public AngularVelocity getCurrentRPS() {
+        return m_motorLeft.getVelocity().getValue();
     }
-
-    public boolean isPrimed() {
-        return Math.abs(getCurrentRPS() - targetRPS.in(RotationsPerSecond)) <= 3;
-    }
-
-    /**
-     * Clears the dashboard trajectory visualization by publishing an empty pose
-     * array.
-     */
-    // public void clearTrajectory() {
-    // NetworkTableInstance.getDefault()
-    // .getStructArrayTopic("Shooter/BallTrajectory", Pose3d.struct)
-    // .publish()
-    // .set(new Pose3d[0]);
-    // }
 
     @Override
     public void periodic() {
@@ -200,8 +198,86 @@ public class ShooterSubsystem extends SubsystemBase {
             shooterStatePub.set(shooterState.toString());
         }
 
-        actualRPSPub.set(getCurrentRPS());
+        actualRPSPub.set(getCurrentRPS().in(RotationsPerSecond));
 
         targetRPSPub.set(targetRPS != null ? targetRPS.in(RotationsPerSecond) : 0);
+    }
+
+    /**
+     * Creates a command that primes the shooter to the default prime RPS.
+     */
+    public Command prime() {
+        return new ShootCommand(
+                this, null, null,
+                () -> ShooterConstants.DefaultPrimeRPS,
+                ShooterState.PRIMING,
+                ShooterState.PRIMING);
+    }
+
+    public Command manuallyShoot(
+            Supplier<AngularVelocity> rpsSupplier,
+            KickerSubsystem kicker,
+            IndexerSubsystem indexer) {
+        return new ShootCommand(
+                this, kicker, indexer,
+                rpsSupplier,
+                ShooterState.PRIMING,
+                ShooterState.MANUAL);
+    }
+
+    /**
+     * Creates a command that automatically calculates the required shooter RPS
+     * based on the robot's current position and a specified target location.
+     */
+    private Command shootAtTarget(
+            Supplier<Pose2d> currentPoseSupplier,
+            Translation3d target,
+            KickerSubsystem kicker,
+            IndexerSubsystem indexer,
+            ShooterState primingState,
+            ShooterState shootingState) {
+        Supplier<AngularVelocity> rpsSupplier = () -> {
+            Pose2d currentPose = currentPoseSupplier.get();
+            Translation2d xyProjection = new Translation2d(
+                    target.getMeasureX(), target.getMeasureY());
+
+            Distance shotGroundDistance = Meters
+                    .of(currentPose.getTranslation().getDistance(xyProjection));
+
+            return calculateRPS(shotGroundDistance, target.getMeasureZ());
+        };
+
+        return new ShootCommand(
+                this, kicker, indexer,
+                rpsSupplier,
+                primingState, shootingState);
+    }
+
+    public Command autoAimShoot(
+            Supplier<Pose2d> currentPoseSupplier,
+            KickerSubsystem kicker,
+            IndexerSubsystem indexer) {
+        Translation2d hubXY = GameConstants.getHubLocation();
+        Translation3d hub = new Translation3d(
+                hubXY.getMeasureX(),
+                hubXY.getMeasureY(),
+                GameConstants.HubTargetHeight);
+
+        return shootAtTarget(
+                currentPoseSupplier,
+                hub,
+                kicker, indexer,
+                ShooterState.AUTOHUB_PRIMING, ShooterState.AUTOHUB);
+    }
+
+    public Command passShoot(
+            Supplier<Pose2d> currentPoseSupplier,
+            KickerSubsystem kicker,
+            IndexerSubsystem indexer) {
+        return shootAtTarget(
+                currentPoseSupplier,
+                new Translation3d(GameConstants.getPassLocation(currentPoseSupplier.get())),
+                kicker, indexer,
+                ShooterState.AUTOPASS_PRIMING, ShooterState.AUTOPASS);
     }
 }
