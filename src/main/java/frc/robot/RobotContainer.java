@@ -175,7 +175,7 @@ public class RobotContainer {
                 driver.leftBumper().onTrue(drivetrain.rotateToHub(this::getDriverInput));
 
                 driver.povUp().onTrue(slapdown.retractSlapdownCommand());
-                driver.povUp().onTrue(slapdown.slapdownCommand());
+                driver.povDown().onTrue(slapdown.slapdownCommand());
 
                 driver.rightStick().onTrue(new RunCommand(() -> slapdown.resetSlapdownPosition(), slapdown));
 
