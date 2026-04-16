@@ -15,6 +15,8 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -36,6 +38,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SlapdownSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
 /**
  * Declares all subsystems, operator-interface devices, and command bindings.
@@ -60,7 +63,7 @@ public class RobotContainer {
         private final CommandXboxController operator = new CommandXboxController(ControllerConstants.OperatorPort);
 
         public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-        // private final VisionSubsystem vision = new VisionSubsystem(drivetrain);
+        private final VisionSubsystem vision = new VisionSubsystem(drivetrain);
         private final ShooterSubsystem shooter = new ShooterSubsystem();
         private final IntakeSubsystem intake = new IntakeSubsystem();
         private final IndexerSubsystem indexer = new IndexerSubsystem();
@@ -266,12 +269,11 @@ public class RobotContainer {
          * @return the estimated {@link Pose2d} of the robot on the field
          */
         private Pose2d getEstimatedVisionPose() {
-                // Translation2d visionTranslation =
-                // vision.getEstimatedPose2d().orElse(drivetrain.getState().Pose)
-                // .getTranslation();
-                // Rotation2d drivetrainRotation = drivetrain.getPose().getRotation();
+                Translation2d visionTranslation = vision.getEstimatedPose2d().orElse(drivetrain.getState().Pose)
+                                .getTranslation();
+                Rotation2d drivetrainRotation = drivetrain.getPose().getRotation();
 
-                // return new Pose2d(visionTranslation, drivetrainRotation);
-                return drivetrain.getPose();
+                return new Pose2d(visionTranslation, drivetrainRotation);
+                // return vision.getEstimatedPose2d().orElse(drivetrain.getPose());
         }
 }

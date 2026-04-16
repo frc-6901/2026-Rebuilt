@@ -133,10 +133,10 @@ public final class Constants {
                 /** The vertical position of the ball exit point from the shooter. */
                 public final static Distance BallExtakeHeight = Meters.of(0.432);
                 /** The angle at which the shooter is mounted above the horizontal plane. */
-                public final static Angle Pitch = Degrees.of(71.5);
+                public final static Angle Pitch = Degrees.of(76);
 
                 /** The scaling constant to correct for damping in the shooter mechanism. */
-                public final static double DampingCoefficient = 1.6901;
+                public final static double DampingCoefficient = 1.6901 + 0.02;
 
                 /** The complete motor configuration for the shooter system. */
                 public static final TalonFXConfiguration MotorConfig = new TalonFXConfiguration()
@@ -162,12 +162,12 @@ public final class Constants {
                 public final static TalonFXConfiguration MotorConfig = new TalonFXConfiguration()
                                 .withMotorOutput(new MotorOutputConfigs()
                                                 .withNeutralMode(NeutralModeValue.Coast)
-                                                .withInverted(InvertedValue.CounterClockwise_Positive))
-                                .withCurrentLimits(new CurrentLimitsConfigs()
-                                                .withStatorCurrentLimit(Amps.of(40))
-                                                .withStatorCurrentLimitEnable(true)
-                                                .withSupplyCurrentLimit(Amps.of(60))
-                                                .withSupplyCurrentLimitEnable(true));
+                                                .withInverted(InvertedValue.CounterClockwise_Positive));
+                                // .withCurrentLimits(new CurrentLimitsConfigs()
+                                //                 .withStatorCurrentLimit(Amps.of(40))
+                                //                 .withStatorCurrentLimitEnable(true)
+                                //                 .withSupplyCurrentLimit(Amps.of(60))
+                                //                 .withSupplyCurrentLimitEnable(true));
         }
 
         public static final class IntakeConstants {

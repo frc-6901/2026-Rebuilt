@@ -202,7 +202,6 @@ public class VisionSubsystem extends SubsystemBase {
                     hasSeededPose = true;
 
                     Translation2d translation = getEstimatedPose2d().get().getTranslation();
-
                     drivetrain.resetTranslation(translation);
                 }
             }
