@@ -66,6 +66,7 @@ public class RobotContainer {
         private final IndexerSubsystem indexer = new IndexerSubsystem();
         private final SlapdownSubsystem slapdown = new SlapdownSubsystem();
         private final KickerSubsystem kicker = new KickerSubsystem();
+        private final LEDSubsystem led = new LEDSubsystem();
 
         private final SendableChooser<Command> dcmp_autoChooser;
 
