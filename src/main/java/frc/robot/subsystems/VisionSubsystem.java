@@ -21,6 +21,7 @@ import org.photonvision.simulation.VisionSystemSim;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -178,7 +179,7 @@ public class VisionSubsystem extends SubsystemBase {
             List<PhotonTrackedTarget> targets = latest.getTargets();
             PhotonTrackedTarget bestTarget = latest.getBestTarget();
 
-            if (bestTarget.getPoseAmbiguity() < 0.2) {
+            if (bestTarget.getPoseAmbiguity() < 0.075) {
                 visionEstimatedPose = visionPoseEstimator.estimateCoprocMultiTagPose(latest)
                         .or(() -> visionPoseEstimator.estimateLowestAmbiguityPose(latest));
             }
@@ -196,13 +197,11 @@ public class VisionSubsystem extends SubsystemBase {
             m_visionfield.setRobotPose(getEstimatedPose2d().get());
 
             if (DriverStation.isTeleop()) {
-                adjustDrivetrainPose();
+                // adjustDrivetrainPose();
 
                 if (!hasSeededPose) {
                     hasSeededPose = true;
-
-                    Translation2d translation = getEstimatedPose2d().get().getTranslation();
-                    drivetrain.resetTranslation(translation);
+                    drivetrain.resetPose(getEstimatedPose2d().get());
                 }
             }
         }
@@ -219,7 +218,7 @@ public class VisionSubsystem extends SubsystemBase {
 
             Pose2d pose = new Pose2d(visionPose, driveTrainRotation);
 
-            drivetrain.addVisionMeasurement(pose, visionEstimatedPose.get().timestampSeconds);
+            drivetrain.addVisionMeasurement(pose, visionEstimatedPose.get().timestampSeconds, VecBuilder.fill(0.5, 0.5, 500));
         }
     }
 
