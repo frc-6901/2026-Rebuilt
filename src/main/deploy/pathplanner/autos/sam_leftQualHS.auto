@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 5.0
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "leftHS_Leave"
@@ -86,34 +92,15 @@
           }
         },
         {
-          "type": "race",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "stopShooter"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.025
-                }
-              }
-            ]
+            "name": "stopShooter"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "leftHS_SecondLeave"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "leftHS_SecondReturn"
+            "pathName": "leftHS_QualLeave"
           }
         }
       ]

@@ -107,6 +107,9 @@ public class RobotContainer {
 
                 sam_autoChooser.addOption("sam_right_ap_sketchy_auton",
                                 new PathPlannerAuto("sam_left_ap_sketchy_auton", true));
+                
+                // newer mirrored autons
+                sam_autoChooser.addOption("sam_rightQualHS", new PathPlannerAuto("sam_leftQualHS"));
 
                 SmartDashboard.putData("Auto Chooser", sam_autoChooser);
         }
