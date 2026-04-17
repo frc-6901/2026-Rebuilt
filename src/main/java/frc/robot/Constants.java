@@ -145,12 +145,12 @@ public final class Constants {
                  * The scaling constant to correct for damping in the shooter mechanism when the
                  * robot is "far" from the hub.
                  */
-                public final static double DampingFarCoefficient = 1.6901 + 0.02;
+                public final static double DampingFarCoefficient = 1.6901 + 0.05;
                 /**
                  * The scaling constant to correct for damping in the shooter mechanism when the
                  * robot is "near" from the hub.
                  */
-                public final static double DampingNearCoefficient = 1.6901 + 0.1;
+                public final static double DampingNearCoefficient = 2.6901;
 
                 /** The maximum distance to be considered "near" to the hub. */
                 public final static Distance NearHubDistance = Meters.of(2);

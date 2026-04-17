@@ -7,13 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "leftHS_Leave"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "leftHS_Return"
+            "pathName": "leftDepot"
           }
         },
         {
@@ -29,7 +23,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.5
+                  "waitTime": 3.0
                 }
               }
             ]
@@ -54,7 +48,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 2.5
+                  "waitTime": 3.0
                 }
               }
             ]
@@ -79,41 +73,10 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 1.5
+                  "waitTime": 3.0
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "stopShooter"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.025
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "leftHS_SecondLeave"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "leftHS_SecondReturn"
           }
         }
       ]
