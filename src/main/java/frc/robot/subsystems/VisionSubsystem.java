@@ -29,6 +29,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -70,11 +71,16 @@ public class VisionSubsystem extends SubsystemBase {
     private List<Integer> visibleTagIds = new ArrayList<>();
 
     /** The most recently estimated robot pose from vision (optional). */
-    private Optional<EstimatedRobotPose> visionEstimatedPose = Optional.empty();
+    private Optional<EstimatedRobotPose> estimatedPose = Optional.empty();
 
     public boolean hasSeededPose = true;
 
     public final Field2d m_visionfield = new Field2d();
+
+    private final BooleanPublisher seeingAprilTagPub = NetworkTableInstance.getDefault()
+            .getTable("Vision")
+            .getBooleanTopic("April Tag?")
+            .publish();
 
     /**
      * Creates the vision subsystem, initializing PhotonVision cameras and the
@@ -94,7 +100,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         Transform3d robotToCam = new Transform3d(
                 new Translation3d(Inches.of(-13), Meters.of(0.0), Inches.of(6.5)),
-                new Rotation3d(0, Math.PI / 3, 0));
+                new Rotation3d(0, Math.PI / 3, Math.PI));
 
         if (fieldLayout != null) {
             visionPoseEstimator = new PhotonPoseEstimator(fieldLayout, robotToCam);
@@ -166,34 +172,39 @@ public class VisionSubsystem extends SubsystemBase {
         visibleTagPoses.clear();
         visibleTagIds.clear();
 
+        seeingAprilTagPub.set(estimatedPose.isPresent());
+
         List<PhotonPipelineResult> results = photonCam.getAllUnreadResults();
 
         if (results.size() == 0) {
-            visionEstimatedPose = Optional.empty();
+            estimatedPose = Optional.empty();
             return;
         }
 
         PhotonPipelineResult latest = results.get(results.size() - 1);
 
-        if (latest.hasTargets()) {
-            List<PhotonTrackedTarget> targets = latest.getTargets();
-            PhotonTrackedTarget bestTarget = latest.getBestTarget();
-
-            if (bestTarget.getPoseAmbiguity() < 0.075) {
-                visionEstimatedPose = visionPoseEstimator.estimateCoprocMultiTagPose(latest)
-                        .or(() -> visionPoseEstimator.estimateLowestAmbiguityPose(latest));
-            }
-
-            for (PhotonTrackedTarget target : targets) {
-                Optional<Pose3d> tagPose = fieldLayout.getTagPose(target.getFiducialId());
-                tagPose.ifPresent(visibleTagPoses::add);
-                visibleTagIds.add(target.getFiducialId());
-            }
-
-            tagPublisher.set(visibleTagPoses.toArray(new Pose3d[0]));
+        if (!latest.hasTargets()) {
+            estimatedPose = Optional.empty();
+            return;
         }
 
-        if (visionEstimatedPose.isPresent()) {
+        List<PhotonTrackedTarget> targets = latest.getTargets();
+        PhotonTrackedTarget bestTarget = latest.getBestTarget();
+
+        if (bestTarget.getPoseAmbiguity() < 0.075) {
+            estimatedPose = visionPoseEstimator.estimateCoprocMultiTagPose(latest)
+                    .or(() -> visionPoseEstimator.estimateLowestAmbiguityPose(latest));
+        }
+
+        for (PhotonTrackedTarget target : targets) {
+            Optional<Pose3d> tagPose = fieldLayout.getTagPose(target.getFiducialId());
+            tagPose.ifPresent(visibleTagPoses::add);
+            visibleTagIds.add(target.getFiducialId());
+        }
+
+        tagPublisher.set(visibleTagPoses.toArray(new Pose3d[0]));
+
+        if (estimatedPose.isPresent()) {
             m_visionfield.setRobotPose(getEstimatedPose2d().get());
 
             if (DriverStation.isTeleop()) {
@@ -208,17 +219,18 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public Optional<Pose2d> getEstimatedPose2d() {
-        return visionEstimatedPose.map(pose -> pose.estimatedPose.toPose2d());
+        return estimatedPose.map(pose -> pose.estimatedPose.toPose2d());
     }
 
     public void adjustDrivetrainPose() {
-        if (visionEstimatedPose.isPresent()) {
+        if (estimatedPose.isPresent()) {
             Translation2d visionPose = getEstimatedPose2d().get().getTranslation();
             Rotation2d driveTrainRotation = drivetrain.getPose().getRotation();
 
             Pose2d pose = new Pose2d(visionPose, driveTrainRotation);
 
-            drivetrain.addVisionMeasurement(pose, visionEstimatedPose.get().timestampSeconds, VecBuilder.fill(0.5, 0.5, 500));
+            drivetrain.addVisionMeasurement(pose, estimatedPose.get().timestampSeconds,
+                    VecBuilder.fill(0.5, 0.5, 500));
         }
     }
 

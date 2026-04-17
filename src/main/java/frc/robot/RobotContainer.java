@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.GameConstants;
 import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.TunerConstants;
 import frc.robot.commands.IntakeCommand;
@@ -125,6 +126,12 @@ public class RobotContainer {
                                 shooter.manuallyShoot(() -> RotationsPerSecond.of(50), kicker, indexer, led));
 
                 NamedCommands.registerCommand("primeShooter", shooter.prime().withTimeout(Seconds.of(3)));
+                NamedCommands.registerCommand("stopShooter",
+                                new InstantCommand(() -> {
+                                        shooter.stop();
+                                        indexer.stop();
+                                        kicker.stop();
+                                }, shooter, indexer, kicker));
 
                 NamedCommands.registerCommand("intake", new IntakeCommand(intake));
                 NamedCommands.registerCommand("stopIntake", new InstantCommand(() -> intake.stop(), intake));
@@ -171,8 +178,6 @@ public class RobotContainer {
                 driver.b().whileTrue(drivetrain.applyRequest(() -> brake));
                 driver.leftStick().onTrue(
                                 new InstantCommand(() -> drivetrain.applyRequest(() -> getDriverInput()), drivetrain));
-
-                driver.y().whileTrue(new RunCommand(() -> indexer.enable(), indexer));
 
                 // Run SysId routines when holding back/start and X/Y.
                 // Note that each routine should be run exactly once in a single log.
@@ -237,6 +242,9 @@ public class RobotContainer {
                 operator.y().onTrue(drivetrain.alignToTrench(this::getDriverInput));
 
                 operator.a().whileTrue(new RunCommand(() -> kicker.kickReversed(), kicker));
+
+                operator.b().onTrue(new InstantCommand(
+                                () -> drivetrain.resetPose(GameConstants.getLeftDepotPose()), drivetrain));
         }
 
         /**

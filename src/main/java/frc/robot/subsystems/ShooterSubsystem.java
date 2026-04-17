@@ -72,10 +72,15 @@ public class ShooterSubsystem extends SubsystemBase {
             .getTable("Shooter")
             .getDoubleTopic("ActualRPS")
             .publish();
-    
+
     private final DoublePublisher manualRPSPub = NetworkTableInstance.getDefault()
             .getTable("Shooter")
             .getDoubleTopic("NaveenRPS")
+            .publish();
+
+    private final StringPublisher nearFarPub = NetworkTableInstance.getDefault()
+            .getTable("Shooter")
+            .getStringTopic("NearFar")
             .publish();
 
     public ShooterState shooterState = ShooterState.OFF;
@@ -111,8 +116,8 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void shoot() {
-        m_motorRight.setControl(m_request.withVelocity(shootRPS));
         targetRPS = shootRPS;
+        m_motorRight.setControl(m_request.withVelocity(shootRPS));
     }
 
     /**
@@ -122,8 +127,8 @@ public class ShooterSubsystem extends SubsystemBase {
      * @param rps target angular velocity
      */
     public void shoot(AngularVelocity rps) {
-        m_motorRight.setControl(m_request.withVelocity(rps));
         targetRPS = rps;
+        m_motorRight.setControl(m_request.withVelocity(rps));
     }
 
     /** Stops the flywheel by applying neutral output to both motors. */
@@ -217,6 +222,8 @@ public class ShooterSubsystem extends SubsystemBase {
         targetRPSPub.set(targetRPS != null ? targetRPS.in(RotationsPerSecond) : 0);
 
         manualRPSPub.set(shootRPS.in(RotationsPerSecond));
+
+        // nearFarPub.set();
     }
 
     /**

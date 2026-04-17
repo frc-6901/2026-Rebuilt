@@ -5,49 +5,7 @@
     {
       "name": "Match",
       "grid_layout": {
-        "layouts": [
-          {
-            "title": "Match Time",
-            "x": 1280.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "Phase Name",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Match Time/Phase Name",
-                  "period": 0.06,
-                  "data_type": "string",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "Phase Time",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Match Time/Phase Time",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
-                }
-              }
-            ]
-          }
-        ],
+        "layouts": [],
         "containers": [
           {
             "title": "Field",
@@ -97,8 +55,8 @@
           },
           {
             "title": "Shooter?",
-            "x": 1280.0,
-            "y": 128.0,
+            "x": 512.0,
+            "y": 384.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
@@ -111,8 +69,8 @@
           },
           {
             "title": "Intake?",
-            "x": 1152.0,
-            "y": 128.0,
+            "x": 384.0,
+            "y": 384.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -120,34 +78,6 @@
               "topic": "/Intake/Intake?",
               "period": 0.06,
               "data_type": "string",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "hub_dtheta",
-            "x": 1152.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/Debug/hub_dtheta",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Canivore Utilization",
-            "x": 384.0,
-            "y": 384.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/Can/Canivore Utilization",
-              "period": 0.06,
-              "data_type": "double",
               "show_submit_button": false
             }
           },
@@ -166,7 +96,7 @@
           },
           {
             "title": "TargetRPS",
-            "x": 1152.0,
+            "x": 896.0,
             "y": 384.0,
             "width": 128.0,
             "height": 128.0,
@@ -180,7 +110,7 @@
           },
           {
             "title": "ActualRPS",
-            "x": 1024.0,
+            "x": 768.0,
             "y": 384.0,
             "width": 128.0,
             "height": 128.0,
@@ -190,6 +120,37 @@
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
+            }
+          },
+          {
+            "title": "Phase Time",
+            "x": 1024.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Match Time/Phase Time",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Active",
+            "x": 1152.0,
+            "y": 128.0,
+            "width": 384.0,
+            "height": 256.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/QoL/Active",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           }
         ]
@@ -280,6 +241,61 @@
                 }
               }
             ]
+          },
+          {
+            "title": "Shooter",
+            "x": 1152.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "ActualRPS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Shooter/ActualRPS",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Shooter?",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Shooter/Shooter?",
+                  "period": 0.06,
+                  "data_type": "string",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "TargetRPS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Shooter/TargetRPS",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              }
+            ]
           }
         ],
         "containers": [
@@ -326,14 +342,14 @@
             }
           },
           {
-            "title": "photonvision_Port_1184_Output_MJPEG_Server",
+            "title": "photonvision_Port_1182_Output_MJPEG_Server",
             "x": 896.0,
             "y": 0.0,
             "width": 256.0,
             "height": 256.0,
             "type": "Camera Stream",
             "properties": {
-              "topic": "/CameraPublisher/photonvision_Port_1184_Output_MJPEG_Server",
+              "topic": "/CameraPublisher/photonvision_Port_1182_Output_MJPEG_Server",
               "period": 0.06,
               "rotation_turns": 0
             }

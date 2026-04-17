@@ -41,6 +41,7 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -186,7 +187,7 @@ public final class Constants {
                 public final static int MotorId = 32;
 
                 /** The rotations per second for actively intaking balls. */
-                public final static AngularVelocity IntakeRPS = RotationsPerSecond.of(80);
+                public final static AngularVelocity IntakeRPS = RotationsPerSecond.of(85);
 
                 /** The gear ratio of the intake system. */
                 public final static double GearRatio = 9.0;
@@ -214,14 +215,14 @@ public final class Constants {
                 public final static int MotorId = 31;
 
                 /** The position to lower the slapdown to when intaking a ball. */
-                public final static Angle IntakePosition = Rotations.of(59);
+                public final static Angle IntakePosition = Rotations.of(62);
                 /** The default home position of slapdown system. */
                 public final static Angle HomePosition = Rotations.of(0);
                 /**
                  * The tolerance for determining whether the slapdown is in the deployed
                  * position.
                  */
-                public final static Angle PositionTolerance = Rotations.of(2.0);
+                public final static Angle PositionTolerance = Rotations.of(1.0);
 
                 /** The gear ratio of the slapdown system. */
                 public final static double GearRatio = 81.0;
@@ -597,6 +598,16 @@ public final class Constants {
                 /** The x-position of the pass-line on the red alliance side of the field. */
                 public static final Distance RedPassLineX = Meters.of(14.207);
 
+                /** The pose of the left depot side on the blue alliance. */
+                public static final Pose2d BlueLeftDepotPose = new Pose2d(
+                                new Translation2d(Inches.of(44.5), Inches.of(223.6)),
+                                new Rotation2d(Degrees.of(0)));
+
+                /** The pose of the left depot side on the red alliance. */
+                public static final Pose2d RedLeftDepotPose = new Pose2d(
+                                new Translation2d(Inches.of(606.72), Inches.of(94.09)),
+                                new Rotation2d(Degrees.of(180)));
+
                 /** The height of the target hub from the ground. */
                 public final static Distance HubTargetHeight = Meters.of(1.524);
 
@@ -616,6 +627,12 @@ public final class Constants {
                         return (DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Blue)
                                         ? new Translation2d(GameConstants.BluePassLineX, y)
                                         : new Translation2d(GameConstants.RedPassLineX, y);
+                }
+
+                public static Pose2d getLeftDepotPose() {
+                        return (DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Blue)
+                                        ? GameConstants.BlueLeftDepotPose
+                                        : GameConstants.RedLeftDepotPose;
                 }
         }
 
