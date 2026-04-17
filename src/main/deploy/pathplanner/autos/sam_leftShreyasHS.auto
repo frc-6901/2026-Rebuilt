@@ -63,13 +63,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "leftHS_SecondLeave"
+            "pathName": "leftHS_ShreyasLeave"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "leftHS_SecondReturn"
+            "name": "primeShooter"
           }
         }
       ]
